@@ -18,7 +18,7 @@ Imager is a plugin for doing image transforms in Craft templates. It does all th
 `{ effects: { sharpen: true, gamma: 1.4, colorize: '#ff9933' } }`
 - Advanced effetcs, including color blend, tint, sepia, contrast, modulate, normalize, contrast stretch, and vignette (Imagick imagedriver only).  
 `{ effects: { modulate: [100, 40, 100], colorBlend: ['rgb(255, 153, 51)', 0.5] } }`
-- Your own choice of which image resize/interpolation to use. Speed vs. quality is up to you (Imagick imagedriver only).  
+- Your own choice of which resize filter to use. Speed vs. quality is up to you (Imagick imagedriver only).  
 - Crazy experiments (only one at the moment) to speed up your transforms like... crazy much.
 
 **For a quick look at what Imager can do, [check out the demo site](http://imager.vaersaagod.no/).**
