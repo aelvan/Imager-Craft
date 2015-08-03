@@ -1,0 +1,14 @@
+language: php
+php:
+- 5.3
+- 5.4
+- 5.5
+- 5.6
+- hhvm
+- nightly
+before_script: composer install
+script: vendor/bin/phpunit
+notifications:
+  email: false
+  slack:
+    secure: W1cEp+ctAD+in3hA/gansbUYrFZsR3EMd7s/XiK2mfAxRRXPCPgCvv0PWpYelJ5F2AnHXkmBP3USKFDhKN+JLmOOxrZpjzh4ve9QSNs4IPgcrU4meQYSgJ3uovS7h4fqAmqhQKL+FpAnrXAmXWGXVPCPtneySsMTyU6kNdmVfulxXRMJ+kLHtFQlT+U7cPYG0f8FkKR2u5CbRsdjUvoZHwbK7jmWpUcCi2O0A1vvMMEMEOG+iuayWW/RbfSfKIgM/SZG0pGYpoAB7I8XfYns7IyLhkJAw18jIWnowF4DuBusNRdr3zIfwC7bSlLKMFYJYpEsiLFCaeGZgp1NbYJ77DvqpwNp9xmoPz9rFGNe7Re+i13pjNWhEnwc5N3St7x8DYNhUC3L0upQ2FWZSomMM7ghlc6GIVtlXYrRJ5AnxIjSWyLRcTRU5Pf/PPRckOTiuLnVgUZNMVIlAHlRV7c/pUVDjbPvjcOajdXnpcd3+5cuKyzCYpXugIfJ9Hzsozq0yCHDKjo8ssAU+5H3mEfB7M25Rtd2awObb3zqOyUPm+J3M/dzql95cF+zj2SWQsBF/ViwkHo+9SoAr/FYqCZveiS0w9vzoKzbGXVDYCfFD+GlEMJ2b8zw4d2sqmIbw24jGq1ZPgczrpD5fcbI2TaheKBkgWvsBJFFO5KbGWqzHIM=

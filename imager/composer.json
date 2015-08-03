@@ -1,0 +1,5 @@
+{
+    "require": {
+        "tinify/tinify": "^0.9.1"
+    }
+}

@@ -1,0 +1,12 @@
+<phpunit bootstrap="test/helper.php" colors="true">
+    <testsuites>
+        <testsuite name="Tinify PHP Test Suite">
+            <directory suffix="Test.php">test</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <directory>lib</directory>
+        </whitelist>
+    </filter>
+</phpunit>
