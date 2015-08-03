@@ -33,14 +33,16 @@ The reason I still publish it now, is to get some early feedback from the commun
 
 Installation
 ---
-1) Download the zip from this repository, unzip, and put the imager folder in your Craft plugin folder.
-2) Enable the plugin in Craft (Settings > Plugins)
-3) Create a new configuration file in the craft/config folder, named imager.php. Override any settings, the defaults are found in imager/config.php. 
-4) Make sure you create the folder where Imager will store the images exists, and is writable. (your public folder)/imager is the default.
+1. Download the zip from this repository, unzip, and put the imager folder in your Craft plugin folder.
+2. Enable the plugin in Craft (Settings > Plugins)
+3. Create a new configuration file in the craft/config folder, named imager.php. Override any settings, the defaults are found in [imager/config.php](https://github.com/aelvan/Imager-Craft/blob/master/imager/config.php). 
+4. Make sure you create the folder where Imager will store the images exists, and is writable. (your public folder)/imager is the default.
 
 Configuration
 ---
-Information about the configuration parameters are coming soon. For now, see imager/config.php. 
+Information about the configuration parameters are coming soon. 
+
+For now, see [imager/config.php](https://github.com/aelvan/Imager-Craft/blob/master/imager/config.php). 
 
 Usage
 ---
@@ -71,7 +73,9 @@ Now you can do something smart with that array of transformed images.
 
 Transform parameters
 ---
-Information about the different transform parameters are coming soon. For now, see the above examples, and [the demo site](http://imager.vaersaagod.no/). 
+Information about the different transform parameters are coming soon. 
+
+For now, see the above examples, and [the demo site](http://imager.vaersaagod.no/). 
 
 Performance
 ---
