@@ -24,6 +24,10 @@ return array(
 	'jpegoptimPath' => '/usr/bin/jpegoptim',
 	'jpegoptimOptionString' => '-s',
 	
+	'jpegtranEnabled' => false,
+	'jpegtranPath' => '/usr/bin/jpegtran',
+	'jpegtranOptionString' => '-optimize -copy none',
+	
 	'optipngEnabled' => false,
 	'optipngPath' => '/usr/bin/optipng',
 	'optipngOptionString' => '-o5',

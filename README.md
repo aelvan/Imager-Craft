@@ -7,7 +7,7 @@ Imager is a plugin for doing image transforms in Craft templates. It does all th
 - A convenient syntax for doing a bunch of image transforms in one go.  
 - Transforms are completely file-based, no database queries needed.
 - Transformed images are placed in their own folder, outside of the asset source folder.
-- Optimize your created images automatically with jpegoptim, optipng or TinyPNG.
+- Optimize your created images automatically with jpegoptim, jpegtran, optipng or TinyPNG.
 - Crop position is relative (in percent) not confined to edges/center (but the built-in keywords still works).  
 `{ width: 600, height: 600, mode: 'crop', position: '20% 65%' }`
 - New cropZoom parameter for when you want to get a little closer.  

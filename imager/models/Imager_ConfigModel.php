@@ -41,6 +41,10 @@ class Imager_ConfigModel extends BaseModel
 			'jpegoptimPath'  					=> array(AttributeType::String),
 			'jpegoptimOptionString'  	=> array(AttributeType::String),
 			
+			'jpegtranEnabled'  			=> array(AttributeType::Bool),
+			'jpegtranPath'  					=> array(AttributeType::String),
+			'jpegtranOptionString'  	=> array(AttributeType::String),
+			
 			'optipngEnabled'  				=> array(AttributeType::Bool),
 			'optipngPath'  						=> array(AttributeType::String),
 			'optipngOptionString'  		=> array(AttributeType::String),

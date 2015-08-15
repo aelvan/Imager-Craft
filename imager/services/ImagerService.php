@@ -274,6 +274,9 @@ class ImagerService extends BaseApplicationComponent
         if (($targetExtension=='jpg' || $targetExtension=='jpeg') && $this->getSetting('jpegoptimEnabled', $transform)) {
           $this->runJpegoptim($targetFilePath, $transform);
         }
+        if (($targetExtension=='jpg' || $targetExtension=='jpeg') && $this->getSetting('jpegtranEnabled', $transform)) {
+          $this->runJpegtran($targetFilePath, $transform);
+        }
         if ($targetExtension=='png' && $this->getSetting('optipngEnabled', $transform)) {
           $this->runOptipng($targetFilePath, $transform);
         }
@@ -841,6 +844,24 @@ class ImagerService extends BaseApplicationComponent
     $cmd .= ' ';
     $cmd .= $file;
     
+    $this->executeOptimize($cmd, $file);
+  }
+
+  /**
+   * Run jpegtran on file
+   *
+   * @param $file
+   * @param $transform
+   */
+  private function runJpegtran($file, $transform) {
+    $cmd = $this->getSetting('jpegtranPath', $transform);
+    $cmd .= ' ';
+    $cmd .= $this->getSetting('jpegtranOptionString', $transform);
+    $cmd .= ' -outfile ';
+    $cmd .= $file;
+    $cmd .= ' ';
+    $cmd .= $file;
+
     $this->executeOptimize($cmd, $file);
   }
   
