@@ -18,6 +18,7 @@ return array(
 
   'cacheEnabled' => true,
   'cacheDuration' => 1209600, // 14 days
+  'cacheDurationRemoteFiles' => 1209600, // 14 days
   'instanceReuseEnabled' => false,
   'jpegoptimEnabled' => false,
   'jpegoptimPath' => '/usr/bin/jpegoptim',

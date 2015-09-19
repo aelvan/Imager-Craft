@@ -126,12 +126,36 @@ class ImagerService extends BaseApplicationComponent
         $this->_createImagineInstance();
 
         if (is_string($image)) {
-            // ok, so it's not an AssetFileModel. What is it then? 
+            // ok, so it's not an AssetFileModel. What is it then?
             $imageString = str_replace($this->getSetting('imagerUrl'), '', $image);
 
-            if (strrpos($imageString, 'http') !== false) {
-                // todo : download remote file and proceed 
-                throw new Exception(Craft::t('External urls are not yet supported.'));
+            if (strrpos($imageString, 'http') !== false) { // this is a remote file. download and proceed.
+
+                $urlParts = parse_url($image);
+                $pathParts = pathinfo($urlParts['path']);
+                $parsedDirname = str_replace('.', '_', $urlParts['host']) . $pathParts['dirname'];
+
+                $sourcePath = CRAFT_STORAGE_PATH . 'runtime/imager/remote/' . $parsedDirname . '/';
+                $targetPath = $this->getSetting('imagerSystemPath') . $parsedDirname . '/';
+                $targetUrl = $this->getSetting('imagerUrl') . $parsedDirname . '/';
+                $imageFilename = $pathParts['basename'];
+
+                // check if the temp path for remote files exists or can be created.
+                if (!IOHelper::getRealPath($sourcePath)) {
+                    IOHelper::createFolder($sourcePath, craft()->config->get('defaultFolderPermissions'), true);
+
+                    if (!IOHelper::getRealPath($sourcePath)) {
+                        throw new Exception(Craft::t('Temp folder “{sourcePath}” does not exist and could not be created',
+                          array('sourcePath' => $sourcePath)));
+                    }
+                }
+
+                // check if the file is already downloaded
+                // tbd : should the caching of remote images expire?
+                if (!IOHelper::fileExists($sourcePath . $imageFilename) || (IOHelper::getLastTimeModified($sourcePath . $imageFilename)->format('U') + $this->getSetting('cacheDurationRemoteFiles') < time())) {
+                    file_put_contents($sourcePath . $imageFilename, fopen($image, 'r'));
+                }
+
             } else {
                 $pathParts = pathinfo($imageString);
                 $sourcePath = $this->getSetting('imagerSystemPath') . $pathParts['dirname'] . '/';
@@ -163,9 +187,8 @@ class ImagerService extends BaseApplicationComponent
         }
 
         if (!IOHelper::getRealPath($targetPath)) {
-            IOHelper::createFolder($this->getSetting('imagerSystemPath') . $image->getFolder()->path,
-              craft()->config->get('defaultFolderPermissions'), true);
-            $targetPath = IOHelper::getRealPath($this->getSetting('imagerSystemPath') . $image->getFolder()->path);
+            IOHelper::createFolder($targetPath, craft()->config->get('defaultFolderPermissions'), true);
+            $targetPath = IOHelper::getRealPath($targetPath);
 
             if (!IOHelper::getRealPath($targetPath)) {
                 throw new Exception(Craft::t('Target folder “{targetPath}” does not exist and could not be created',
