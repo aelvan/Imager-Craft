@@ -48,6 +48,13 @@ class Imager_ConfigModel extends BaseModel
           'tinyPngEnabled' => array(AttributeType::Bool),
           'tinyPngApiKey' => array(AttributeType::String),
           'logOptimizations' => array(AttributeType::Bool),
+          'awsEnabled' => array(AttributeType::Bool),
+          'awsAccessKey' => array(AttributeType::String),
+          'awsSecretAccessKey' => array(AttributeType::String),
+          'awsBucket' => array(AttributeType::String),
+          'awsCacheDuration' => array(AttributeType::Number),
+          'awsRequestHeaders' => array(AttributeType::Mixed),
+          'awsStorageType' => array(AttributeType::String),
         );
     }
 

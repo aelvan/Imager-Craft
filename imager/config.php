@@ -34,4 +34,13 @@ return array(
   'tinyPngApiKey' => '',
   'optimizeType' => '',
   'logOptimizations' => false,
+  
+  'awsEnabled' => false,
+  'awsAccessKey' => '',
+  'awsSecretAccessKey' => '',
+  'awsBucket' => '',
+  'awsCacheDuration' => 1209600, // 14 days
+  'awsRequestHeaders' => array(),
+  'awsStorageType' => 'standard', // 'standard' or 'rrs' (reduced redundancy storage) 
+  
 );

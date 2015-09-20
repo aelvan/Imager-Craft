@@ -14,6 +14,7 @@ class ImagerService extends BaseApplicationComponent
     var $imagineInstance = null;
     var $imageInstance = null;
     var $configModel = null;
+    var $s3 = null;
 
     // translate dictionary for translating transform keys into filename markers
     public static $transformKeyTranslate = array(
@@ -252,21 +253,25 @@ class ImagerService extends BaseApplicationComponent
 
             // if file was created, check if optimization should be done
             if (IOHelper::fileExists($targetFilePath)) {
-                if (($targetExtension == 'jpg' || $targetExtension == 'jpeg') && $this->getSetting('jpegoptimEnabled',
-                    $transform)
-                ) {
-                    $this->runJpegoptim($targetFilePath, $transform);
+                if ($targetExtension == 'jpg' || $targetExtension == 'jpeg') {
+                    if ($this->getSetting('jpegoptimEnabled', $transform)) {
+                        $this->runJpegoptim($targetFilePath, $transform);
+                    }
+                    if ($this->getSetting('jpegtranEnabled', $transform)) {
+                        $this->runJpegtran($targetFilePath, $transform);
+                    }
                 }
-                if (($targetExtension == 'jpg' || $targetExtension == 'jpeg') && $this->getSetting('jpegtranEnabled',
-                    $transform)
-                ) {
-                    $this->runJpegtran($targetFilePath, $transform);
-                }
+
                 if ($targetExtension == 'png' && $this->getSetting('optipngEnabled', $transform)) {
                     $this->runOptipng($targetFilePath, $transform);
                 }
+
                 if ($this->getSetting('tinyPngEnabled', $transform)) {
                     $this->runTinyPng($targetFilePath, $transform);
+                }
+
+                if ($this->getSetting('awsEnabled')) {
+                    $this->_uploadToAWS($targetFilePath);
                 }
             }
         }
@@ -843,7 +848,7 @@ class ImagerService extends BaseApplicationComponent
      * @param $file
      * @param $transform
      */
-    private function runJpegoptim($file, $transform)
+    public function runJpegoptim($file, $transform)
     {
         $cmd = $this->getSetting('jpegoptimPath', $transform);
         $cmd .= ' ';
@@ -860,7 +865,7 @@ class ImagerService extends BaseApplicationComponent
      * @param $file
      * @param $transform
      */
-    private function runJpegtran($file, $transform)
+    public function runJpegtran($file, $transform)
     {
         $cmd = $this->getSetting('jpegtranPath', $transform);
         $cmd .= ' ';
@@ -879,7 +884,7 @@ class ImagerService extends BaseApplicationComponent
      * @param $file
      * @param $transform
      */
-    private function runOptipng($file, $transform)
+    public function runOptipng($file, $transform)
     {
         $cmd = $this->getSetting('optipngPath', $transform);
         $cmd .= ' ';
@@ -890,7 +895,7 @@ class ImagerService extends BaseApplicationComponent
         $this->executeOptimize($cmd, $file);
     }
 
-    private function runTinyPng($file, $transform)
+    public function runTinyPng($file, $transform)
     {
         $this->makeTask('Imager_TinyPng', $file);
     }
@@ -909,6 +914,44 @@ class ImagerService extends BaseApplicationComponent
         if ($this->getSetting('logOptimizations')) {
             ImagerPlugin::log("Optimized image $file \n\n" . $r, LogLevel::Info, true);
         }
+    }
+
+
+    /**
+     * ---- AWS -----------------------------------------------------------------------------------------------------------
+     */
+
+
+    private function _uploadToAWS($filePath)
+    {
+        if (is_null($this->s3)) {
+            $this->s3 = new \S3($this->getSetting('awsAccessKey'), $this->getSetting('awsSecretAccessKey'));
+            $this->s3->setExceptions(true);
+        }
+
+        $file = $this->s3->inputFile($filePath);
+        $headers = $this->getSetting('awsRequestHeaders');
+        
+        if (!isset($headers['Cache-Control'])) {
+            $headers['Cache-Control'] = 'max-age=' . $this->getSetting('awsCacheDuration') . ', must-revalidate';
+        }
+        
+        if (!$this->s3->putObject($file, $this->getSetting('awsBucket'), str_replace($this->getSetting('imagerSystemPath'), '', $filePath), \S3::ACL_PUBLIC_READ, array(), $headers, $this->_getAWSStorageClass())) //fail
+        {
+            throw new Exception(Craft::t('File “{filePath}” could not be uploaded to AWS', array('filePath' => $filePath)));
+        }
+    }
+
+
+    private function _getAWSStorageClass()
+    {
+        switch ($this->getSetting('awsStorageType')) {
+            case 'standard':
+                return \S3::STORAGE_CLASS_STANDARD;
+            case 'rrs':
+                return \S3::STORAGE_CLASS_RRS;
+        }
+        return \S3::STORAGE_CLASS_STANDARD;
     }
 
 
