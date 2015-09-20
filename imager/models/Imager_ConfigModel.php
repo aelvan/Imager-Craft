@@ -31,6 +31,7 @@ class Imager_ConfigModel extends BaseModel
           'resizeFilter' => array(AttributeType::String),
           'position' => array(AttributeType::String),
           'hashFilename' => array(AttributeType::Bool),
+          'hashRemoteUrl' => array(AttributeType::Bool),
           'cacheEnabled' => array(AttributeType::Bool),
           'cacheDuration' => array(AttributeType::Number),
           'cacheDurationRemoteFiles' => array(AttributeType::Number),

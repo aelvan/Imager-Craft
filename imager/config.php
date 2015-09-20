@@ -14,7 +14,8 @@ return array(
   'allowUpscale' => true,
   'resizeFilter' => 'lanczos',
   'position' => '50% 50%',
-  'hashFilename' => 'postfix', // true, false, or 'postfix' (meaning only the generated part of the filename)
+  'hashFilename' => 'postfix', // true, false, or 'postfix' (meaning only the generated part of the filename is hashed)
+  'hashRemoteUrl' => false, // true, false, or 'host' (meaning only the host part of the url is hashed) 
 
   'cacheEnabled' => true,
   'cacheDuration' => 1209600, // 14 days

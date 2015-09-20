@@ -122,91 +122,39 @@ class ImagerService extends BaseApplicationComponent
         }
 
         $this->configModel = new Imager_ConfigModel($configOverrides);
-
+        $pathsModel = new Imager_ImagePathsModel($image);
         $this->_createImagineInstance();
 
-        if (is_string($image)) {
-            // ok, so it's not an AssetFileModel. What is it then?
-            $imageString = str_replace($this->getSetting('imagerUrl'), '', $image);
-
-            if (strrpos($imageString, 'http') !== false) { // this is a remote file. download and proceed.
-
-                $urlParts = parse_url($image);
-                $pathParts = pathinfo($urlParts['path']);
-                $parsedDirname = str_replace('.', '_', $urlParts['host']) . $pathParts['dirname'];
-
-                $sourcePath = CRAFT_STORAGE_PATH . 'runtime/imager/remote/' . $parsedDirname . '/';
-                $targetPath = $this->getSetting('imagerSystemPath') . $parsedDirname . '/';
-                $targetUrl = $this->getSetting('imagerUrl') . $parsedDirname . '/';
-                $imageFilename = $pathParts['basename'];
-
-                // check if the temp path for remote files exists or can be created.
-                if (!IOHelper::getRealPath($sourcePath)) {
-                    IOHelper::createFolder($sourcePath, craft()->config->get('defaultFolderPermissions'), true);
-
-                    if (!IOHelper::getRealPath($sourcePath)) {
-                        throw new Exception(Craft::t('Temp folder “{sourcePath}” does not exist and could not be created',
-                          array('sourcePath' => $sourcePath)));
-                    }
-                }
-
-                // check if the file is already downloaded
-                // tbd : should the caching of remote images expire?
-                if (!IOHelper::fileExists($sourcePath . $imageFilename) || (IOHelper::getLastTimeModified($sourcePath . $imageFilename)->format('U') + $this->getSetting('cacheDurationRemoteFiles') < time())) {
-                    file_put_contents($sourcePath . $imageFilename, fopen($image, 'r'));
-                }
-
-            } else {
-                $pathParts = pathinfo($imageString);
-                $sourcePath = $this->getSetting('imagerSystemPath') . $pathParts['dirname'] . '/';
-                $targetPath = $this->getSetting('imagerSystemPath') . $pathParts['dirname'] . '/';
-                $targetUrl = $this->getSetting('imagerUrl') . $pathParts['dirname'] . '/';
-                $imageFilename = $pathParts['basename'];
-            }
-
-        } else {
-            // This is an AssetsFileModel! That's great.
-
-            // todo : But only local sources are supported for now.
-            if ($image->getSource()->type != 'Local') {
-                throw new Exception(Craft::t('Only local asset sources are supported for now'));
-            }
-
-            $sourcePath = craft()->config->parseEnvironmentString($image->getSource()->settings['path']) . $image->getFolder()->path;
-            $targetPath = $this->getSetting('imagerSystemPath') . $image->getFolder()->path;
-            $targetUrl = $this->getSetting('imagerUrl') . $image->getFolder()->path;
-            $imageFilename = $image->filename;
-        }
 
         /**
          * Check all the things that could go wrong(tm)
          */
-        if (!IOHelper::getRealPath($sourcePath)) {
+        if (!IOHelper::getRealPath($pathsModel->sourcePath)) {
             throw new Exception(Craft::t('Source folder “{sourcePath}” does not exist',
-              array('sourcePath' => $sourcePath)));
+              array('sourcePath' => $pathsModel->sourcePath)));
         }
 
-        if (!IOHelper::getRealPath($targetPath)) {
-            IOHelper::createFolder($targetPath, craft()->config->get('defaultFolderPermissions'), true);
-            $targetPath = IOHelper::getRealPath($targetPath);
+        if (!IOHelper::getRealPath($pathsModel->targetPath)) {
+            IOHelper::createFolder($pathsModel->targetPath, craft()->config->get('defaultFolderPermissions'), true);
+            $pathsModel->targetPath = IOHelper::getRealPath($pathsModel->targetPath);
 
-            if (!IOHelper::getRealPath($targetPath)) {
+            if (!IOHelper::getRealPath($pathsModel->targetPath)) {
                 throw new Exception(Craft::t('Target folder “{targetPath}” does not exist and could not be created',
-                  array('targetPath' => $targetPath)));
+                  array('targetPath' => $pathsModel->targetPath)));
             }
         }
 
-        if ($targetPath && !IOHelper::isWritable($targetPath)) {
+        if ($pathsModel->targetPath && !IOHelper::isWritable($pathsModel->targetPath)) {
             throw new Exception(Craft::t('Target folder “{targetPath}” is not writeable',
-              array('targetPath' => $targetPath)));
+              array('targetPath' => $pathsModel->targetPath)));
         }
 
-        if (!IOHelper::fileExists($sourcePath . $imageFilename)) {
+        if (!IOHelper::fileExists($pathsModel->sourcePath . $pathsModel->sourceFilename)) {
             throw new Exception(Craft::t('Requested image “{fileName}” does not exist in path “{sourcePath}”',
-              array('fileName' => $imageFilename, 'sourcePath' => $sourcePath)));
+              array('fileName' => $pathsModel->sourceFilename, 'sourcePath' => $pathsModel->sourcePath)));
         }
 
-        if (!craft()->images->checkMemoryForImage($sourcePath . $imageFilename)) {
+        if (!craft()->images->checkMemoryForImage($pathsModel->sourcePath . $pathsModel->sourceFilename)) {
             throw new Exception(Craft::t("Not enough memory available to perform this image operation."));
         }
 
@@ -220,14 +168,12 @@ class ImagerService extends BaseApplicationComponent
         if (isset($transform[0])) {
             $transformedImages = array();
             foreach ($transform as $t) {
-                $transformedImage = $this->_getTransformedImage($imageFilename, $sourcePath, $targetPath, $targetUrl,
-                  $t);
+                $transformedImage = $this->_getTransformedImage($pathsModel, $t);
                 $transformedImages[] = $transformedImage;
             }
             $r = $transformedImages;
         } else {
-            $transformedImage = $this->_getTransformedImage($imageFilename, $sourcePath, $targetPath, $targetUrl,
-              $transform);
+            $transformedImage = $this->_getTransformedImage($pathsModel, $transform);
             $r = $transformedImage;
         }
 
@@ -248,10 +194,10 @@ class ImagerService extends BaseApplicationComponent
      * @throws Exception
      * @return Imager_ImageModel
      */
-    private function _getTransformedImage($imageFilename, $sourcePath, $targetPath, $targetUrl, $transform)
+    private function _getTransformedImage($paths, $transform)
     {
         // break up the image filename to get extension and actual filename 
-        $pathParts = pathinfo($imageFilename);
+        $pathParts = pathinfo($paths->targetFilename);
         $targetExtension = $pathParts['extension'];
         $filename = $pathParts['filename'];
 
@@ -265,8 +211,8 @@ class ImagerService extends BaseApplicationComponent
 
         // create target filename, path and url
         $targetFilename = $this->_createTargetFilename($filename, $targetExtension, $transform);
-        $targetFilePath = $targetPath . $targetFilename;
-        $targetFileUrl = $targetUrl . $targetFilename;
+        $targetFilePath = $paths->targetPath . $targetFilename;
+        $targetFileUrl = $paths->targetUrl . $targetFilename;
 
         /**
          * Check if the image already exists, if caching is turned on or if the cache has expired.
@@ -276,7 +222,7 @@ class ImagerService extends BaseApplicationComponent
         ) {
             // create the imageInstance. only once if reuse is enabled, or always
             if (!$this->getSetting('instanceReuseEnabled', $transform) || $this->imageInstance == null) {
-                $this->imageInstance = $this->imagineInstance->open($sourcePath . $imageFilename);
+                $this->imageInstance = $this->imagineInstance->open($paths->sourcePath . $paths->sourceFilename);
             }
 
             // Apply any pre resize filters
