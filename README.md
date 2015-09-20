@@ -26,7 +26,7 @@ Imager is a plugin for doing image transforms in Craft templates. It does all th
 Why beta?
 ---
 1. The plugin hasn't been battle-tested yet (development was started five days ago, at the time of writing). 
-2. I have plans to implement more features (removal of generated files from the control panel, external sources, CDN upload support, custom filters, filetypes for letting the client define focal point and effects, etc). 
+2. I have plans to implement more features (removal of generated files from the control panel, ~~external sources~~, ~~CDN upload support~~, custom filters, fieldtypes for letting the client define focal point and effects, etc). 
 3. A few things doesn't work as well as it should (jpegoptim and optipng should also be called through tasks, like TinyPNG, and the vignette effect just isn't very nice).
 
 The reason I still publish it now, is to get some early feedback from the community. I'd love to get some feedback on wether or not this is a plugin that people will use, suggestions for new features, and bug-reports. 
