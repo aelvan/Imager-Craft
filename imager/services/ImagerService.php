@@ -31,6 +31,7 @@ class ImagerService extends BaseApplicationComponent
       'pngCompressionLevel' => 'PNGC',
       'jpegQuality' => 'Q',
       'instanceReuseEnabled' => 'REUSE',
+      'watermark' => 'WM',
     );
 
     // translate dictionary for resize method 
@@ -52,6 +53,9 @@ class ImagerService extends BaseApplicationComponent
       'sinc' => \Imagine\Image\ImageInterface::FILTER_SINC,
 
     );
+
+    // translate dictionary for composite modes. set in constructor if driver is imagick. 
+    public static $compositeKeyTranslate = array();
 
     // translate dictionary for translating crafts built in position constants into relative format (width/height offset) 
     public static $craftPositonTranslate = array(
@@ -88,7 +92,17 @@ class ImagerService extends BaseApplicationComponent
             }
         }
 
-        $this->_createImagineInstance();
+        $this->imagineInstance = $this->_createImagineInstance();
+
+        if ($this->imageDriver == 'imagick') {
+            ImagerService::$compositeKeyTranslate['blend'] = \imagick::COMPOSITE_BLEND;
+            ImagerService::$compositeKeyTranslate['darken'] = \imagick::COMPOSITE_DARKEN;
+            ImagerService::$compositeKeyTranslate['lighten'] = \imagick::COMPOSITE_LIGHTEN;
+            ImagerService::$compositeKeyTranslate['modulate'] = \imagick::COMPOSITE_MODULATE;
+            ImagerService::$compositeKeyTranslate['multiply'] = \imagick::COMPOSITE_MULTIPLY;
+            ImagerService::$compositeKeyTranslate['overlay'] = \imagick::COMPOSITE_OVERLAY;
+            ImagerService::$compositeKeyTranslate['screen'] = \imagick::COMPOSITE_SCREEN;
+        }
     }
 
 
@@ -98,10 +112,10 @@ class ImagerService extends BaseApplicationComponent
     private function _createImagineInstance()
     {
         if ($this->imageDriver === 'gd') {
-            $this->imagineInstance = new \Imagine\Gd\Imagine();
+            return new \Imagine\Gd\Imagine();
         } else {
             if ($this->imageDriver === 'imagick') {
-                $this->imagineInstance = new \Imagine\Imagick\Imagine();
+                return new \Imagine\Imagick\Imagine();
             }
         }
     }
@@ -124,8 +138,7 @@ class ImagerService extends BaseApplicationComponent
 
         $this->configModel = new Imager_ConfigModel($configOverrides);
         $pathsModel = new Imager_ImagePathsModel($image);
-        $this->_createImagineInstance();
-
+        $this->imagineInstance = $this->_createImagineInstance();
 
         /**
          * Check all the things that could go wrong(tm)
@@ -249,10 +262,15 @@ class ImagerService extends BaseApplicationComponent
                 $this->_applyImageEffects($this->imageInstance, $transform['effects']);
             }
 
+            if (isset($transform['watermark'])) {
+                $this->_applyWatermark($this->imageInstance, $transform['watermark']);
+            }
+
             $this->imageInstance->save($targetFilePath, $saveOptions);
 
             // if file was created, check if optimization should be done
             if (IOHelper::fileExists($targetFilePath)) {
+                // todo : move these into tasks 
                 if ($targetExtension == 'jpg' || $targetExtension == 'jpeg') {
                     if ($this->getSetting('jpegoptimEnabled', $transform)) {
                         $this->runJpegoptim($targetFilePath, $transform);
@@ -270,6 +288,7 @@ class ImagerService extends BaseApplicationComponent
                     $this->runTinyPng($targetFilePath, $transform);
                 }
 
+                // todo : make sure this is done after task has been run too
                 if ($this->getSetting('awsEnabled')) {
                     $this->_uploadToAWS($targetFilePath);
                 }
@@ -356,7 +375,13 @@ class ImagerService extends BaseApplicationComponent
 
         ksort($transform);
 
-        // todo : move width and height to front of filename for sanitys sake? And effects to the end?
+        // Move certain keys around abit to make the filename a bit more sane when viewed unencoded
+        $transform = $this->_moveArrayKeyToPos('mode', 0, $transform);
+        $transform = $this->_moveArrayKeyToPos('height', 0, $transform);
+        $transform = $this->_moveArrayKeyToPos('width', 0, $transform);
+        $transform = $this->_moveArrayKeyToPos('preEffects', 99, $transform);
+        $transform = $this->_moveArrayKeyToPos('effects', 99, $transform);
+        $transform = $this->_moveArrayKeyToPos('watermark', 99, $transform);
 
         return $transform;
     }
@@ -381,8 +406,18 @@ class ImagerService extends BaseApplicationComponent
 
                 $r .= '_' . (isset(ImagerService::$transformKeyTranslate[$k]) ? ImagerService::$transformKeyTranslate[$k] : $k) . $effectString;
             } else {
-                $r .= '_' . (isset(ImagerService::$transformKeyTranslate[$k]) ? ImagerService::$transformKeyTranslate[$k] : $k) . (is_array($v) ? implode("-",
-                    $v) : $v);
+                if ($k == 'watermark') {
+                    $watermarkString = '';
+                    foreach ($v as $eff => $param) {
+                        $watermarkString .= $eff . '-' . (is_array($param) ? implode("-", $param) : $param);
+                    }
+
+                    $r .= '_' . (isset(ImagerService::$transformKeyTranslate[$k]) ? ImagerService::$transformKeyTranslate[$k] : $k) . '_' . substr(md5($watermarkString),
+                        0, 10);
+                } else {
+                    $r .= '_' . (isset(ImagerService::$transformKeyTranslate[$k]) ? ImagerService::$transformKeyTranslate[$k] : $k) . (is_array($v) ? implode("-",
+                        $v) : $v);
+                }
             }
         }
 
@@ -613,11 +648,83 @@ class ImagerService extends BaseApplicationComponent
         return array();
     }
 
+    /**
+     * Apply watermark to image
+     *
+     * @param $imageInstance
+     * @param $effects
+     */
+    private function _applyWatermark($imageInstance, $watermark)
+    {
+        if (!isset($watermark['image'])) {
+            throw new Exception(Craft::t('Watermark image property not set'));
+        }
+
+        if (!(isset($watermark['width']) && isset($watermark['width']))) {
+            throw new Exception(Craft::t('Watermark image size is not set'));
+        }
+
+        $paths = new Imager_ImagePathsModel($watermark['image']);
+        $watermarkInstance = $this->imagineInstance->open($paths->sourcePath . $paths->sourceFilename);
+        $watermarkInstance->resize(new \Imagine\Image\Box($watermark['width'], $watermark['height']),
+          \Imagine\Image\ImageInterface::FILTER_UNDEFINED);
+
+        if (isset($watermark['position'])) {
+            $position = $watermark['position'];
+
+            if (isset($position['top'])) {
+                $posY = intval($position['top']);
+            } else {
+                if (isset($position['bottom'])) {
+                    $posY = $imageInstance->getSize()->getHeight() - intval($watermark['height']) - intval($position['bottom']);
+                } else {
+                    $posY = $imageInstance->getSize()->getHeight() - intval($watermark['height']) - 10;
+                }
+            }
+
+            if (isset($position['left'])) {
+                $posX = intval($position['left']);
+            } else {
+                if (isset($position['right'])) {
+                    $posX = $imageInstance->getSize()->getWidth() - intval($watermark['width']) - intval($position['right']);
+                } else {
+                    $posX = $imageInstance->getSize()->getWidth() - intval($watermark['width']) - 10;
+                }
+            }
+        } else {
+            $posY = $imageInstance->getSize()->getHeight() - intval($watermark['height']) - 10;
+            $posX = $imageInstance->getSize()->getWidth() - intval($watermark['width']) - 10;
+        }
+
+        $positionPoint = new \Imagine\Image\Point($posX, $posY);
+
+        if ($this->imageDriver == 'imagick') {
+            $watermarkImagick = $watermarkInstance->getImagick();
+
+            if (isset($watermark['opacity'])) {
+                $watermarkImagick->evaluateImage(\Imagick::EVALUATE_MULTIPLY, floatval($watermark['opacity']),
+                  \Imagick::CHANNEL_ALPHA);
+            }
+
+            if (isset($watermark['blendMode']) && isset(ImagerService::$compositeKeyTranslate[$watermark['blendMode']])) {
+                $blendMode = ImagerService::$compositeKeyTranslate[$watermark['blendMode']];
+            } else {
+                $blendMode = \Imagick::COMPOSITE_ATOP;
+            }
+
+            $imageInstance->getImagick()->compositeImage($watermarkImagick, $blendMode, $positionPoint->getX(),
+              $positionPoint->getY());
+
+        } else { // it's GD :(
+            $imageInstance->paste($watermarkInstance, $positionPoint);
+        }
+    }
+
+
 
     /**
      * ---- Effects ------------------------------------------------------------------------------------------------------
      */
-
 
     /**
      * Apply effects array to image instance
@@ -931,14 +1038,18 @@ class ImagerService extends BaseApplicationComponent
 
         $file = $this->s3->inputFile($filePath);
         $headers = $this->getSetting('awsRequestHeaders');
-        
+
         if (!isset($headers['Cache-Control'])) {
             $headers['Cache-Control'] = 'max-age=' . $this->getSetting('awsCacheDuration') . ', must-revalidate';
         }
-        
-        if (!$this->s3->putObject($file, $this->getSetting('awsBucket'), str_replace($this->getSetting('imagerSystemPath'), '', $filePath), \S3::ACL_PUBLIC_READ, array(), $headers, $this->_getAWSStorageClass())) //fail
+
+        if (!$this->s3->putObject($file, $this->getSetting('awsBucket'),
+          str_replace($this->getSetting('imagerSystemPath'), '', $filePath), \S3::ACL_PUBLIC_READ, array(), $headers,
+          $this->_getAWSStorageClass())
+        ) //fail
         {
-            throw new Exception(Craft::t('File “{filePath}” could not be uploaded to AWS', array('filePath' => $filePath)));
+            throw new Exception(Craft::t('File “{filePath}” could not be uploaded to AWS',
+              array('filePath' => $filePath)));
         }
     }
 
@@ -1009,6 +1120,53 @@ class ImagerService extends BaseApplicationComponent
               'paths' => $paths
             ));
         }
+    }
+
+
+    /**
+     * ---- Helper functions -------------------------------------------------------------------------------------------
+     */
+
+    /**
+     * Moves a named key in an associative array to a given position
+     *
+     * @param $key
+     * @param $value
+     * @param $pos
+     * @param $arr
+     * @return array
+     */
+    private function _moveArrayKeyToPos($key, $pos, $arr)
+    {
+        if (!isset($arr[$key])) {
+            return $arr;
+        }
+
+        $tempValue = $arr[$key];
+        unset($arr[$key]);
+
+        if ($pos == 0) {
+            return array($key => $tempValue) + $arr;
+        }
+
+        if ($pos > count($arr)) {
+            return $arr + array($key => $tempValue);
+        }
+
+        $new_arr = array();
+        $i = 1;
+
+        foreach ($arr as $arr_key => $arr_value) {
+            if ($i == $pos) {
+                $new_arr[$key] = $tempValue;
+            }
+
+            $new_arr[$arr_key] = $arr_value;
+
+            ++$i;
+        }
+
+        return $new_arr;
     }
 
 }
