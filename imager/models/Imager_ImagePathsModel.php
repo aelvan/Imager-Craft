@@ -60,9 +60,9 @@ class Imager_ImagePathsModel extends BaseModel
     /**
      * Get paths for a local file that's in the imager path
      * 
-     * @param AssetFileModel $image
+     * @param $image
      */
-    private function _getPathsForLocaleImagerFile(AssetFileModel $image)
+    private function _getPathsForLocaleImagerFile($image)
     {
         $imageString = str_replace(craft()->imager->getSetting('imagerUrl'), '', $image);
         $pathParts = pathinfo($imageString);
