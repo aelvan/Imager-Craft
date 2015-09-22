@@ -6,7 +6,9 @@ Imager is a plugin for doing image transforms in Craft templates. It does all th
 
 - A convenient syntax for doing a bunch of image transforms in one go.  
 - Transforms are completely file-based, no database queries needed.
+- You can transform both images in your asset sources, both local and cloud ones, and external images on any url.
 - Transformed images are placed in their own folder, outside of the asset source folder.
+- You can even upload and server the transformed images from AWS.
 - Optimize your created images automatically with jpegoptim, jpegtran, optipng or TinyPNG.
 - Crop position is relative (in percent) not confined to edges/center (but the built-in keywords still works).  
 `{ width: 600, height: 600, mode: 'crop', position: '20% 65%' }`
@@ -18,7 +20,9 @@ Imager is a plugin for doing image transforms in Craft templates. It does all th
 `{ effects: { sharpen: true, gamma: 1.4, colorize: '#ff9933' } }`
 - Advanced effetcs, including color blend, tint, sepia, contrast, modulate, normalize, contrast stretch, and vignette (Imagick imagedriver only).  
 `{ effects: { modulate: [100, 40, 100], colorBlend: ['rgb(255, 153, 51)', 0.5] } }`
-- Your own choice of which resize filter to use. Speed vs. quality is up to you (Imagick imagedriver only).  
+- Your own choice of which resize filter to use. Speed vs. quality is up to you (Imagick imagedriver only).
+- Concerned about people copying your images? You can add a watermark to them with Imager.  
+`{ watermark: { image: logo, width: 80, height: 80, position: { right: 30, bottom: 30 }, opacity: 0.8, blendMode: 'multiply' } }`
 - Crazy experiments (only one at the moment) to speed up your transforms like... crazy much.
 
 **For a quick look at what Imager can do, [check out the demo site](http://imager.vaersaagod.no/).**
