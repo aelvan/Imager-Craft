@@ -82,10 +82,10 @@ class Imager_ImagePathsModel extends BaseModel
     {
         $urlParts = parse_url($image);
         $pathParts = pathinfo($urlParts['path']);
+        $hashRemoteUrl = craft()->imager->getSetting('hashRemoteUrl');
         
-        $hasRemoteUrl = craft()->imager->getSetting('hashRemoteUrl');
-        if ($hasRemoteUrl) {
-            if (is_string($hasRemoteUrl) && $hasRemoteUrl=='host') {
+        if ($hashRemoteUrl) {
+            if (is_string($hashRemoteUrl) && $hashRemoteUrl=='host') {
                 $parsedDirname = substr(md5($urlParts['host']), 0, 10) . $pathParts['dirname'];
             } else {
                 $parsedDirname = md5($urlParts['host'] . $pathParts['dirname']);
@@ -94,7 +94,7 @@ class Imager_ImagePathsModel extends BaseModel
             $parsedDirname = str_replace('.', '_', $urlParts['host']) . $pathParts['dirname'];
         }
 
-        $this->sourcePath = CRAFT_STORAGE_PATH . 'runtime/imager/' . $parsedDirname . '/';
+        $this->sourcePath = craft()->path->getRuntimePath() . 'imager/' . $parsedDirname . '/';
         $this->targetPath = craft()->imager->getSetting('imagerSystemPath') . $parsedDirname . '/';
         $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $parsedDirname . '/';
         $this->sourceFilename = $this->targetFilename = $pathParts['basename'];
