@@ -32,4 +32,18 @@ class ImagerPlugin extends BasePlugin
     {
         require_once __DIR__ . '/vendor/autoload.php';
     }
+    
+    /**
+     * Adds Imager paths to the list of things the Clear Caches tool can delete.
+     *
+     * @return array
+     */
+    public function registerCachePaths()
+    {
+        return array(
+            craft()->imager->getSetting('imagerSystemPath') => Craft::t('Imager image transform cache'),
+            craft()->path->getRuntimePath() . 'imager/' => Craft::t('Imager remote images cache'),
+        );
+    }
+    
 }
