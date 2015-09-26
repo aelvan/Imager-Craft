@@ -27,6 +27,7 @@ class Imager_ConfigModel extends BaseModel
           'imagerUrl' => array(AttributeType::String),
           'jpegQuality' => array(AttributeType::Number),
           'pngCompressionLevel' => array(AttributeType::Number),
+          'interlace' => array(AttributeType::Mixed),
           'allowUpscale' => array(AttributeType::Bool),
           'resizeFilter' => array(AttributeType::String),
           'position' => array(AttributeType::String),

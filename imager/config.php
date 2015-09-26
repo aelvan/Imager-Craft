@@ -11,6 +11,7 @@ return array(
   'imagerUrl' => '/imager/',
   'jpegQuality' => 80,
   'pngCompressionLevel' => 2,
+  'interlace' => false, // false, true ('line'), 'none', 'line', 'plane', 'partition'
   'allowUpscale' => true,
   'resizeFilter' => 'lanczos',
   'position' => '50% 50%',
@@ -32,7 +33,7 @@ return array(
   'optipngOptionString' => '-o5',
   'tinyPngEnabled' => false,
   'tinyPngApiKey' => '',
-  'optimizeType' => '',
+  'optimizeType' => 'task',
   'logOptimizations' => false,
   
   'awsEnabled' => false,

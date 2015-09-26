@@ -30,6 +30,7 @@ class ImagerService extends BaseApplicationComponent
       'allowUpscale' => 'upscale',
       'pngCompressionLevel' => 'PNGC',
       'jpegQuality' => 'Q',
+      'interlace' => 'I',
       'instanceReuseEnabled' => 'REUSE',
       'watermark' => 'WM',
     );
@@ -51,7 +52,14 @@ class ImagerService extends BaseApplicationComponent
       'lanczos' => \Imagine\Image\ImageInterface::FILTER_LANCZOS,
       'bessel' => \Imagine\Image\ImageInterface::FILTER_BESSEL,
       'sinc' => \Imagine\Image\ImageInterface::FILTER_SINC,
-
+    );
+    
+    // translate dictionary for interlace method 
+    public static $interlaceKeyTranslate = array(
+      'none' => \Imagine\Image\ImageInterface::INTERLACE_NONE,
+      'line' => \Imagine\Image\ImageInterface::INTERLACE_LINE,
+      'plane' => \Imagine\Image\ImageInterface::INTERLACE_PLANE,
+      'partition' => \Imagine\Image\ImageInterface::INTERLACE_PARTITION,
     );
 
     // translate dictionary for composite modes. set in constructor if driver is imagick. 
@@ -87,7 +95,6 @@ class ImagerService extends BaseApplicationComponent
                     $this->imageDriver = 'gd';
                 } else {
                     $this->imageDriver = 'imagick';
-
                 }
             }
         }
@@ -125,7 +132,8 @@ class ImagerService extends BaseApplicationComponent
      * Do an image transform
      *
      * @param AssetFileModel|string $image
-     * @param AssetFileModel $transform
+     * @param Array $transform
+     * @param Array $configOverrides
      *
      * @throws Exception
      * @return Image
@@ -199,10 +207,7 @@ class ImagerService extends BaseApplicationComponent
     /**
      * Loads an image from a file system path, do transform, return transformed image as an Imager_ImageModel
      *
-     * @param AssetFileModel $image
-     * @param string $sourcePath
-     * @param string $targetPath
-     * @param string $targetUrl
+     * @param Imager_ImagePathsModel $paths
      * @param Array $transform
      *
      * @throws Exception
@@ -260,6 +265,17 @@ class ImagerService extends BaseApplicationComponent
             // Apply post resize filters
             if (isset($transform['effects'])) {
                 $this->_applyImageEffects($this->imageInstance, $transform['effects']);
+            }
+            
+            // Interlace if true
+            if ($this->getSetting('interlace', $transform)) {
+                $interlaceVal = $this->getSetting('interlace', $transform);
+                
+                if (is_string($interlaceVal)) {
+                    $this->imageInstance->interlace(ImagerService::$interlaceKeyTranslate[$interlaceVal]);
+                } else {
+                    $this->imageInstance->interlace(ImagerService::$interlaceKeyTranslate['line']);
+                }
             }
 
             if (isset($transform['watermark'])) {
