@@ -18,5 +18,20 @@ class Imager_ImageModel extends BaseModel
         return Craft::t($this->url);
     }
 
+    function getUrl()
+    {
+        return $this->url;
+    }
+
+    function getWidth()
+    {
+        return $this->width;
+    }
+
+    function getHeight()
+    {
+        return $this->height;
+    }
+
     // todo : implement more methods to make it more similar to AssetFileModel
 }
