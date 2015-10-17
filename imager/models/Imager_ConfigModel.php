@@ -18,6 +18,12 @@ class Imager_ConfigModel extends BaseModel
                 $this[$attr] = craft()->config->get($attr, 'imager');
             }
         }
+        
+        if (isset(ImagerService::$craftPositonTranslate[$this->position])) {
+            $this->position = ImagerService::$craftPositonTranslate[$this->position];
+        } 
+            
+        $this->position = str_replace('%', '', $this->position);
     }
 
     protected function defineAttributes()

@@ -384,9 +384,9 @@ class ImagerService extends BaseApplicationComponent
         if (isset($transform['position'])) {
             if (isset(ImagerService::$craftPositonTranslate[$transform['position']])) {
                 $transform['position'] = ImagerService::$craftPositonTranslate[$transform['position']];
-            } else {
-                $transform['position'] = str_replace('%', '', $transform['position']);
-            }
+            } 
+            
+            $transform['position'] = str_replace('%', '', $transform['position']);
         }
 
         ksort($transform);
@@ -621,7 +621,7 @@ class ImagerService extends BaseApplicationComponent
         $position = $this->getSetting('position', $transform);
 
         // get the offsets, left and top, now as an int, representing the % offset
-        list($leftOffset, $topOffset) = explode(' ', str_replace('%', '', $position));
+        list($leftOffset, $topOffset) = explode(' ', $position);
 
         // calculate and return the point
         return new \Imagine\Image\Point(floor($wDiff * ($leftOffset / 100)), floor($hDiff * ($topOffset / 100)));
