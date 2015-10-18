@@ -468,10 +468,10 @@ class ImagerService extends BaseApplicationComponent
                 }
             }
         }
-
+        
         // check if we want to upscale. If not, adjust the transform here 
         if (!$this->getSetting('allowUpscale', $transform)) {
-            list($width, $height) = $this->_enforceMaxSize($width, $height, $originalSize);
+            list($width, $height) = $this->_enforceMaxSize($width, $height, $originalSize, true);
         }
 
         return new \Imagine\Image\Box($width, $height);
@@ -550,10 +550,10 @@ class ImagerService extends BaseApplicationComponent
                 }
             }
         }
-
+        
         // check if we want to upscale. If not, adjust the transform here 
         if (!$this->getSetting('allowUpscale', $transform)) {
-            list($width, $height) = $this->_enforceMaxSize($width, $height, $originalSize,
+            list($width, $height) = $this->_enforceMaxSize($width, $height, $originalSize, false,
               $this->_getCropZoomFactor($transform));
         }
 
@@ -569,19 +569,24 @@ class ImagerService extends BaseApplicationComponent
      * @param $originalSize
      * @return array
      */
-    private function _enforceMaxSize($width, $height, $originalSize, $zoomFactor = 1)
+    private function _enforceMaxSize($width, $height, $originalSize, $maintainAspect, $zoomFactor = 1)
     {
         $adjustedWidth = $width;
         $adjustedHeight = $height;
-
-        if ($width > $originalSize->getWidth() * $zoomFactor) {
-            $adjustedWidth = floor($height * ($originalSize->getWidth() * $zoomFactor / $width));
-            $adjustedHeight = $originalSize->getWidth() * $zoomFactor;
+        
+        if ($adjustedWidth > $originalSize->getWidth() * $zoomFactor) {
+            $adjustedWidth = floor($originalSize->getWidth() * $zoomFactor);
+            if ($maintainAspect) {
+                $adjustedHeight = floor($adjustedHeight * ($adjustedWidth / $width));
+            }
         }
 
-        if ($height > $originalSize->getHeight() * $zoomFactor) {
-            $adjustedWidth = floor($width * ($originalSize->getHeight() * $zoomFactor / $height));
-            $adjustedHeight = $originalSize->getHeight() * $zoomFactor;
+        if ($adjustedHeight > $originalSize->getHeight() * $zoomFactor) {
+            
+            $adjustedHeight = floor($originalSize->getHeight() * $zoomFactor);
+            if ($maintainAspect) {
+                $adjustedWidth = floor($adjustedWidth * ($adjustedHeight / $height));
+            }
         }
 
         return array($adjustedWidth, $adjustedHeight);
