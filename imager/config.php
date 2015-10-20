@@ -15,6 +15,7 @@ return array(
   'allowUpscale' => true,
   'resizeFilter' => 'lanczos',
   'position' => '50% 50%',
+  'letterbox' => array('color'=>'#000', 'opacity'=>0),
   'hashFilename' => 'postfix', // true, false, or 'postfix' (meaning only the generated part of the filename is hashed)
   'hashRemoteUrl' => false, // true, false, or 'host' (meaning only the host part of the url is hashed) 
 

@@ -33,6 +33,7 @@ class ImagerService extends BaseApplicationComponent
       'interlace' => 'I',
       'instanceReuseEnabled' => 'REUSE',
       'watermark' => 'WM',
+      'letterbox' => 'LB',
     );
 
     // translate dictionary for resize method 
@@ -53,7 +54,7 @@ class ImagerService extends BaseApplicationComponent
       'bessel' => \Imagine\Image\ImageInterface::FILTER_BESSEL,
       'sinc' => \Imagine\Image\ImageInterface::FILTER_SINC,
     );
-    
+
     // translate dictionary for interlace method 
     public static $interlaceKeyTranslate = array(
       'none' => \Imagine\Image\ImageInterface::INTERLACE_NONE,
@@ -249,6 +250,7 @@ class ImagerService extends BaseApplicationComponent
                 $this->_applyImageEffects($this->imageInstance, $transform['preEffects']);
             }
 
+            // Do the resize
             $originalSize = $this->imageInstance->getSize();
             $cropSize = $this->_getCropSize($originalSize, $transform);
             $resizeSize = $this->_getResizeSize($originalSize, $transform);
@@ -262,15 +264,20 @@ class ImagerService extends BaseApplicationComponent
                 $this->imageInstance->resize($resizeSize, $filterMethod);
             }
 
+            // letterbox, add padding
+            if (isset($transform['mode']) && mb_strtolower($transform['mode']) == 'letterbox') {
+                $this->_applyLetterbox($this->imageInstance, $transform);
+            }
+
             // Apply post resize filters
             if (isset($transform['effects'])) {
                 $this->_applyImageEffects($this->imageInstance, $transform['effects']);
             }
-            
+
             // Interlace if true
             if ($this->getSetting('interlace', $transform)) {
                 $interlaceVal = $this->getSetting('interlace', $transform);
-                
+
                 if (is_string($interlaceVal)) {
                     $this->imageInstance->interlace(ImagerService::$interlaceKeyTranslate[$interlaceVal]);
                 } else {
@@ -384,8 +391,8 @@ class ImagerService extends BaseApplicationComponent
         if (isset($transform['position'])) {
             if (isset(ImagerService::$craftPositonTranslate[$transform['position']])) {
                 $transform['position'] = ImagerService::$craftPositonTranslate[$transform['position']];
-            } 
-            
+            }
+
             $transform['position'] = str_replace('%', '', $transform['position']);
         }
 
@@ -468,7 +475,7 @@ class ImagerService extends BaseApplicationComponent
                 }
             }
         }
-        
+
         // check if we want to upscale. If not, adjust the transform here 
         if (!$this->getSetting('allowUpscale', $transform)) {
             list($width, $height) = $this->_enforceMaxSize($width, $height, $originalSize, true);
@@ -493,7 +500,7 @@ class ImagerService extends BaseApplicationComponent
 
         $mode = isset($transform['mode']) ? mb_strtolower($transform['mode']) : 'crop';
 
-        if ($mode == 'crop' || $mode == 'fit') {
+        if ($mode == 'crop' || $mode == 'fit' || $mode == 'letterbox') {
 
             if (isset($transform['width']) and isset($transform['height'])) {
                 $transformAspect = (int)$transform['width'] / (int)$transform['height'];
@@ -550,7 +557,7 @@ class ImagerService extends BaseApplicationComponent
                 }
             }
         }
-        
+
         // check if we want to upscale. If not, adjust the transform here 
         if (!$this->getSetting('allowUpscale', $transform)) {
             list($width, $height) = $this->_enforceMaxSize($width, $height, $originalSize, false,
@@ -573,7 +580,7 @@ class ImagerService extends BaseApplicationComponent
     {
         $adjustedWidth = $width;
         $adjustedHeight = $height;
-        
+
         if ($adjustedWidth > $originalSize->getWidth() * $zoomFactor) {
             $adjustedWidth = floor($originalSize->getWidth() * $zoomFactor);
             if ($maintainAspect) {
@@ -582,7 +589,7 @@ class ImagerService extends BaseApplicationComponent
         }
 
         if ($adjustedHeight > $originalSize->getHeight() * $zoomFactor) {
-            
+
             $adjustedHeight = floor($originalSize->getHeight() * $zoomFactor);
             if ($maintainAspect) {
                 $adjustedWidth = floor($adjustedWidth * ($adjustedHeight / $height));
@@ -738,6 +745,35 @@ class ImagerService extends BaseApplicationComponent
 
         } else { // it's GD :(
             $imageInstance->paste($watermarkInstance, $positionPoint);
+        }
+    }
+
+    /**
+     * Apply letterbox to image
+     *
+     * @param $imageInstance
+     * @param $transform
+     */
+    private function _applyLetterbox(\Imagine\Image\ImageInterface &$imageInstance, $transform)
+    {
+        if (isset($transform['width']) and isset($transform['height'])) { // if both isn't set, there's no need for a letterbox
+            $letterboxDef = $this->getSetting('letterbox', $transform);
+
+            $size = new \Imagine\Image\Box($transform['width'], $transform['height']);
+            $position = new \Imagine\Image\Point(
+              floor(((int)$transform['width'] - $imageInstance->getSize()->getWidth()) / 2),
+              floor(((int)$transform['height'] - $imageInstance->getSize()->getHeight()) / 2)
+            );
+
+            $palette = new \Imagine\Image\Palette\RGB();
+            $color = $palette->color(
+              isset($letterboxDef['color']) ? $letterboxDef['color'] : '#000',
+              isset($letterboxDef['opacity']) ? (int)($letterboxDef['opacity'] * 100) : 0
+            );
+
+            $backgroundImage = $this->imagineInstance->create($size, $color);
+            $backgroundImage->paste($imageInstance, $position);
+            $imageInstance = $backgroundImage;
         }
     }
 

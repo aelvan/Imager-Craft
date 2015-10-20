@@ -37,6 +37,7 @@ class Imager_ConfigModel extends BaseModel
           'allowUpscale' => array(AttributeType::Bool),
           'resizeFilter' => array(AttributeType::String),
           'position' => array(AttributeType::String),
+          'letterbox' => array(AttributeType::Mixed),
           'hashFilename' => array(AttributeType::Bool),
           'hashRemoteUrl' => array(AttributeType::Bool),
           'cacheEnabled' => array(AttributeType::Bool),

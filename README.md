@@ -17,6 +17,8 @@ Imager is a plugin for doing image transforms in Craft templates. It does all th
 `{ width: 600, height: 600, mode: 'crop', position: '20% 65%', cropZoom: 1.5 }`
 - New croponly mode. To crop, not resize.  
 `{ width: 600, height: 600, mode: 'croponly', position: '20% 65%' }`
+- New letterbox resize mode.
+`{ width: 600, height: 600, mode: 'letterbox', letterbox: { color: '#000', opacity: 0 } }`
 - Basic image effects, including grayscale, negative, blur, sharpen, gamma and colorize.   
 `{ effects: { sharpen: true, gamma: 1.4, colorize: '#ff9933' } }`
 - Advanced effetcs, including color blend, tint, sepia, contrast, modulate, normalize, contrast stretch, and vignette (Imagick imagedriver only).  
