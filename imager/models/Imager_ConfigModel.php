@@ -19,8 +19,8 @@ class Imager_ConfigModel extends BaseModel
             }
         }
         
-        if (isset(ImagerService::$craftPositonTranslate[$this->position])) {
-            $this->position = ImagerService::$craftPositonTranslate[$this->position];
+        if (isset(ImagerService::$craftPositonTranslate[(string)$this->position])) {
+            $this->position = ImagerService::$craftPositonTranslate[(string)$this->position];
         } 
             
         $this->position = str_replace('%', '', $this->position);
