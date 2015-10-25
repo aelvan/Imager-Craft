@@ -11,13 +11,12 @@ class Imager_ImagePathsModel extends BaseModel
     {
         if (is_string($image)) { // Not an AssetFileModel
 
-            // if we remove imagerUrl, we'll figure out if it is an image that's already transformed by Imager 
-            $imageString = str_replace(craft()->imager->getSetting('imagerUrl'), '', $image);
-
-            if (strrpos($imageString, 'http') !== false) { // nope, this is a remote file. download and proceed.
-                $this->_getPathsForUrl($image);
-            } else { // file that is in the imager library
-                $this->_getPathsForLocaleImagerFile($image);
+            if (strpos($image, craft()->imager->getSetting('imagerUrl'))!==false) { // file that is in the imager library
+                $this->_getPathsForLocaleImagerFile($image); 
+            } else if (strrpos($image, 'http') !== false) { // external file
+                $this->_getPathsForUrl($image); 
+            } else { // relative path, assume that it's relative to document root
+                $this->_getPathsForLocaleFile($image); 
             }
 
         } else { // It's an AssetFileModel
@@ -27,6 +26,7 @@ class Imager_ImagePathsModel extends BaseModel
             } else {  // it's a local source
                 $this->_getPathsForLocalAsset($image);
             }
+            
         }
     }
 
@@ -51,9 +51,16 @@ class Imager_ImagePathsModel extends BaseModel
      */
     private function _getPathsForLocalAsset(AssetFileModel $image)
     {
-        $this->sourcePath = craft()->config->parseEnvironmentString($image->getSource()->settings['path']) . $image->getFolder()->path;
-        $this->targetPath = craft()->imager->getSetting('imagerSystemPath') . $image->getFolder()->path;
-        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $image->getFolder()->path;
+        $assetSourcePath = craft()->config->parseEnvironmentString($image->getSource()->settings['url']);
+        
+        if (strrpos($assetSourcePath, 'http') !== false) {
+            $parsedUrl = parse_url($assetSourcePath);
+            $assetSourcePath = $parsedUrl['path'];
+        } 
+        
+        $this->sourcePath = $this->_fixSlashes(craft()->config->parseEnvironmentString($image->getSource()->settings['path']) . $image->getFolder()->path);
+        $this->targetPath = $this->_fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $assetSourcePath . $image->getFolder()->path);
+        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $this->_fixSlashes($assetSourcePath . $image->getFolder()->path, true);
         $this->sourceFilename = $this->targetFilename = $image->filename;
     }
 
@@ -66,9 +73,25 @@ class Imager_ImagePathsModel extends BaseModel
     {
         $imageString = str_replace(craft()->imager->getSetting('imagerUrl'), '', $image);
         $pathParts = pathinfo($imageString);
+        
         $this->sourcePath = craft()->imager->getSetting('imagerSystemPath') . $pathParts['dirname'] . '/';
-        $this->targetPath = craft()->imager->getSetting('imagerSystemPath') . $pathParts['dirname'] . '/';
-        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $pathParts['dirname'] . '/';
+        $this->targetPath = $this->_fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $pathParts['dirname'] . '/');
+        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $this->_fixSlashes($pathParts['dirname'] . '/', true);
+        $this->sourceFilename = $this->targetFilename = $pathParts['basename'];
+    }
+
+    /**
+     * Get paths for a local file that's in the imager path
+     * 
+     * @param $image
+     */
+    private function _getPathsForLocaleFile($image)
+    {
+        $pathParts = pathinfo($image);
+        
+        $this->sourcePath = $_SERVER['DOCUMENT_ROOT'] . $pathParts['dirname'] . '/';
+        $this->targetPath = $this->_fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $pathParts['dirname'] . '/');
+        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $this->_fixSlashes($pathParts['dirname'] . '/', true);
         $this->sourceFilename = $this->targetFilename = $pathParts['basename'];
     }
 
@@ -118,6 +141,22 @@ class Imager_ImagePathsModel extends BaseModel
                   array('sourcePath' => $this->sourcePath)));
             }
         }
+    }
+    
+    
+    private function _fixSlashes ($str, $removeInitial = false, $removeTrailing = false) 
+    {
+        $r = str_replace('//', '/', $str);
+        
+        if ($removeInitial && ($r[0]=='/')) {
+            $r = substr($r, 1);
+        }
+        
+        if ($removeTrailing && ($r[strlen($r)-1]=='/')) {
+            $r = substr($r, 0, strlen($r)-1);
+        }
+        
+        return $r;
     }
 
 }
