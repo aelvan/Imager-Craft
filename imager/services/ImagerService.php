@@ -337,8 +337,9 @@ class ImagerService extends BaseApplicationComponent
     {
         $paths = new Imager_ImagePathsModel($asset);
         
-        if (strpos($paths->targetPath, craft()->imager->getSetting('imagerSystemPath'))!==false) {
+        if (strpos($paths->targetPath, craft()->imager->getSetting('imagerSystemPath'))!==false) { 
             IOHelper::clearFolder($paths->targetPath);
+            craft()->templateCache->deleteCachesByElementId($asset->id);
         }
     }
 
