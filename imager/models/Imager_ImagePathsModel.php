@@ -59,8 +59,8 @@ class Imager_ImagePathsModel extends BaseModel
         } 
         
         $this->sourcePath = $this->_fixSlashes(craft()->config->parseEnvironmentString($image->getSource()->settings['path']) . $image->getFolder()->path);
-        $this->targetPath = $this->_fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $assetSourcePath . $image->getFolder()->path);
-        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $this->_fixSlashes($assetSourcePath . $image->getFolder()->path, true);
+        $this->targetPath = $this->_fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $assetSourcePath . $image->getFolder()->path) . $image->id . '/';
+        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $this->_fixSlashes($assetSourcePath . $image->getFolder()->path, true) . $image->id . '/';
         $this->sourceFilename = $this->targetFilename = $image->filename;
     }
 

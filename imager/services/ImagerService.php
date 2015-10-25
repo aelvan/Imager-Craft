@@ -328,6 +328,20 @@ class ImagerService extends BaseApplicationComponent
         return $imagerImage;
     }
 
+    /**
+     * Remove transforms for a given asset 
+     * 
+     * @param AssetFileModel $asset
+     */
+    public function removeTransformsForAsset(AssetFileModel $asset) 
+    {
+        $paths = new Imager_ImagePathsModel($asset);
+        
+        if (strpos($paths->targetPath, craft()->imager->getSetting('imagerSystemPath'))!==false) {
+            IOHelper::clearFolder($paths->targetPath);
+        }
+    }
+
 
     /**
      * Creates the target filename

@@ -31,6 +31,10 @@ class ImagerPlugin extends BasePlugin
     public function init()
     {
         require_once __DIR__ . '/vendor/autoload.php';
+        
+        craft()->on('assets.onReplaceFile', function (Event $event) {
+            craft()->imager->removeTransformsForAsset($event->params['asset']);
+        });
     }
     
     /**
@@ -45,5 +49,27 @@ class ImagerPlugin extends BasePlugin
             craft()->path->getRuntimePath() . 'imager/' => Craft::t('Imager remote images cache'),
         );
     }
+
+    /**
+     * Adds asset action for clearing asset transforms
+     * 
+     * @return array
+     */
+    public function addAssetActions()
+    {
+        $actions = array();
+
+        $purgeAction = craft()->elements->getAction('Imager_ClearTransforms');
+
+        $purgeAction->setParams(array(
+          'label' => Craft::t('Clear Imager transforms'),
+        ));
+
+        $actions[] = $purgeAction;
+
+        return $actions;
+    }
+
+    
     
 }
