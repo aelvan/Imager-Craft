@@ -599,7 +599,7 @@ class ImagerService extends BaseApplicationComponent
         if ($adjustedWidth > $originalSize->getWidth() * $zoomFactor) {
             $adjustedWidth = floor($originalSize->getWidth() * $zoomFactor);
             if ($maintainAspect) {
-                $adjustedHeight = floor($adjustedHeight * ($adjustedWidth / $width));
+                $adjustedHeight = floor($height * ($adjustedWidth / $width));
             }
         }
 
@@ -607,13 +607,12 @@ class ImagerService extends BaseApplicationComponent
 
             $adjustedHeight = floor($originalSize->getHeight() * $zoomFactor);
             if ($maintainAspect) {
-                $adjustedWidth = floor($adjustedWidth * ($adjustedHeight / $height));
+                $adjustedWidth = floor($width * ($adjustedHeight / $height));
             }
         }
 
         return array($adjustedWidth, $adjustedHeight);
     }
-
 
     /**
      * Get the crop zoom factor
