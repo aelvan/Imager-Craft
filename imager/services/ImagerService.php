@@ -23,6 +23,7 @@ class ImagerService extends BaseApplicationComponent
       'mode' => 'M',
       'position' => 'P',
       'format' => 'F',
+      'bgColor' => 'BC',
       'cropZoom' => 'CZ',
       'effects' => 'E',
       'preEffects' => 'PE',
@@ -218,7 +219,7 @@ class ImagerService extends BaseApplicationComponent
     {
         // break up the image filename to get extension and actual filename 
         $pathParts = pathinfo($paths->targetFilename);
-        $targetExtension = $pathParts['extension'];
+        $sourceExtension = $targetExtension = $pathParts['extension'];
         $filename = $pathParts['filename'];
 
         // do we want to output in a certain format?
@@ -287,6 +288,10 @@ class ImagerService extends BaseApplicationComponent
 
             if (isset($transform['watermark'])) {
                 $this->_applyWatermark($this->imageInstance, $transform['watermark']);
+            }
+            
+            if (($sourceExtension != $targetExtension) && ($sourceExtension != 'jpg') && ($targetExtension == 'jpg') && ($this->getSetting('bgColor', $transform)!='')) {
+                $this->_applyBackgroundColor($this->imageInstance, $this->getSetting('bgColor', $transform));
             }
 
             $this->imageInstance->save($targetFilePath, $saveOptions);
@@ -789,6 +794,22 @@ class ImagerService extends BaseApplicationComponent
             $backgroundImage->paste($imageInstance, $position);
             $imageInstance = $backgroundImage;
         }
+    }
+
+    /**
+     * Apply background color to image when converting from transparent to non-transparent
+     * 
+     * @param \Imagine\Image\ImageInterface $imageInstance
+     * @param $bgColor
+     */
+    private function _applyBackgroundColor(\Imagine\Image\ImageInterface &$imageInstance, $bgColor)
+    {
+        $palette = new \Imagine\Image\Palette\RGB();
+        $color = $palette->color($bgColor);
+        $topLeft = new \Imagine\Image\Point(0, 0);
+        $backgroundImage = $this->imagineInstance->create($imageInstance->getSize(), $color);
+        $backgroundImage->paste($imageInstance, $topLeft);
+        $imageInstance = $backgroundImage;
     }
 
 

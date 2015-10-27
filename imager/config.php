@@ -14,6 +14,7 @@ return array(
   'interlace' => false, // false, true ('line'), 'none', 'line', 'plane', 'partition'
   'allowUpscale' => true,
   'resizeFilter' => 'lanczos',
+  'bgColor' => '',
   'position' => '50% 50%',
   'letterbox' => array('color'=>'#000', 'opacity'=>0),
   'hashFilename' => 'postfix', // true, false, or 'postfix' (meaning only the generated part of the filename is hashed)
