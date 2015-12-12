@@ -36,6 +36,7 @@ class Imager_ConfigModel extends BaseModel
           'interlace' => array(AttributeType::Mixed),
           'allowUpscale' => array(AttributeType::Bool),
           'resizeFilter' => array(AttributeType::String),
+          'smartResizeEnabled' => array(AttributeType::Bool),
           'bgColor' => array(AttributeType::String),
           'position' => array(AttributeType::String),
           'letterbox' => array(AttributeType::Mixed),

@@ -258,13 +258,17 @@ class ImagerService extends BaseApplicationComponent
             $saveOptions = $this->_getSaveOptions($targetExtension, $transform);
             $filterMethod = $this->_getFilterMethod($transform);
 
-            if (!isset($transform['mode']) || mb_strtolower($transform['mode']) == 'crop' || mb_strtolower($transform['mode']) == 'croponly') {
-                $cropPoint = $this->_getCropPoint($resizeSize, $cropSize, $transform);
-                $this->imageInstance->resize($resizeSize, $filterMethod)->crop($cropPoint, $cropSize);
+            if ($this->imageDriver=='imagick' && $this->getSetting('smartResizeEnabled', $transform) && version_compare(craft()->getVersion(), '2.5', '>=')) {
+                $this->imageInstance->smartResize($resizeSize, false, $this->getSetting('jpegQuality', $transform));
             } else {
                 $this->imageInstance->resize($resizeSize, $filterMethod);
             }
-
+            
+            if (!isset($transform['mode']) || mb_strtolower($transform['mode']) == 'crop' || mb_strtolower($transform['mode']) == 'croponly') {
+                $cropPoint = $this->_getCropPoint($resizeSize, $cropSize, $transform);
+                $this->imageInstance->crop($cropPoint, $cropSize);
+            } 
+            
             // letterbox, add padding
             if (isset($transform['mode']) && mb_strtolower($transform['mode']) == 'letterbox') {
                 $this->_applyLetterbox($this->imageInstance, $transform);

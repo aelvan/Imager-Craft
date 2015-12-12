@@ -14,6 +14,7 @@ return array(
   'interlace' => false, // false, true ('line'), 'none', 'line', 'plane', 'partition'
   'allowUpscale' => true,
   'resizeFilter' => 'lanczos',
+  'smartResizeEnabled' => false,
   'bgColor' => '',
   'position' => '50% 50%',
   'letterbox' => array('color'=>'#000', 'opacity'=>0),
