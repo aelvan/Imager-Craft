@@ -65,6 +65,7 @@ class Imager_ConfigModel extends BaseModel
           'awsCacheDuration' => array(AttributeType::Number),
           'awsRequestHeaders' => array(AttributeType::Mixed),
           'awsStorageType' => array(AttributeType::String),
+          'removeMetadata' => array(AttributeType::Bool),
         );
     }
 

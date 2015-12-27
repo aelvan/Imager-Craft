@@ -263,6 +263,12 @@ class ImagerService extends BaseApplicationComponent
             } else {
                 $this->imageInstance->resize($resizeSize, $filterMethod);
             }
+
+            // If Image Driver is imagick and removeMetadata is true
+            // remove Metadata to reduce the image size by a significant amount
+            if ($this->imageDriver == 'imagick' && $this->getSetting('removeMetadata', $transform)) {
+                $this->imageInstance->strip($transform);
+            }
             
             if (!isset($transform['mode']) || mb_strtolower($transform['mode']) == 'crop' || mb_strtolower($transform['mode']) == 'croponly') {
                 $cropPoint = $this->_getCropPoint($resizeSize, $cropSize, $transform);
