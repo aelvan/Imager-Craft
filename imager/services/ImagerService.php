@@ -239,7 +239,7 @@ class ImagerService extends BaseApplicationComponent
          * Check if the image already exists, if caching is turned on or if the cache has expired.
          */
         if (!$this->getSetting('cacheEnabled',
-            $transform) || !IOHelper::fileExists($targetFilePath) || (IOHelper::getLastTimeModified($targetFilePath)->format('U') + $this->getSetting('cacheDuration') < time())
+            $transform) || !IOHelper::fileExists($targetFilePath) || (IOHelper::getLastTimeModified($targetFilePath)->format('U') + $this->getSetting('cacheDuration', $transform) < time())
         ) {
             // create the imageInstance. only once if reuse is enabled, or always
             if (!$this->getSetting('instanceReuseEnabled', $transform) || $this->imageInstance == null) {
