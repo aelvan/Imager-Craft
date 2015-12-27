@@ -263,6 +263,10 @@ class ImagerService extends BaseApplicationComponent
             } else {
                 $this->imageInstance->resize($resizeSize, $filterMethod);
             }
+
+            if ($this->imageDriver == 'imagick' && $this->getSetting('removeMetadata', $transform)) {
+                $this->imageInstance->strip($transform);
+            }
             
             if (!isset($transform['mode']) || mb_strtolower($transform['mode']) == 'crop' || mb_strtolower($transform['mode']) == 'croponly') {
                 $cropPoint = $this->_getCropPoint($resizeSize, $cropSize, $transform);
