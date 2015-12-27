@@ -264,6 +264,8 @@ class ImagerService extends BaseApplicationComponent
                 $this->imageInstance->resize($resizeSize, $filterMethod);
             }
 
+            // If Image Driver is imagick and removeMetadata is true
+            // remove Metadata to reduce the image size by a significant amount
             if ($this->imageDriver == 'imagick' && $this->getSetting('removeMetadata', $transform)) {
                 $this->imageInstance->strip($transform);
             }
