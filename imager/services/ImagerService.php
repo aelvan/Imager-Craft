@@ -267,7 +267,7 @@ class ImagerService extends BaseApplicationComponent
             // If Image Driver is imagick and removeMetadata is true
             // remove Metadata to reduce the image size by a significant amount
             if ($this->imageDriver == 'imagick' && $this->getSetting('removeMetadata', $transform)) {
-                $this->imageInstance->strip($transform);
+                $this->imageInstance->strip();
             }
             
             if (!isset($transform['mode']) || mb_strtolower($transform['mode']) == 'crop' || mb_strtolower($transform['mode']) == 'croponly') {
