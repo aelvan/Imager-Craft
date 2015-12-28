@@ -9,22 +9,23 @@
 return array(
   'imagerSystemPath' => $_SERVER['DOCUMENT_ROOT'] . '/imager/',
   'imagerUrl' => '/imager/',
+  'cacheEnabled' => true,
+  'cacheDuration' => 1209600, // 14 days
+  'cacheDurationRemoteFiles' => 1209600, // 14 days
   'jpegQuality' => 80,
   'pngCompressionLevel' => 2,
   'interlace' => false, // false, true ('line'), 'none', 'line', 'plane', 'partition'
   'allowUpscale' => true,
   'resizeFilter' => 'lanczos',
   'smartResizeEnabled' => false,
+  'removeMetadata' => false,
   'bgColor' => '',
   'position' => '50% 50%',
   'letterbox' => array('color'=>'#000', 'opacity'=>0),
   'hashFilename' => 'postfix', // true, false, or 'postfix' (meaning only the generated part of the filename is hashed)
   'hashRemoteUrl' => false, // true, false, or 'host' (meaning only the host part of the url is hashed) 
-
-  'cacheEnabled' => true,
-  'cacheDuration' => 1209600, // 14 days
-  'cacheDurationRemoteFiles' => 1209600, // 14 days
   'instanceReuseEnabled' => false,
+  
   'jpegoptimEnabled' => false,
   'jpegoptimPath' => '/usr/bin/jpegoptim',
   'jpegoptimOptionString' => '-s',
@@ -45,7 +46,6 @@ return array(
   'awsBucket' => '',
   'awsCacheDuration' => 1209600, // 14 days
   'awsRequestHeaders' => array(),
-  'awsStorageType' => 'standard', // 'standard' or 'rrs' (reduced redundancy storage)
-  'removeMetadata' => false
+  'awsStorageType' => 'standard' // 'standard' or 'rrs' (reduced redundancy storage)
   
 );
