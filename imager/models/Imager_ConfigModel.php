@@ -57,6 +57,7 @@ class Imager_ConfigModel extends BaseModel
           'optipngOptionString' => array(AttributeType::String),
           'tinyPngEnabled' => array(AttributeType::Bool),
           'tinyPngApiKey' => array(AttributeType::String),
+          'optimizeType' => array(AttributeType::String),
           'logOptimizations' => array(AttributeType::Bool),
           'awsEnabled' => array(AttributeType::Bool),
           'awsAccessKey' => array(AttributeType::String),
