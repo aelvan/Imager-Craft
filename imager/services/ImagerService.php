@@ -258,7 +258,7 @@ class ImagerService extends BaseApplicationComponent
             $saveOptions = $this->_getSaveOptions($targetExtension, $transform);
             $filterMethod = $this->_getFilterMethod($transform);
 
-            if ($this->imageDriver=='imagick' && $this->getSetting('smartResizeEnabled', $transform) && version_compare(craft()->getVersion(), '2.5', '>=')) {
+            if ($this->imageDriver == 'imagick' && $this->getSetting('smartResizeEnabled', $transform) && version_compare(craft()->getVersion(), '2.5', '>=')) {
                 $this->imageInstance->smartResize($resizeSize, false, $this->getSetting('jpegQuality', $transform));
             } else {
                 $this->imageInstance->resize($resizeSize, $filterMethod);
@@ -269,12 +269,12 @@ class ImagerService extends BaseApplicationComponent
             if ($this->imageDriver == 'imagick' && $this->getSetting('removeMetadata', $transform)) {
                 $this->imageInstance->strip();
             }
-            
+
             if (!isset($transform['mode']) || mb_strtolower($transform['mode']) == 'crop' || mb_strtolower($transform['mode']) == 'croponly') {
                 $cropPoint = $this->_getCropPoint($resizeSize, $cropSize, $transform);
                 $this->imageInstance->crop($cropPoint, $cropSize);
-            } 
-            
+            }
+
             // letterbox, add padding
             if (isset($transform['mode']) && mb_strtolower($transform['mode']) == 'letterbox') {
                 $this->_applyLetterbox($this->imageInstance, $transform);
@@ -296,43 +296,46 @@ class ImagerService extends BaseApplicationComponent
                 }
             }
 
+            // apply watermark if enabled
             if (isset($transform['watermark'])) {
                 $this->_applyWatermark($this->imageInstance, $transform['watermark']);
             }
-            
-            if (($sourceExtension != $targetExtension) && ($sourceExtension != 'jpg') && ($targetExtension == 'jpg') && ($this->getSetting('bgColor', $transform)!='')) {
+
+            // apply background color if enabled and applicable
+            if (($sourceExtension != $targetExtension) && ($sourceExtension != 'jpg') && ($targetExtension == 'jpg') && ($this->getSetting('bgColor', $transform) != '')) {
                 $this->_applyBackgroundColor($this->imageInstance, $this->getSetting('bgColor', $transform));
             }
 
+            // save the transform
             $this->imageInstance->save($targetFilePath, $saveOptions);
 
             // if file was created, check if optimization should be done
             if (IOHelper::fileExists($targetFilePath)) {
-                // todo : move these into tasks 
                 if ($targetExtension == 'jpg' || $targetExtension == 'jpeg') {
                     if ($this->getSetting('jpegoptimEnabled', $transform)) {
-                        $this->runJpegoptim($targetFilePath, $transform);
+                        $this->postOptimize('jpegoptim', $targetFilePath);
                     }
                     if ($this->getSetting('jpegtranEnabled', $transform)) {
-                        $this->runJpegtran($targetFilePath, $transform);
+                        $this->postOptimize('jpegtran', $targetFilePath);
                     }
                 }
 
                 if ($targetExtension == 'png' && $this->getSetting('optipngEnabled', $transform)) {
-                    $this->runOptipng($targetFilePath, $transform);
+                    $this->postOptimize('optipng', $targetFilePath);
                 }
 
                 if ($this->getSetting('tinyPngEnabled', $transform)) {
-                    $this->runTinyPng($targetFilePath, $transform);
+                    $this->postOptimize('tinypng', $targetFilePath);
                 }
 
-                // todo : make sure this is done after task has been run too
+                // Upload to AWS if enabled
                 if ($this->getSetting('awsEnabled')) {
-                    $this->_uploadToAWS($targetFilePath);
+                    $this->uploadToAWS($targetFilePath);
                 }
             }
         }
 
+        // create Imager_ImageModel for transformed image
         $imageInfo = @getimagesize($targetFilePath);
 
         $imagerImage = new Imager_ImageModel();
@@ -344,15 +347,15 @@ class ImagerService extends BaseApplicationComponent
     }
 
     /**
-     * Remove transforms for a given asset 
-     * 
+     * Remove transforms for a given asset
+     *
      * @param AssetFileModel $asset
      */
-    public function removeTransformsForAsset(AssetFileModel $asset) 
+    public function removeTransformsForAsset(AssetFileModel $asset)
     {
         $paths = new Imager_ImagePathsModel($asset);
-        
-        if (strpos($paths->targetPath, craft()->imager->getSetting('imagerSystemPath'))!==false) { 
+
+        if (strpos($paths->targetPath, craft()->imager->getSetting('imagerSystemPath')) !== false) {
             IOHelper::clearFolder($paths->targetPath);
             craft()->templateCache->deleteCachesByElementId($asset->id);
         }
@@ -808,7 +811,7 @@ class ImagerService extends BaseApplicationComponent
 
     /**
      * Apply background color to image when converting from transparent to non-transparent
-     * 
+     *
      * @param \Imagine\Image\ImageInterface $imageInstance
      * @param $bgColor
      */
@@ -1052,16 +1055,57 @@ class ImagerService extends BaseApplicationComponent
      */
 
     /**
-     * Run jpegoptim on file
+     * Set up optimization
+     *
+     * @param $type
+     * @param $file
+     */
+    public function postOptimize($type, $file)
+    {
+        if ($this->getSetting('optimizeType') == 'task') {
+            switch ($type) {
+                case 'jpegoptim':
+                    $this->makeTask('Imager_Jpegoptim', $file);
+                    break;
+                case 'jpegtran':
+                    $this->makeTask('Imager_Jpegtran', $file);
+                    break;
+                case 'optipng':
+                    $this->makeTask('Imager_Optipng', $file);
+                    break;
+                case 'tinypng':
+                    $this->makeTask('Imager_TinyPng', $file);
+                    break;
+            }
+        } else {
+            switch ($type) {
+                case 'jpegoptim':
+                    $this->runJpegoptim($file);
+                    break;
+                case 'jpegtran':
+                    $this->runJpegtran($file);
+                    break;
+                case 'optipng':
+                    $this->runOptipng($file);
+                    break;
+                case 'tinypng':
+                    $this->runTinyPng($file);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Run jpegoptim optimization
      *
      * @param $file
      * @param $transform
      */
-    public function runJpegoptim($file, $transform)
+    public function runJpegoptim($file)
     {
-        $cmd = $this->getSetting('jpegoptimPath', $transform);
+        $cmd = $this->getSetting('jpegoptimPath');
         $cmd .= ' ';
-        $cmd .= $this->getSetting('jpegoptimOptionString', $transform);
+        $cmd .= $this->getSetting('jpegoptimOptionString');
         $cmd .= ' ';
         $cmd .= $file;
 
@@ -1069,16 +1113,16 @@ class ImagerService extends BaseApplicationComponent
     }
 
     /**
-     * Run jpegtran on file
+     * Run jpegtran optimization
      *
      * @param $file
      * @param $transform
      */
-    public function runJpegtran($file, $transform)
+    public function runJpegtran($file)
     {
-        $cmd = $this->getSetting('jpegtranPath', $transform);
+        $cmd = $this->getSetting('jpegtranPath');
         $cmd .= ' ';
-        $cmd .= $this->getSetting('jpegtranOptionString', $transform);
+        $cmd .= $this->getSetting('jpegtranOptionString');
         $cmd .= ' -outfile ';
         $cmd .= $file;
         $cmd .= ' ';
@@ -1088,27 +1132,38 @@ class ImagerService extends BaseApplicationComponent
     }
 
     /**
-     * Run optipng on file
+     * Run optipng optimization
      *
      * @param $file
      * @param $transform
      */
-    public function runOptipng($file, $transform)
+    public function runOptipng($file)
     {
-        $cmd = $this->getSetting('optipngPath', $transform);
+        $cmd = $this->getSetting('optipngPath');
         $cmd .= ' ';
-        $cmd .= $this->getSetting('optipngOptionString', $transform);
+        $cmd .= $this->getSetting('optipngOptionString');
         $cmd .= ' ';
         $cmd .= $file;
 
         $this->executeOptimize($cmd, $file);
     }
 
-    public function runTinyPng($file, $transform)
+    /**
+     * Runs TinyPNG optimization
+     *
+     * @param $file
+     * @param $transform
+     */
+    public function runTinyPng($file)
     {
-        $this->makeTask('Imager_TinyPng', $file);
+        try {
+            \Tinify\setKey($this->getSetting('tinyPngApiKey'));
+            \Tinify\validate();
+            \Tinify\fromFile($file)->toFile($file);
+        } catch (\Tinify\Exception $e) {
+            ImagerPlugin::log("Could not validate connection to TinyPNG, image was not optimized.", LogLevel::Error);
+        }
     }
-
 
     /**
      * Executes a shell command
@@ -1131,7 +1186,7 @@ class ImagerService extends BaseApplicationComponent
      */
 
 
-    private function _uploadToAWS($filePath)
+    public function uploadToAWS($filePath)
     {
         if (is_null($this->s3)) {
             $this->s3 = new \S3($this->getSetting('awsAccessKey'), $this->getSetting('awsSecretAccessKey'));
@@ -1150,8 +1205,7 @@ class ImagerService extends BaseApplicationComponent
           $this->_getAWSStorageClass())
         ) //fail
         {
-            throw new Exception(Craft::t('File “{filePath}” could not be uploaded to AWS',
-              array('filePath' => $filePath)));
+            ImagerPlugin::log("Upload to AWS failed for $path in ImagerService", LogLevel::Error);
         }
     }
 
@@ -1200,6 +1254,7 @@ class ImagerService extends BaseApplicationComponent
     {
         // If there are any pending tasks, just append the paths to it
         $task = craft()->tasks->getNextPendingTask($taskName);
+
         if ($task && is_array($task->settings)) {
             $settings = $task->settings;
             if (!is_array($settings['paths'])) {

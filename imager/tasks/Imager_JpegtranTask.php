@@ -1,13 +1,13 @@
 <?php
 namespace Craft;
 
-class Imager_TinyPngTask extends BaseTask
+class Imager_JpegtranTask extends BaseTask
 {
     private $_paths;
 
     public function getDescription()
     {
-        return Craft::t('Optimizing images with TinyPNG');
+        return Craft::t('Optimizing images with jpegtran');
     }
 
     /**
@@ -40,14 +40,14 @@ class Imager_TinyPngTask extends BaseTask
         }
 
         // Run TinyPNG 
-        craft()->imager->runTinypng($path);
+        craft()->imager->runJpegtran($path);
         
         // if AWS is enabled, upload file
         if (craft()->imager->getSetting('awsEnabled')) {
             try {
                 craft()->imager->uploadToAWS($path);
             } catch (\Exception $e) {
-                ImagerPlugin::log("Upload to AWS failed for $path in Imager_TinyPngTask", LogLevel::Error);
+                ImagerPlugin::log("Upload to AWS failed for $path in Imager_JpegtranTask", LogLevel::Error);
             }
         }
 
