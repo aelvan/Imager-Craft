@@ -2,8 +2,8 @@
 
 namespace Tinify;
 
-class Result {
-    private $meta, $data;
+class Result extends ResultMeta {
+    protected $data;
 
     public function __construct($meta, $data) {
         $this->meta = $meta;
@@ -20,14 +20,6 @@ class Result {
 
     public function toFile($path) {
         return file_put_contents($path, $this->toBuffer());
-    }
-
-    public function width() {
-        return intval($this->meta["image-width"]);
-    }
-
-    public function height() {
-        return intval($this->meta["image-height"]);
     }
 
     public function size() {

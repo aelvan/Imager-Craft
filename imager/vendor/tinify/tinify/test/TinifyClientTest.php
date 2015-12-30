@@ -12,6 +12,14 @@ class TinifyClientTest extends TestCase {
         $this->assertSame("api:key", CurlMock::last(CURLOPT_USERPWD));
     }
 
+    public function testRequestWhenValidShouldIssueRequestWithoutBodyWhenOptionsAreEmpty() {
+        CurlMock::register("https://api.tinify.com/", array("status" => 200));
+        $client = new Tinify\Client("key");
+        $client->request("get", "/", array());
+
+        $this->assertFalse(CurlMock::last_has(CURLOPT_POSTFIELDS));
+    }
+
     public function testRequestWhenValidShouldIssueRequestWithJSONBody() {
         CurlMock::register("https://api.tinify.com/", array("status" => 200));
         $client = new Tinify\Client("key");
@@ -37,7 +45,7 @@ class TinifyClientTest extends TestCase {
         $client = new Tinify\Client("key");
         $client->request("get", "/");
 
-        $this->assertSame(12, Tinify\compressionCount());
+        $this->assertSame(12, Tinify\getCompressionCount());
     }
 
     public function testRequestWhenValidWithAppIdShouldIssueRequestWithUserAgent() {
@@ -64,6 +72,15 @@ class TinifyClientTest extends TestCase {
         ));
         $this->setExpectedExceptionRegExp("Tinify\ConnectionException",
             "/Error while connecting: Failed! \(#2\)/");
+        $client = new Tinify\Client("key");
+        $client->request("get", "/");
+    }
+
+    public function testRequestWithCurlErrorShouldThrowConnectionError() {
+        CurlMock::register("https://api.tinify.com/", array(
+            "errno" => 0, "error" => "", "return" => null
+        ));
+        $this->setExpectedException("Tinify\ConnectionException");
         $client = new Tinify\Client("key");
         $client->request("get", "/");
     }

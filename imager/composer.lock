@@ -4,20 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ca99947998e9e63c858cc3a31629d970",
+    "hash": "2832569d4d06bfcf92b88f1ed1d96391",
+    "content-hash": "6ac7fec371de306ae36e3d9b726f4dea",
     "packages": [
         {
             "name": "tinify/tinify",
-            "version": "0.9.1",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tinify/tinify-php.git",
-                "reference": "35c141d3c33f3033f00ab1c4e05e4cc6ad641c9d"
+                "reference": "4f072760edfb8c9680bc74fd911645f214bbcab0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tinify/tinify-php/zipball/35c141d3c33f3033f00ab1c4e05e4cc6ad641c9d",
-                "reference": "35c141d3c33f3033f00ab1c4e05e4cc6ad641c9d",
+                "url": "https://api.github.com/repos/tinify/tinify-php/zipball/4f072760edfb8c9680bc74fd911645f214bbcab0",
+                "reference": "4f072760edfb8c9680bc74fd911645f214bbcab0",
                 "shasum": ""
             },
             "require": {
@@ -58,7 +59,7 @@
                 "tinyjpg",
                 "tinypng"
             ],
-            "time": "2015-07-21 05:42:25"
+            "time": "2015-09-01 07:26:33"
         }
     ],
     "packages-dev": [],

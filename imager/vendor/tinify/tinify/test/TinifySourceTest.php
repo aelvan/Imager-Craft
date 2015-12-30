@@ -100,7 +100,7 @@ class TinifySourceTest extends TestCase {
         $this->assertSame("small file", Tinify\Source::fromBuffer("png file")->resize(array("width" => 400))->toBuffer());
     }
 
-    public function testStoreShouldReturnResult() {
+    public function testStoreShouldReturnResultMeta() {
         CurlMock::register("https://api.tinify.com/shrink", array(
             "status" => 201,
             "headers" => array("Location" => "https://api.tinify.com/some/location"),
@@ -113,6 +113,24 @@ class TinifySourceTest extends TestCase {
         Tinify\setKey("valid");
         $options = array("service" => "s3", "aws_secret_access_key" => "abcde");
         $this->assertInstanceOf("Tinify\Result", Tinify\Source::fromBuffer("png file")->store($options));
+    }
+
+    public function testStoreShouldReturnResultMetaWithLocation() {
+        CurlMock::register("https://api.tinify.com/shrink", array(
+            "status" => 201,
+            "headers" => array("Location" => "https://api.tinify.com/some/location"),
+        ));
+
+        CurlMock::register("https://api.tinify.com/some/location", array(
+            "body" => '{"store":{"service":"s3"}}'
+        ), array(
+            "status" => 201,
+            "headers" => array("Location" => "https://bucket.s3.amazonaws.com/example"),
+        ));
+
+        Tinify\setKey("valid");
+        $location = Tinify\Source::fromBuffer("png file")->store(array("service" => "s3"))->location();
+        $this->assertSame("https://bucket.s3.amazonaws.com/example", $location);
     }
 
     public function testStoreShouldMergeCommands() {

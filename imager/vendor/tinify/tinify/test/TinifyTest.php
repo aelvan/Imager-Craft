@@ -21,6 +21,18 @@ class ClientTest extends TestCase {
         $this->assertSame("api:fghij", CurlMock::last(CURLOPT_USERPWD));
     }
 
+    public function testAppIdentifierShouldResetClientWithNewAppIdentifier() {
+        CurlMock::register("https://api.tinify.com/", array("status" => 200));
+        Tinify\setKey("abcde");
+        Tinify\setAppIdentifier("MyApp/1.0");
+        Tinify\Tinify::getClient();
+        Tinify\setAppIdentifier("MyApp/2.0");
+        $client = Tinify\Tinify::getClient();
+        $client->request("get", "/");
+
+        $this->assertSame(Tinify\Client::userAgent() . " MyApp/2.0", CurlMock::last(CURLOPT_USERAGENT));
+    }
+
     public function testClientWithKeyShouldReturnClient() {
         Tinify\setKey("abcde");
         $this->assertInstanceOf("Tinify\Client", Tinify\Tinify::getClient());

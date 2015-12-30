@@ -30,8 +30,12 @@ class Client {
 
     function request($method, $url, $body = NULL, $header = array()) {
         if (is_array($body)) {
-            $body = json_encode($body);
-            array_push($header, "Content-Type: application/json");
+            if (!empty($body)) {
+                $body = json_encode($body);
+                array_push($header, "Content-Type: application/json");
+            } else {
+                $body = NULL;
+            }
         }
 
         $request = curl_init();
@@ -40,15 +44,15 @@ class Client {
         $url = strtolower(substr($url, 0, 6)) == "https:" ? $url : Client::API_ENDPOINT . $url;
         curl_setopt($request, CURLOPT_URL, $url);
         curl_setopt($request, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($request, CURLOPT_POSTFIELDS, $body);
+        curl_setopt($request, CURLOPT_CUSTOMREQUEST, strtoupper($method));
+
+        if ($body) {
+            curl_setopt($request, CURLOPT_POSTFIELDS, $body);
+        }
 
         $response = curl_exec($request);
 
-        if ($response === false) {
-            $message = sprintf("%s (#%d)", curl_error($request), curl_errno($request));
-            curl_close($request);
-            throw new ConnectionException("Error while connecting: " . $message);
-        } else {
+        if (is_string($response)) {
             $status = curl_getinfo($request, CURLINFO_HTTP_CODE);
             $headerSize = curl_getinfo($request, CURLINFO_HEADER_SIZE);
             curl_close($request);
@@ -57,7 +61,7 @@ class Client {
             $body = substr($response, $headerSize);
 
             if (isset($headers["compression-count"])) {
-                Tinify::$compressionCount = intval($headers["compression-count"]);
+                Tinify::setCompressionCount(intval($headers["compression-count"]));
             }
 
             if ($status >= 200 && $status <= 299) {
@@ -76,6 +80,10 @@ class Client {
             }
 
             throw Exception::create($details->message, $details->error, $status);
+        } else {
+            $message = sprintf("%s (#%d)", curl_error($request), curl_errno($request));
+            curl_close($request);
+            throw new ConnectionException("Error while connecting: " . $message);
         }
     }
 

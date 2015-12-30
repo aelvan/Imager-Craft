@@ -13,6 +13,11 @@ class TinifyResultTest extends TestCase {
         $this->assertSame(60, $result->height());
     }
 
+    public function testWithMetaAndDataLocationShouldReturnNull() {
+        $result = new Tinify\ResultMeta(array(), "image data");
+        $this->assertSame(null, $result->location());
+    }
+
     public function testWithMetaAndDataSizeShouldReturnContentLength() {
         $result = new Tinify\Result(array("content-length" => "450"), "image data");
         $this->assertSame(450, $result->size());
@@ -23,8 +28,8 @@ class TinifyResultTest extends TestCase {
         $this->assertSame("image/png", $result->contentType());
     }
 
-    public function testWithMetaAndDataDataShouldReturnImageData() {
+    public function testWithMetaAndDataToBufferShouldReturnImageData() {
         $result = new Tinify\Result(array(), "image data");
-        $this->assertSame("image data", $result->data());
+        $this->assertSame("image data", $result->toBuffer());
     }
 }

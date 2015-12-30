@@ -25,6 +25,11 @@ class CurlMock {
         self::$requests = array();
     }
 
+    public static function last_has($key) {
+        $lastReq = self::$requests[count(self::$requests) - 1];
+        return array_key_exists($key, $lastReq->options);
+    }
+
     public static function last($key) {
         $lastReq = self::$requests[count(self::$requests) - 1];
         if ($key) {
@@ -68,7 +73,9 @@ class CurlMock {
             $this->response["body"] = "";
         }
 
-        if (isset($this->response["status"])) {
+        if (array_key_exists("return", $this->response)) {
+            return $this->response["return"];
+        } else if (isset($this->response["status"])) {
             return $this->response["headers"] . $this->response["body"];
         } else {
             return false;

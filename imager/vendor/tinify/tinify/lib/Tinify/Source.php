@@ -31,7 +31,7 @@ class Source {
     }
 
     public function result() {
-        $response = Tinify::getClient()->request("post", $this->url, $this->commands);
+        $response = Tinify::getClient()->request("get", $this->url, $this->commands);
         return new Result($response["headers"], $response["body"]);
     }
 
