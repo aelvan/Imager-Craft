@@ -483,6 +483,19 @@ Enhances the contrast of a color image by adjusting the pixels color to span the
 
     {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { contrastStretch: [500*500*0.10, 500*500*0.90] } }) %}
 
+
+### posterize [array]
+Reduces image colors by applying the posterize effect. Uses [Imagick's posterizeImage method](http://php.net/manual/en/imagick.posterizeimage.php). Example:
+
+    {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { posterize: [136, 'no'] } }) %}
+
+The second parameter refers to which dither method is used. Allowed values are:
+    
+**'no'**: No dithering.    
+**'riemersma'**: [Riemersma dithering](http://www.compuphase.com/riemer.htm).    
+**'floydsteinberg'**: [Floyd–Steinberg dithering](https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering).    
+    
+
 ### vignette [array]
 *The vignette effect is not yet finalized.*
 

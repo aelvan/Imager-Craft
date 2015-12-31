@@ -64,6 +64,13 @@ class ImagerService extends BaseApplicationComponent
       'partition' => \Imagine\Image\ImageInterface::INTERLACE_PARTITION,
     );
 
+    // translate dictionary for dither method 
+    public static $ditherKeyTranslate = array(
+      'no' => \Imagick::DITHERMETHOD_NO,
+      'riemersma' => \Imagick::DITHERMETHOD_RIEMERSMA,
+      'floydsteinberg' => \Imagick::DITHERMETHOD_FLOYDSTEINBERG,
+    );
+
     // translate dictionary for composite modes. set in constructor if driver is imagick. 
     public static $compositeKeyTranslate = array();
 
@@ -949,6 +956,11 @@ class ImagerService extends BaseApplicationComponent
                 // contrast stretch
                 if ($effect == 'contraststretch' && is_array($value) && count($value) >= 2) {
                     $imagickInstance->contrastStretchImage($value[0], $value[1]);
+                }
+
+                // posterize
+                if ($effect == 'posterize' && is_array($value) && count($value) == 2) {
+                    $imagickInstance->posterizeImage($value[0], isset(ImagerService::$ditherKeyTranslate[$value[1]]) ? ImagerService::$ditherKeyTranslate[$value[1]] : \Imagick::DITHERMETHOD_NO);
                 }
 
                 // vignette
