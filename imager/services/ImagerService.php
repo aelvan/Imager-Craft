@@ -402,12 +402,14 @@ class ImagerService extends BaseApplicationComponent
      */
     private function _normalizeTransform($transform)
     {
+        // if resize mode is not crop or croponly, remove position
         if (isset($transform['mode']) && (($transform['mode'] != 'crop') && ($transform['mode'] != 'croponly'))) {
             if (isset($transform['position'])) {
                 unset($transform['position']);
             }
         }
-
+        
+        // if quality is used, assume it's jpegQuality
         if (isset($transform['quality'])) {
             $value = $transform['quality'];
             unset($transform['quality']);
@@ -416,11 +418,26 @@ class ImagerService extends BaseApplicationComponent
                 $transform['jpegQuality'] = $value;
             }
         }
+        
+        // if ratio is set, and width or height is missing, calculate missing size
+        if (isset($transform['ratio']) and (is_float($transform['ratio']) or is_int($transform['ratio']))) {
+            if (isset($transform['width']) && !isset($transform['height'])) {
+                $transform['height'] = round($transform['width']/$transform['ratio']);
+                unset($transform['ratio']);
+            } else {
+                if (isset($transform['height']) && !isset($transform['width'])) {
+                    $transform['width'] = round($transform['height'] * $transform['ratio']);
+                    unset($transform['ratio']);
+                }
+            }
+        } 
 
+        // remove format, this is already in the extension
         if (isset($transform['format'])) {
             unset($transform['format']);
         }
 
+        // if transform is in Craft's named version, convert to percentage
         if (isset($transform['position'])) {
             if (isset(ImagerService::$craftPositonTranslate[$transform['position']])) {
                 $transform['position'] = ImagerService::$craftPositonTranslate[$transform['position']];
@@ -428,7 +445,8 @@ class ImagerService extends BaseApplicationComponent
 
             $transform['position'] = str_replace('%', '', $transform['position']);
         }
-
+        
+        // sort keys to get them in the same order 
         ksort($transform);
 
         // Move certain keys around abit to make the filename a bit more sane when viewed unencoded
@@ -564,16 +582,16 @@ class ImagerService extends BaseApplicationComponent
 
             } else {
                 if (isset($transform['width'])) {
-
+                    
                     $width = (int)$transform['width'];
                     $height = ceil($width / $aspect);
-
+                    
                 } else {
                     if (isset($transform['height'])) {
-
+                        
                         $height = (int)$transform['height'];
                         $width = ceil($height * $aspect);
-
+                        
                     }
                 }
             }
