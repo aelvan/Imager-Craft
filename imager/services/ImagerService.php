@@ -963,6 +963,11 @@ class ImagerService extends BaseApplicationComponent
                     $imagickInstance->posterizeImage($value[0], isset(ImagerService::$ditherKeyTranslate[$value[1]]) ? ImagerService::$ditherKeyTranslate[$value[1]] : \Imagick::DITHERMETHOD_NO);
                 }
 
+                // unsharpMask
+                if ($effect == 'unsharpmask' && is_array($value) && count($value) == 4) {
+                    $imagickInstance->unsharpMaskImage($value[0], $value[1], $value[2], $value[3]);
+                }
+
                 // vignette
                 // todo : make a better vignette
                 if ($effect == 'vignette' && is_array($value) && count($value) >= 3) {

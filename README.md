@@ -495,6 +495,10 @@ The second parameter refers to which dither method is used. Allowed values are:
 **'riemersma'**: [Riemersma dithering](http://www.compuphase.com/riemer.htm).    
 **'floydsteinberg'**: [Floyd–Steinberg dithering](https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering).    
     
+### unsharpmask [array]
+Applies an unsharp mask with [Imagick's unsharpMaskImage method](http://php.net/manual/en/imagick.unsharpmaskimage.php). Example:
+
+    {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { unsharpMask: [0, 0.5, 1, 0.05] } }) %}
 
 ### vignette [array]
 *The vignette effect is not yet finalized.*
