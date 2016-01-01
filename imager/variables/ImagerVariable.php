@@ -4,6 +4,8 @@ namespace Craft;
 class ImagerVariable
 {
     /**
+     * Transforms an image 
+     * 
      * @param $file
      * @param $transform
      * @param $configOverrides
@@ -44,5 +46,54 @@ class ImagerVariable
     public function base64Pixel($width = 1, $height = 1)
     {
         return "data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' viewBox%3D'0 0 $width $height'%2F%3E";
+    }
+
+    /**
+     * Gets the dominant color of an image
+     * 
+     * @param $image
+     * @param string $colorValue
+     * @param int $quality
+     * @return mixed
+     */
+    public function getDominantColor($image, $quality = 10, $colorValue='hex')
+    {
+        return craft()->imager->getDominantColor($image, $quality, $colorValue);
+    }
+
+    /**
+     * Gets a palette of colors from an image 
+     * 
+     * @param $image
+     * @param string $colorValue
+     * @param int $colorCount
+     * @param int $quality
+     * @return mixed
+     */
+    public function getColorPalette($image, $colorCount = 8, $quality = 10, $colorValue='hex')
+    {
+        return craft()->imager->getColorPalette($image, $colorCount, $quality, $colorValue);
+    }
+
+    /**
+     * Converts a hex color value to rgb
+     * 
+     * @param string $color
+     * @return array
+     */
+    public function hex2rgb($color) 
+    {
+        return ImagerService::hex2rgb($color);
+    }
+    
+    /**
+     * Converts a rgb color value to hex
+     * 
+     * @param array $color
+     * @return string
+     */
+    public function rgb2hex($color) 
+    {
+        return ImagerService::rgb2hex($color);
     }
 }

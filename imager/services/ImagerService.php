@@ -7,6 +7,7 @@ namespace Craft;
  */
 
 use Tinify;
+use ColorThief\ColorThief;
 
 class ImagerService extends BaseApplicationComponent
 {
@@ -136,6 +137,44 @@ class ImagerService extends BaseApplicationComponent
         }
     }
 
+    
+    public function getDominantColor($image, $quality, $colorValue) 
+    {
+        $pathsModel = new Imager_ImagePathsModel($image);
+        
+        if (!IOHelper::getRealPath($pathsModel->sourcePath)) {
+            throw new Exception(Craft::t('Source folder “{sourcePath}” does not exist',
+              array('sourcePath' => $pathsModel->sourcePath)));
+        }
+        
+        if (!IOHelper::fileExists($pathsModel->sourcePath . $pathsModel->sourceFilename)) {
+            throw new Exception(Craft::t('Requested image “{fileName}” does not exist in path “{sourcePath}”',
+              array('fileName' => $pathsModel->sourceFilename, 'sourcePath' => $pathsModel->sourcePath)));
+        }
+        
+        $dominantColor = ColorThief::getColor($pathsModel->sourcePath . $pathsModel->sourceFilename, $quality);
+        return $colorValue=='hex' ? ImagerService::rgb2hex($dominantColor) : $dominantColor;
+    }
+    
+    public function getColorPalette($image, $colorCount, $quality, $colorValue)
+    {
+        $pathsModel = new Imager_ImagePathsModel($image);
+        
+        if (!IOHelper::getRealPath($pathsModel->sourcePath)) {
+            throw new Exception(Craft::t('Source folder “{sourcePath}” does not exist',
+              array('sourcePath' => $pathsModel->sourcePath)));
+        }
+        
+        if (!IOHelper::fileExists($pathsModel->sourcePath . $pathsModel->sourceFilename)) {
+            throw new Exception(Craft::t('Requested image “{fileName}” does not exist in path “{sourcePath}”',
+              array('fileName' => $pathsModel->sourceFilename, 'sourcePath' => $pathsModel->sourcePath)));
+        }
+        
+        $palette = ColorThief::getPalette($pathsModel->sourcePath . $pathsModel->sourceFilename, $colorCount, $quality);
+        
+        return $colorValue=='hex' ? $this->_paletteToHex($palette) : $palette;
+        
+    }
 
     /**
      * Do an image transform
@@ -1361,4 +1400,46 @@ class ImagerService extends BaseApplicationComponent
         return $new_arr;
     }
 
+
+    /**
+     * rgb2hex
+     * 
+     * @param array $rgb
+     * @return string
+     */
+    static function rgb2hex($rgb)
+    {
+        return '#' . sprintf('%02x', $rgb[0]) . sprintf('%02x', $rgb[1]) . sprintf('%02x', $rgb[2]);
+    }
+
+    /**
+     * hex2rgb
+     * 
+     * @param string $hex
+     * @return array
+     */
+    static function hex2rgb($hex) {
+       $hex = str_replace("#", "", $hex);
+    
+       if(strlen($hex) == 3) {
+          $r = hexdec($hex[0].$hex[0]);
+          $g = hexdec($hex[1].$hex[1]);
+          $b = hexdec($hex[2].$hex[2]);
+       } else {
+          $r = hexdec($hex[0].$hex[1]);
+          $g = hexdec($hex[2].$hex[3]);
+          $b = hexdec($hex[4].$hex[5]);
+       }
+    
+       return array($r, $g, $b); 
+    }
+    
+    private function _paletteToHex($palette) {
+        $r = [];
+        foreach ($palette as $paletteColor) {
+            array_push($r, ImagerService::rgb2hex($paletteColor));
+        }
+        return $r;
+    }
+    
 }

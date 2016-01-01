@@ -30,6 +30,7 @@ Whenever possible, Imager utilizes the image manipulation library [Imagine](http
 - Your own choice of which resize filter to use. Speed vs. quality is up to you (Imagick imagedriver only).
 - Concerned about people copying your images? You can add a watermark to them with Imager.  
 `{ watermark: { image: logo, width: 80, height: 80, position: { right: 30, bottom: 30 }, opacity: 0.8, blendMode: 'multiply' } }`
+- Imager also lets you get color information, dominant color and palette, from your images.
 
 **For a quick look at what Imager can do, [check out the demo site](http://imager.vaersaagod.no/).**
 
@@ -332,6 +333,28 @@ Outputs a srcset string from an array of transformed images.
 
 **images**: An array of Imager_ImageModel objects, or anything else that support the interface.  
 **descriptior**: A string indicating which size descriptor should be used in the srcset. *Only 'w' is supported at the moment.*
+
+### craft.imager.getDominantColor(image [, quality=10, colorValue='hex'])
+Gets the dominant color of an image. Uses [Color Thief](https://github.com/ksubileau/color-thief-php) for all the magic.
+
+**image**: Image to get dominant color from. Can be any of the types that transformImage can handle.  
+**quality**: Calculation accuracy of the dominant color. 1 is the highest quality, 10 is the default. Be aware that there is a trade-off between quality and speed/memory consumption!    
+**colorValue**: Indicates which data format the returned color is in. Allowed values are `'hex'` (default) and `'rgb'`. If rgb is selected, the value is an array with red as index 0, green as index 1 and blue as index 2.   
+
+### craft.imager.getColorPalette(image [, $colorCount=8, quality=10, colorValue='hex'])
+Gets the color palette of an image. Uses [Color Thief](https://github.com/ksubileau/color-thief-php) for all the magic.
+
+**image**: Image to get palette from. Can be any of the types that transformImage can handle.  
+**colorCount**: Number of colors to include in palette.  
+**quality**: Calculation accuracy of the dominant color. 1 is the highest quality, 10 is the default. Be aware that there is a trade-off between quality and speed/memory consumption!    
+**colorValue**: Indicates which data format the returned color is in. Allowed values are `'hex'` (default) and `'rgb'`. If rgb is selected, the value is an array with red as index 0, green as index 1 and blue as index 2.     
+
+### craft.imager.hex2rgb(color)
+Converts a hexadecimal color value to rgb. Input value must be a string. Output value is an array with red as index 0, green as index 1 and blue as index 2.
+
+### craft.imager.rgb2hex(color)
+Converts a rgb color value to hexadecimal. Input value must be an array with red as index 0, green as index 1 and blue as index 2. Output value is a string.
+
 
 Transform parameters
 ---
