@@ -48,12 +48,16 @@ Contents
 * [Price, license and support](#price-license-and-support)
 * [Changelog](#changelog)
 
+---
+
 Installation
 ---
 1. Download the zip from this repository, unzip, and put the imager folder in your Craft plugin folder.
 2. Enable the plugin in Craft (Settings > Plugins)
 3. Create a new configuration file in the craft/config folder, named imager.php. Override any settings, the defaults are found in [imager/config.php](https://github.com/aelvan/Imager-Craft/blob/master/imager/config.php). 
 4. Make sure you create the folder where Imager will store the images exists, and is writable. (your public folder)/imager is the default.
+
+---
 
 Configuration
 ---
@@ -260,6 +264,8 @@ Additional request headers to send to AWS.
 *Allowed values: `'standard'`, `'rrs'`*   
 Sets the AWS storage type. 
 
+---
+
 Usage
 ---
 If you've ever done an image transform in a Craft template, this probably looks familiar:
@@ -319,6 +325,8 @@ You can also transform remote images by passing an url for an image to transform
 
 When transforming external images, the remote image is downloaded to your `craft/storage/runtime` folder, and cached for the duration selected in the `cacheDurationRemoteFiles` config parameter. 
 
+---
+
 Template variables
 ---
 ### craft.imager.transformImage(image, transform [, transformDefaults=null, configOverrides=null])
@@ -362,6 +370,7 @@ Converts a hexadecimal color value to rgb. Input value must be a string. Output 
 ### craft.imager.rgb2hex(color)
 Converts a rgb color value to hexadecimal. Input value must be an array with red as index 0, green as index 1 and blue as index 2. Output value is a string.
 
+---
 
 Transform parameters
 ---
@@ -460,6 +469,8 @@ As with the `effects`, this adds image adjustments to the transformed image, but
 * hashFilename
 * hashRemoteUrl
 
+---
+
 Effects
 ---
 **The following basic adjustments ([see demo](http://imager.vaersaagod.no/?img=6&demo=basic-image-adjustments)) works both in GD and Imagick, and are limited to what is available in [Imagine](http://imagine.readthedocs.org/en/latest/usage/effects.html):**
@@ -533,6 +544,8 @@ Applies an unsharp mask with [Imagick's unsharpMaskImage method](http://php.net/
 ### vignette [array]
 *The vignette effect is not yet finalized.*
 
+---
+
 Imager_ImageModel
 ---
 The model returned by the craft.imager.transformImage method.
@@ -553,6 +566,8 @@ The model returned by the craft.imager.transformImage method.
 **getWidth()**: Width of the image.   
 **getHeight()**: Height of the image.   
 
+---
+
 Caching and cache breaking
 ---
 When caching is enabled (`cacheEnabled` configuration setting set to `true`) transformed images are cached for the duration of the `cacheDuration` configuration setting. If an image file is replaced, the existing transforms will be deleted. If a file is moved, the transforms will also be regenerated, since Imager will not find the transforms in the new location.
@@ -561,13 +576,19 @@ It is possible to manually remove the generated transforms by going to Settings 
 
 When transforming a remote image, the image will be downloaded and cached for the duration of the `cacheDurationRemoteFiles` configuration setting. You can manually remove the cached remote images by going to Settings > Clear Caches, selecting "Imager remote images cache" and clicking "Clear!".
 
+---
+
 Performance
 ---
 The main motivation behind making the plugin (before I went down the rabbit hole full of image effects, crop options, etc), was to improve the performance when doing image transforms. When using the <picture> element and srcset-attribute, there is usually 50+ image transforms being done in most of our templates. That leads to alot of database queries. Did I succeed? Benchmarks coming soon (but, yes). 
 
+---
+
 Price, license and support
 ---
 The plugin is released under the MIT license, meaning you can do what ever you want with it as long as you don't blame me. **It's free**, which means there is absolutely no support included, but you might get it anyway. Just post an issue here on github if you have one, and I'll see what I can do. :)
+
+---
 
 Changelog
 ---
