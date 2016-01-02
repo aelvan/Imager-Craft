@@ -19,13 +19,13 @@ Whenever possible, Imager utilizes the image manipulation library [Imagine](http
 `{ width: 600, height: 600, mode: 'crop', position: '20% 65%', cropZoom: 1.5 }`
 - New croponly mode. To crop, not resize.  
 `{ width: 600, height: 600, mode: 'croponly', position: '20% 65%' }`
-- New letterbox resize mode.
-`{ width: 600, height: 600, mode: 'letterbox', letterbox: { color: '#000', opacity: 0 } }`
+- New letterbox resize mode.    
+`{ width: 600, height: 600, mode: 'letterbox', letterbox: { color: '#000', opacity: 0 } }`    
 – If you know the aspect ration you want, you don't have to calculate the extra height/width.
-`{ width: 800, ratio: 16/9 }`
+`{ width: 800, ratio: 16/9 }`    
 - Basic image effects, including grayscale, negative, blur, sharpen, gamma and colorize.   
 `{ effects: { sharpen: true, gamma: 1.4, colorize: '#ff9933' } }`
-- Advanced effetcs, including color blend, tint, sepia, contrast, modulate, normalize, contrast stretch, and vignette (Imagick imagedriver only).  
+- Advanced effetcs, including color blend, tint, sepia, contrast, modulate, normalize, contrast stretch, unsharp mask, posterize and vignette (Imagick imagedriver only).  
 `{ effects: { modulate: [100, 40, 100], colorBlend: ['rgb(255, 153, 51)', 0.5] } }`
 - Your own choice of which resize filter to use. Speed vs. quality is up to you (Imagick imagedriver only).
 - Concerned about people copying your images? You can add a watermark to them with Imager.  
@@ -49,6 +49,8 @@ Contents
 * [Changelog](#changelog)
 
 ---
+
+
 
 Installation
 ---
