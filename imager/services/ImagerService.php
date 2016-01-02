@@ -2,8 +2,13 @@
 namespace Craft;
 
 /**
- * Class ImagerService
- * @package Craft
+ * Imager by André Elvan
+ *
+ * @author      André Elvan <http://vaersaagod.no>
+ * @package     Imager
+ * @copyright   Copyright (c) 2016, André Elvan
+ * @license     http://opensource.org/licenses/mit-license.php MIT License
+ * @link        https://github.com/aelvan/Imager-Craft
  */
 
 use Tinify;
@@ -137,43 +142,43 @@ class ImagerService extends BaseApplicationComponent
         }
     }
 
-    
-    public function getDominantColor($image, $quality, $colorValue) 
+
+    public function getDominantColor($image, $quality, $colorValue)
     {
         $pathsModel = new Imager_ImagePathsModel($image);
-        
+
         if (!IOHelper::getRealPath($pathsModel->sourcePath)) {
             throw new Exception(Craft::t('Source folder “{sourcePath}” does not exist',
               array('sourcePath' => $pathsModel->sourcePath)));
         }
-        
+
         if (!IOHelper::fileExists($pathsModel->sourcePath . $pathsModel->sourceFilename)) {
             throw new Exception(Craft::t('Requested image “{fileName}” does not exist in path “{sourcePath}”',
               array('fileName' => $pathsModel->sourceFilename, 'sourcePath' => $pathsModel->sourcePath)));
         }
-        
+
         $dominantColor = ColorThief::getColor($pathsModel->sourcePath . $pathsModel->sourceFilename, $quality);
-        return $colorValue=='hex' ? ImagerService::rgb2hex($dominantColor) : $dominantColor;
+        return $colorValue == 'hex' ? ImagerService::rgb2hex($dominantColor) : $dominantColor;
     }
-    
+
     public function getColorPalette($image, $colorCount, $quality, $colorValue)
     {
         $pathsModel = new Imager_ImagePathsModel($image);
-        
+
         if (!IOHelper::getRealPath($pathsModel->sourcePath)) {
             throw new Exception(Craft::t('Source folder “{sourcePath}” does not exist',
               array('sourcePath' => $pathsModel->sourcePath)));
         }
-        
+
         if (!IOHelper::fileExists($pathsModel->sourcePath . $pathsModel->sourceFilename)) {
             throw new Exception(Craft::t('Requested image “{fileName}” does not exist in path “{sourcePath}”',
               array('fileName' => $pathsModel->sourceFilename, 'sourcePath' => $pathsModel->sourcePath)));
         }
-        
+
         $palette = ColorThief::getPalette($pathsModel->sourcePath . $pathsModel->sourceFilename, $colorCount, $quality);
-        
-        return $colorValue=='hex' ? $this->_paletteToHex($palette) : $palette;
-        
+
+        return $colorValue == 'hex' ? $this->_paletteToHex($palette) : $palette;
+
     }
 
     /**
@@ -181,12 +186,13 @@ class ImagerService extends BaseApplicationComponent
      *
      * @param AssetFileModel|string $image
      * @param Array $transform
+     * @param Array $transformDefaults
      * @param Array $configOverrides
      *
      * @throws Exception
      * @return Image
      */
-    public function transformImage($image, $transform, $configOverrides)
+    public function transformImage($image, $transform, $transformDefaults, $configOverrides)
     {
         if (!$image) {
             return null; // there's nothing to see here, move along.
@@ -238,12 +244,12 @@ class ImagerService extends BaseApplicationComponent
         if (isset($transform[0])) {
             $transformedImages = array();
             foreach ($transform as $t) {
-                $transformedImage = $this->_getTransformedImage($pathsModel, $t);
+                $transformedImage = $this->_getTransformedImage($pathsModel, $transformDefaults!=null ? array_merge($transformDefaults, $t) : $t);
                 $transformedImages[] = $transformedImage;
             }
             $r = $transformedImages;
         } else {
-            $transformedImage = $this->_getTransformedImage($pathsModel, $transform);
+            $transformedImage = $this->_getTransformedImage($pathsModel, $transformDefaults!=null ?  array_merge($transformDefaults, (array)$transform) : $transform);
             $r = $transformedImage;
         }
 
@@ -382,12 +388,7 @@ class ImagerService extends BaseApplicationComponent
         }
 
         // create Imager_ImageModel for transformed image
-        $imageInfo = @getimagesize($targetFilePath);
-
-        $imagerImage = new Imager_ImageModel();
-        $imagerImage->url = $targetFileUrl;
-        $imagerImage->width = $imageInfo[0];
-        $imagerImage->height = $imageInfo[1];
+        $imagerImage = new Imager_ImageModel($targetFilePath, $targetFileUrl);
 
         return $imagerImage;
     }
@@ -454,7 +455,7 @@ class ImagerService extends BaseApplicationComponent
                 unset($transform['position']);
             }
         }
-        
+
         // if quality is used, assume it's jpegQuality
         if (isset($transform['quality'])) {
             $value = $transform['quality'];
@@ -464,11 +465,11 @@ class ImagerService extends BaseApplicationComponent
                 $transform['jpegQuality'] = $value;
             }
         }
-        
+
         // if ratio is set, and width or height is missing, calculate missing size
         if (isset($transform['ratio']) and (is_float($transform['ratio']) or is_int($transform['ratio']))) {
             if (isset($transform['width']) && !isset($transform['height'])) {
-                $transform['height'] = round($transform['width']/$transform['ratio']);
+                $transform['height'] = round($transform['width'] / $transform['ratio']);
                 unset($transform['ratio']);
             } else {
                 if (isset($transform['height']) && !isset($transform['width'])) {
@@ -476,7 +477,7 @@ class ImagerService extends BaseApplicationComponent
                     unset($transform['ratio']);
                 }
             }
-        } 
+        }
 
         // remove format, this is already in the extension
         if (isset($transform['format'])) {
@@ -491,7 +492,7 @@ class ImagerService extends BaseApplicationComponent
 
             $transform['position'] = str_replace('%', '', $transform['position']);
         }
-        
+
         // sort keys to get them in the same order 
         ksort($transform);
 
@@ -628,16 +629,16 @@ class ImagerService extends BaseApplicationComponent
 
             } else {
                 if (isset($transform['width'])) {
-                    
+
                     $width = (int)$transform['width'];
                     $height = ceil($width / $aspect);
-                    
+
                 } else {
                     if (isset($transform['height'])) {
-                        
+
                         $height = (int)$transform['height'];
                         $width = ceil($height * $aspect);
-                        
+
                     }
                 }
             }
@@ -1403,7 +1404,7 @@ class ImagerService extends BaseApplicationComponent
 
     /**
      * rgb2hex
-     * 
+     *
      * @param array $rgb
      * @return string
      */
@@ -1414,32 +1415,38 @@ class ImagerService extends BaseApplicationComponent
 
     /**
      * hex2rgb
-     * 
+     *
      * @param string $hex
      * @return array
      */
-    static function hex2rgb($hex) {
-       $hex = str_replace("#", "", $hex);
-    
-       if(strlen($hex) == 3) {
-          $r = hexdec($hex[0].$hex[0]);
-          $g = hexdec($hex[1].$hex[1]);
-          $b = hexdec($hex[2].$hex[2]);
-       } else {
-          $r = hexdec($hex[0].$hex[1]);
-          $g = hexdec($hex[2].$hex[3]);
-          $b = hexdec($hex[4].$hex[5]);
-       }
-    
-       return array($r, $g, $b); 
+    static function hex2rgb($hex)
+    {
+        $hex = str_replace("#", "", $hex);
+
+        if (strlen($hex) == 3) {
+            $r = hexdec($hex[0] . $hex[0]);
+            $g = hexdec($hex[1] . $hex[1]);
+            $b = hexdec($hex[2] . $hex[2]);
+        } else {
+            $r = hexdec($hex[0] . $hex[1]);
+            $g = hexdec($hex[2] . $hex[3]);
+            $b = hexdec($hex[4] . $hex[5]);
+        }
+
+        return array($r, $g, $b);
     }
-    
-    private function _paletteToHex($palette) {
+
+    /**
+     * @param $palette
+     * @return array
+     */
+    private function _paletteToHex($palette)
+    {
         $r = [];
         foreach ($palette as $paletteColor) {
             array_push($r, ImagerService::rgb2hex($paletteColor));
         }
         return $r;
     }
-    
+
 }

@@ -1,6 +1,16 @@
 <?php
 namespace Craft;
 
+/**
+ * Imager by André Elvan
+ *
+ * @author      André Elvan <http://vaersaagod.no>
+ * @package     Imager
+ * @copyright   Copyright (c) 2016, André Elvan
+ * @license     http://opensource.org/licenses/mit-license.php MIT License
+ * @link        https://github.com/aelvan/Imager-Craft
+ */
+
 class ImagerVariable
 {
     /**
@@ -11,9 +21,9 @@ class ImagerVariable
      * @param $configOverrides
      * @return mixed
      */
-    public function transformImage($file, $transform, $configOverrides = null)
+    public function transformImage($file, $transform, $transformDefaults = null, $configOverrides = null)
     {
-        $image = craft()->imager->transformImage($file, $transform, $configOverrides);
+        $image = craft()->imager->transformImage($file, $transform, $transformDefaults, $configOverrides);
         return $image;
     }
 
