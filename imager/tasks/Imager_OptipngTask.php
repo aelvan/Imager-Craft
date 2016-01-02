@@ -1,6 +1,16 @@
 <?php
 namespace Craft;
 
+/**
+ * Imager by André Elvan
+ *
+ * @author      André Elvan <http://vaersaagod.no>
+ * @package     Imager
+ * @copyright   Copyright (c) 2016, André Elvan
+ * @license     http://opensource.org/licenses/mit-license.php MIT License
+ * @link        https://github.com/aelvan/Imager-Craft
+ */
+
 class Imager_OptipngTask extends BaseTask
 {
     private $_paths;

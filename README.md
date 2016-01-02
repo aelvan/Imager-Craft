@@ -1,4 +1,4 @@
-Imager for Craft (beta)
+Imager for Craft
 =====
 Imager is a plugin for doing image transforms in Craft templates. It does all the things that the built-in image transform functionality do – but more. And it's faster. At least if you want it to be. 
 
@@ -34,13 +34,19 @@ Whenever possible, Imager utilizes the image manipulation library [Imagine](http
 
 **For a quick look at what Imager can do, [check out the demo site](http://imager.vaersaagod.no/).**
 
-Why beta?
+Contents
 ---
-1. The plugin hasn't been battle-tested yet (development was started five days ago, at the time of writing). 
-2. I have plans to implement more features (~~removal of generated files from the control panel~~, ~~external sources~~, ~~CDN upload support~~, custom filters, fieldtypes for letting the client define focal point and effects, etc). 
-3. A few things doesn't work as well as it should (jpegoptim and optipng should also be called through tasks, like TinyPNG, and the vignette effect just isn't very nice).
-
-The reason I still publish it now, is to get some early feedback from the community. I'd love to get some feedback on wether or not this is a plugin that people will use, suggestions for new features, and bug-reports. 
+* [Installation](#installation)
+* [Configuration](#configuration)
+* [Usage](#usage)
+* [Template variables](#template-variables)
+* [Transform parameters](#transform-parameters)
+* [Effects](#effects)
+* [Imager_ImageModel](#imager_imagemodel)
+* [Caching and cache breaking](#caching-and-cache-breaking)
+* [Performance](#performance)
+* [Price, license and support](#price-license-and-support)
+* [Changelog](#changelog)
 
 Installation
 ---
@@ -267,7 +273,7 @@ The same code using Imager would look like this:
     {% set transformedImage = craft.imager.transformImage(image, { width: 1000 })
     <img src="{{ transformedImage.url }}">
 
-So far, it's more code than the Craft way. But, let's say you need to resize the image to six different widths, because you're using <picture> and srcset to serve up responsive images (in a modern and futureproof way). And you want the crop position on all the images to be in the bottom-right corner, and while the large images should have a high jpeg quality, the smaller ones should be more optimized. 
+So far, it's more code than the Craft way. But, let's say you need to resize the image to six different widths, because you're using <picture> and srcset to serve up responsive images (in a modern and futureproof way). And you want the crop position on all the images to be in the bottom-right corner, an aspect ratio of 16:9, and while the large images should have a high jpeg quality, the smaller ones should be more optimized. 
 
 Here's how the code would look with Imager:
 
@@ -277,7 +283,7 @@ Here's how the code would look with Imager:
 		{ width: 800 }, 
 		{ width: 600, jpegQuality: 65 }, 
 		{ width: 400, jpegQuality: 65 }
-		], { position: 'bottom-right', jpegQuality: 80 }) %}
+		], { ratio: 16/9, position: 'bottom-right', jpegQuality: 80 }) %}
 
 The plugin also includes some additional methods that helps you streamline the creation of responsive images. With the above transformed images, you can output the appropriate srcset like this, with a base64-encoded placeholder in the src attribute:
 
@@ -286,7 +292,7 @@ The plugin also includes some additional methods that helps you streamline the c
 Additional information about the template variables can be found in the "Template variables"-section below.    
 
 ### Relative image paths
-In the above examples, an AssetFileModel is passed to the transformImage method. You can also pass a path or an url to an image that has already been transformed by Imager. This can be useful for increasing performance, or simplifying your template code. In the below example, an image is first resized and have effects applied to it, before being resized to the final sizes:
+In the above examples, an AssetFileModel is passed to the transformImage method. You can also pass an Imager_ImageModel, path or an url to an image that has already been transformed by Imager. This can be useful for increasing performance, or simplifying your template code. In the below example, an image is first resized and have effects applied to it, before being resized to the final sizes:
 
     {% set newBaseImage = craft.imager.transformImage(selectedImage, { 
     	width: 1000, 
@@ -294,7 +300,7 @@ In the above examples, an AssetFileModel is passed to the transformImage method.
     	effects: { modulate: [110, 100, 100], colorBlend: ['#ffcc33', 0.3], gamma: 1.2 },
     	jpegQuality: 95 }) %}
     
-    {% set transformedImages = craft.imager.transformImage(newBaseImage.url, [
+    {% set transformedImages = craft.imager.transformImage(newBaseImage, [
     	{ width: 600, height: 600 },
     	{ width: 500, height: 500 },
     	{ width: 400, height: 400 }
@@ -315,11 +321,12 @@ When transforming external images, the remote image is downloaded to your `craft
 
 Template variables
 ---
-### craft.imager.transformImage(image, transform [, configOverrides=null])
+### craft.imager.transformImage(image, transform [, transformDefaults=null, configOverrides=null])
 The main transform method. Returns either an Imager_ImageModel (see documentation below) if just one transform object were passed, or an array of Imager_ImageModel if an array were passed. Takes the following parameters:
 
 **image**: Image to be transformed. This can be either an AssetFileModel, a string to a previously transformed Imager image, or a string to an external image.   
 **transform**: An object, or an array of objects, containing the transform parameters to be used. See the "Usage"- and "Transform parameters"-sections for more information.   
+**transformDefaults**: An object containing any default transform settings that should be applied to each transform. If transform properties given here are specified in an individual transform, the property value of the individual transform will be used.    
 **configOverrides**: An object containing any overrides to the default config settings that should be used for this transform. See the "Configuration"-section for information on which settings that can be overridden.
 
 ### craft.imager.base64Pixel([width=1, height=1])
@@ -532,17 +539,23 @@ The model returned by the craft.imager.transformImage method.
 
 ### Public attributes
 **url**: URL to the image.   
+**path**: System path to the image file.   
+**extension**: File extension.   
+**mimeType**: File mime type.   
 **width**: Width of the image.   
 **height**: Height of the image.    
 
 ### Public methods
 **getUrl()**: URL to the image.   
+**getPath()**: System path to the image file.   
+**getExtension()**: File extension.   
+**getMimeType()**: File mime type.   
 **getWidth()**: Width of the image.   
 **getHeight()**: Height of the image.   
 
 Caching and cache breaking
 ---
-When caching is enabled (`cacheEnabled` configuration setting set to `true`) transformed images are cached for the duration of the `cacheDuration` configuration setting. If an image file is replaced, the existing transforms will be deleted. If a file is moved, the transforms will also be regenerated, since Imager will not find the transforms in the new location. 
+When caching is enabled (`cacheEnabled` configuration setting set to `true`) transformed images are cached for the duration of the `cacheDuration` configuration setting. If an image file is replaced, the existing transforms will be deleted. If a file is moved, the transforms will also be regenerated, since Imager will not find the transforms in the new location.
 
 It is possible to manually remove the generated transforms by going to Settings > Clear Caches, selecting "Imager image transform cache" and clicking "Clear!". You can also select the images you want to clear in the Assets element list, and choose "Clear Imager transforms" from the element action dropdown menu.
 
@@ -558,5 +571,6 @@ The plugin is released under the MIT license, meaning you can do what ever you w
 
 Changelog
 ---
-*Still in beta*
-
+### 1.0.0 -- 2016.01.02
+* Beta has ended, initial release for all practical purposes.
+* Possible breaking change: The transformImage method now takes a new transformDefaults parameter. This is now the third parameter, bumping configOverrides to the fourth position.

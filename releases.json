@@ -1,0 +1,11 @@
+[
+    {
+        "version": "1.0.0",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2010-01-02T10:00:00+02:00",
+        "notes": [
+            "[Added] Beta has ended, initial release for all practical purposes.",
+            "[Added] Possible breaking change: The transformImage method now takes a new transformDefaults parameter. This is now the third parameter, bumping configOverrides to the fourth position."
+        ]
+    }
+]
