@@ -20,9 +20,9 @@ Whenever possible, Imager utilizes the image manipulation library [Imagine](http
 - New croponly mode. To crop, not resize.  
 `{ width: 600, height: 600, mode: 'croponly', position: '20% 65%' }`
 - New letterbox resize mode.    
-`{ width: 600, height: 600, mode: 'letterbox', letterbox: { color: '#000', opacity: 0 } }`    
-– If you know the aspect ration you want, you don't have to calculate the extra height/width.
-`{ width: 800, ratio: 16/9 }`    
+`{ width: 600, height: 600, mode: 'letterbox', letterbox: { color: '#000', opacity: 0 } }`
+– If you know the aspect ration you want, you don't have to calculate the extra height/width.    
+`{ width: 800, ratio: 16/9 }`
 - Basic image effects, including grayscale, negative, blur, sharpen, gamma and colorize.   
 `{ effects: { sharpen: true, gamma: 1.4, colorize: '#ff9933' } }`
 - Advanced effetcs, including color blend, tint, sepia, contrast, modulate, normalize, contrast stretch, unsharp mask, posterize and vignette (Imagick imagedriver only).  
@@ -50,7 +50,7 @@ Contents
 
 ---
 
-
+    
 
 Installation
 ---
