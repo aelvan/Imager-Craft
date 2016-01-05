@@ -404,7 +404,7 @@ The mode that should be used when resizing images.
 
 **'crop'**: Crops the image to the given size, scaling the image to fill as much as possible of the size. 
 **'fit'**: Scales the image to fit within the given size while maintaining the aspect ratio of the original image.  
-**'strecth'**: Scales the image to the given size, stretching it if the aspect ratio is different from the original.   
+**'stretch'**: Scales the image to the given size, stretching it if the aspect ratio is different from the original.   
 **'croponly'**: Crops the image to the given size without any resizing.  
 **'letterbox'**: Scales the image to fit within the given size, the same way as `'fit'`. It then expands the image to the given size, adding a specified color to either the top/bottom or left/right of the image. The color (and opacity if the image format supports it) can be controlled with the `letterbox` parameter. 
 

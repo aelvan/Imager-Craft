@@ -1,5 +1,13 @@
 [
     {
+        "version": "1.0.1",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2010-01-05T11:30:00+02:00",
+        "notes": [
+            "[Fixed] The ImagerService class had an unnecessary dependency on Imagick, which would cause an error in the settings panel if Imagick was not installed.",
+        ]
+    },
+    {
         "version": "1.0.0",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2010-01-02T10:00:00+02:00",

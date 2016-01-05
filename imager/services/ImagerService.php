@@ -71,11 +71,7 @@ class ImagerService extends BaseApplicationComponent
     );
 
     // translate dictionary for dither method 
-    public static $ditherKeyTranslate = array(
-      'no' => \Imagick::DITHERMETHOD_NO,
-      'riemersma' => \Imagick::DITHERMETHOD_RIEMERSMA,
-      'floydsteinberg' => \Imagick::DITHERMETHOD_FLOYDSTEINBERG,
-    );
+    public static $ditherKeyTranslate = array();
 
     // translate dictionary for composite modes. set in constructor if driver is imagick. 
     public static $compositeKeyTranslate = array();
@@ -124,6 +120,10 @@ class ImagerService extends BaseApplicationComponent
             ImagerService::$compositeKeyTranslate['multiply'] = \imagick::COMPOSITE_MULTIPLY;
             ImagerService::$compositeKeyTranslate['overlay'] = \imagick::COMPOSITE_OVERLAY;
             ImagerService::$compositeKeyTranslate['screen'] = \imagick::COMPOSITE_SCREEN;
+            
+            ImagerService::$ditherKeyTranslate['no'] =  \Imagick::DITHERMETHOD_NO;
+            ImagerService::$ditherKeyTranslate['riemersma'] =  \Imagick::DITHERMETHOD_RIEMERSMA;
+            ImagerService::$ditherKeyTranslate['floydsteinberg'] =  \Imagick::DITHERMETHOD_FLOYDSTEINBERG;
         }
     }
 
@@ -389,6 +389,7 @@ class ImagerService extends BaseApplicationComponent
 
         // create Imager_ImageModel for transformed image
         $imagerImage = new Imager_ImageModel($targetFilePath, $targetFileUrl);
+
 
         return $imagerImage;
     }
@@ -1442,7 +1443,7 @@ class ImagerService extends BaseApplicationComponent
      */
     private function _paletteToHex($palette)
     {
-        $r = [];
+        $r = array();
         foreach ($palette as $paletteColor) {
             array_push($r, ImagerService::rgb2hex($paletteColor));
         }
