@@ -271,7 +271,13 @@ class ImagerService extends BaseApplicationComponent
     {
         // break up the image filename to get extension and actual filename 
         $pathParts = pathinfo($paths->targetFilename);
-        $sourceExtension = $targetExtension = $pathParts['extension'];
+        
+        if (isset($pathParts['extension'])) {
+            $sourceExtension = $targetExtension = $pathParts['extension'];
+        } else {
+            $sourceExtension = $targetExtension = FileHelper::getExtensionByMimeType(mime_content_type($paths->sourcePath . $paths->sourceFilename));
+        }
+        
         $filename = $pathParts['filename'];
 
         // do we want to output in a certain format?
@@ -280,7 +286,7 @@ class ImagerService extends BaseApplicationComponent
         }
 
         // normalize the transform before doing anything more 
-        $transform = $this->_normalizeTransform($transform);
+        $transform = $this->_normalizeTransform($transform, $paths);
 
         // create target filename, path and url
         $targetFilename = $this->_createTargetFilename($filename, $targetExtension, $transform);
@@ -445,10 +451,11 @@ class ImagerService extends BaseApplicationComponent
     /**
      * Normalize transform object and values
      *
+     * @param $paths
      * @param $transform
      * @return mixed
      */
-    private function _normalizeTransform($transform)
+    private function _normalizeTransform($transform, $paths=null)
     {
         // if resize mode is not crop or croponly, remove position
         if (isset($transform['mode']) && (($transform['mode'] != 'crop') && ($transform['mode'] != 'croponly'))) {
@@ -476,6 +483,14 @@ class ImagerService extends BaseApplicationComponent
                 if (isset($transform['height']) && !isset($transform['width'])) {
                     $transform['width'] = round($transform['height'] * $transform['ratio']);
                     unset($transform['ratio']);
+                } else { 
+                    // neither is set, use width from original image
+                    if ($paths!==null) {
+                        $originalSize = getimagesize($paths->sourcePath . $paths->sourceFilename);
+                        $transform['width'] = $originalSize[0];
+                        $transform['height'] = round($transform['width'] / $transform['ratio']);
+                        unset($transform['ratio']);
+                    }
                 }
             }
         }
@@ -1277,7 +1292,7 @@ class ImagerService extends BaseApplicationComponent
         }
 
         if (!$this->s3->putObject($file, $this->getSetting('awsBucket'),
-          str_replace($this->getSetting('imagerSystemPath'), '', $filePath), \S3::ACL_PUBLIC_READ, array(), $headers,
+          ImagerService::fixSlashes($this->getSetting('awsFolder'), true, true) . '/' . str_replace($this->getSetting('imagerSystemPath'), '', $filePath), \S3::ACL_PUBLIC_READ, array(), $headers,
           $this->_getAWSStorageClass())
         ) //fail
         {
@@ -1435,6 +1450,29 @@ class ImagerService extends BaseApplicationComponent
         }
 
         return array($r, $g, $b);
+    }
+    
+    /**
+     * Fixes slashes in path
+     *
+     * @param $str
+     * @param bool|false $removeInitial
+     * @param bool|false $removeTrailing
+     * @return mixed|string
+     */
+    static function fixSlashes($str, $removeInitial = false, $removeTrailing = false)
+    {
+        $r = str_replace('//', '/', $str);
+
+        if ($removeInitial && ($r[0] == '/')) {
+            $r = substr($r, 1);
+        }
+
+        if ($removeTrailing && ($r[strlen($r) - 1] == '/')) {
+            $r = substr($r, 0, strlen($r) - 1);
+        }
+
+        return $r;
     }
 
     /**

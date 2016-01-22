@@ -80,9 +80,9 @@ class Imager_ImagePathsModel extends BaseModel
             $assetSourcePath = $parsedUrl['path'];
         }
 
-        $this->sourcePath = $this->_fixSlashes(craft()->config->parseEnvironmentString($image->getSource()->settings['path']) . $image->getFolder()->path);
-        $this->targetPath = $this->_fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $assetSourcePath . $image->getFolder()->path) . $image->id . '/';
-        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $this->_fixSlashes($assetSourcePath . $image->getFolder()->path, true) . $image->id . '/';
+        $this->sourcePath = ImagerService::fixSlashes(craft()->config->parseEnvironmentString($image->getSource()->settings['path']) . $image->getFolder()->path);
+        $this->targetPath = ImagerService::fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $assetSourcePath . $image->getFolder()->path) . $image->id . '/';
+        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . ImagerService::fixSlashes($assetSourcePath . $image->getFolder()->path, true) . $image->id . '/';
         $this->sourceFilename = $this->targetFilename = $image->filename;
     }
 
@@ -97,8 +97,8 @@ class Imager_ImagePathsModel extends BaseModel
         $pathParts = pathinfo($imageString);
 
         $this->sourcePath = craft()->imager->getSetting('imagerSystemPath') . $pathParts['dirname'] . '/';
-        $this->targetPath = $this->_fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $pathParts['dirname'] . '/');
-        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $this->_fixSlashes($pathParts['dirname'] . '/', true);
+        $this->targetPath = ImagerService::fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $pathParts['dirname'] . '/');
+        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . ImagerService::fixSlashes($pathParts['dirname'] . '/', true);
         $this->sourceFilename = $this->targetFilename = $pathParts['basename'];
     }
 
@@ -112,8 +112,8 @@ class Imager_ImagePathsModel extends BaseModel
         $pathParts = pathinfo($image);
 
         $this->sourcePath = $_SERVER['DOCUMENT_ROOT'] . $pathParts['dirname'] . '/';
-        $this->targetPath = $this->_fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $pathParts['dirname'] . '/');
-        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $this->_fixSlashes($pathParts['dirname'] . '/', true);
+        $this->targetPath = ImagerService::fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $pathParts['dirname'] . '/');
+        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . ImagerService::fixSlashes($pathParts['dirname'] . '/', true);
         $this->sourceFilename = $this->targetFilename = $pathParts['basename'];
     }
 
@@ -156,7 +156,7 @@ class Imager_ImagePathsModel extends BaseModel
 
         // check if the file is already downloaded
         if (!IOHelper::fileExists($this->sourcePath . $this->sourceFilename) || (IOHelper::getLastTimeModified($this->sourcePath . $this->sourceFilename)->format('U') + craft()->imager->getSetting('cacheDurationRemoteFiles') < time())) {
-            @file_put_contents($this->sourcePath . $this->sourceFilename, fopen($image, 'r'));
+            $this->_downloadFile($this->sourcePath . $this->sourceFilename, $image);
 
             if (!IOHelper::fileExists($this->sourcePath . $this->sourceFilename)) {
                 throw new Exception(Craft::t('File could not be downloaded and saved to “{sourcePath}”',
@@ -166,26 +166,48 @@ class Imager_ImagePathsModel extends BaseModel
     }
 
     /**
-     * Fixes slashes in path
+     * Downloads remote file. Uses cURL if available, then tries with file_get_contents() if allow_url_fopen.
      *
-     * @param $str
-     * @param bool|false $removeInitial
-     * @param bool|false $removeTrailing
-     * @return mixed|string
+     * @param $destinationPath
+     * @param $imageUrl
+     * @throws Exception
      */
-    private function _fixSlashes($str, $removeInitial = false, $removeTrailing = false)
+    private function _downloadFile($destinationPath, $imageUrl)
     {
-        $r = str_replace('//', '/', $str);
+        if (function_exists('curl_init')) {
+            $ch = curl_init($imageUrl);
+            $fp = fopen($destinationPath, "wb");
 
-        if ($removeInitial && ($r[0] == '/')) {
-            $r = substr($r, 1);
+            $options = array(
+              CURLOPT_FILE => $fp,
+              CURLOPT_HEADER => 0,
+              CURLOPT_FOLLOWLOCATION => 1,
+              CURLOPT_TIMEOUT => 30
+            );
+
+            curl_setopt_array($ch, $options);
+            curl_exec($ch);
+            $httpStatus = intval(curl_getinfo($ch, CURLINFO_HTTP_CODE));
+            curl_close($ch);
+            fclose($fp);
+
+            if ($httpStatus != 200) {
+                if (!($httpStatus == 404 && strrpos(mime_content_type($destinationPath), 'image') !== false)) { // remote server returned a 404, but the contents was a valid image file.
+                    unlink($destinationPath);
+                    throw new Exception(Craft::t('HTTP status “{httpStatus}” encountered while attempting to download “{imageUrl}”',
+                      array('imageUrl' => $imageUrl, 'httpStatus' => $httpStatus)));
+                }
+            }
+        } elseif (ini_get('allow_url_fopen')) {
+            if (!@file_put_contents($destinationPath, file_get_contents($imageUrl))) {
+                unlink($destinationPath);
+                $httpStatus = $http_response_header[0];
+                throw new Exception(Craft::t('“{httpStatus}” encountered while attempting to download “{imageUrl}”',
+                  array('imageUrl' => $imageUrl, 'httpStatus' => $httpStatus)));
+            }
+        } else {
+            throw new Exception(Craft::t('Looks like allow_url_fopen is off and cURL is not enabled. To download external files, one of these methods has to be enabled.'));
         }
-
-        if ($removeTrailing && ($r[strlen($r) - 1] == '/')) {
-            $r = substr($r, 0, strlen($r) - 1);
-        }
-
-        return $r;
     }
 
 }

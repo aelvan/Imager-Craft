@@ -251,6 +251,10 @@ AWS secret key.
 *Default: `''`*  
 AWS bucket name.
 
+### awsFolder [string]
+*Default: `''`*  
+Subfolder inside the AWS bucket where you want to put the transformed images.
+
 ### awsCacheDuration [int]
 *Default: `1209600`*  
 Cache duration of files on AWS.
@@ -594,6 +598,16 @@ The plugin is released under the MIT license, meaning you can do what ever you w
 
 Changelog
 ---
+### 1.0.2 -- 2016.01.22
+* Added configuration setting `'awsFolder'` that lets you put transformed images in a subfolder on the bucket.
+* Imager now tries to determine which format an image is if the file doesn't have an extension.
+* You can now resize images based on ratio only, width or height is no longer necessary.
+* Improved downloading of remote images, now supporting both cURL (default) and `file_get_contents`. An exception is raised if neither is available.
+* When a cURL request for a remote image returns a HTTP 404, but the contents of the response is an image, the image will be returned correctly
+            
+### 1.0.1 -- 2016.01.05
+* The ImagerService class had an unnecessary dependency on Imagick, which would cause an error in the settings panel if Imagick was not installed.
+
 ### 1.0.0 -- 2016.01.02
 * Beta has ended, initial release for all practical purposes.
 * Possible breaking change: The transformImage method now takes a new transformDefaults parameter. This is now the third parameter, bumping configOverrides to the fourth position.

@@ -1,10 +1,22 @@
 [
     {
+        "version": "1.0.2",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2010-01-22T22:24:00+02:00",
+        "notes": [
+            "[Added] Added configuration setting 'awsFolder' that lets you put transformed images in a subfolder on the bucket.",
+            "[Added] Imager now tries to determine which format an image is if the file doesn't have an extension.",
+            "[Added] You can now resize images based on ratio only, width or height is no longer necessary.",
+            "[Fixed] Improved downloading of remote images, now supporting both cURL (default) and file_get_contents. An exception is raised if neither is available.",
+            "[Fixed] When a cURL request for a remote image returns a HTTP 404, but the contents of the response is an image, the image will be returned correctly."
+        ]
+    },
+    {
         "version": "1.0.1",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2010-01-05T11:30:00+02:00",
         "notes": [
-            "[Fixed] The ImagerService class had an unnecessary dependency on Imagick, which would cause an error in the settings panel if Imagick was not installed.",
+            "[Fixed] The ImagerService class had an unnecessary dependency on Imagick, which would cause an error in the settings panel if Imagick was not installed."
         ]
     },
     {

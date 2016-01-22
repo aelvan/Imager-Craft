@@ -75,6 +75,7 @@ class Imager_ConfigModel extends BaseModel
           'awsAccessKey' => array(AttributeType::String),
           'awsSecretAccessKey' => array(AttributeType::String),
           'awsBucket' => array(AttributeType::String),
+          'awsFolder' => array(AttributeType::String),
           'awsCacheDuration' => array(AttributeType::Number),
           'awsRequestHeaders' => array(AttributeType::Mixed),
           'awsStorageType' => array(AttributeType::String),

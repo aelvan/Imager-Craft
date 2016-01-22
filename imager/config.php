@@ -56,6 +56,7 @@ return array(
   'awsAccessKey' => '',
   'awsSecretAccessKey' => '',
   'awsBucket' => '',
+  'awsFolder' => '',
   'awsCacheDuration' => 1209600, // 14 days
   'awsRequestHeaders' => array(),
   'awsStorageType' => 'standard' // 'standard' or 'rrs' (reduced redundancy storage)
