@@ -1464,14 +1464,16 @@ class ImagerService extends BaseApplicationComponent
     {
         $r = str_replace('//', '/', $str);
 
-        if ($removeInitial && ($r[0] == '/')) {
-            $r = substr($r, 1);
-        }
+        if (strlen($r)>0) {
+            if ($removeInitial && ($r[0] == '/')) {
+                $r = substr($r, 1);
+            }
 
-        if ($removeTrailing && ($r[strlen($r) - 1] == '/')) {
-            $r = substr($r, 0, strlen($r) - 1);
+            if ($removeTrailing && ($r[strlen($r) - 1] == '/')) {
+                $r = substr($r, 0, strlen($r) - 1);
+            }
         }
-
+        
         return $r;
     }
 
