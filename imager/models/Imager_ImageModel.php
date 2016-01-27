@@ -31,6 +31,7 @@ class Imager_ImageModel extends BaseModel
 
             $this['extension'] = IOHelper::getExtension($imagePath);
             $this['mimeType'] = IOHelper::getMimeType($imagePath);
+            $this['size'] = IOHelper::getFileSize($imagePath);
         }
 
         if ($imageUrl != 'null') {
@@ -47,6 +48,7 @@ class Imager_ImageModel extends BaseModel
           'mimeType' => array(AttributeType::String),
           'width' => array(AttributeType::Number),
           'height' => array(AttributeType::Number),
+          'size' => array(AttributeType::Number),
         );
     }
 
@@ -82,6 +84,30 @@ class Imager_ImageModel extends BaseModel
 
     function getHeight()
     {
+        return $this->height;
+    }
+
+    function getSize($unit = 'b', $precision = 2)
+    {
+        $unit = strtolower($unit);
+        
+        switch ($unit) {
+            case "g":
+            case "gb":
+                return round(((int)$this->size)/1024/1024/1024, $precision);
+                break;
+            case "m":
+            case "mb":
+                return round(((int)$this->size)/1024/1024, $precision);
+                break;
+            case "k":
+            case "kb":
+                return round(((int)$this->size)/1024, $precision);
+                break;
+            default:
+                return $this->size;
+        }
+        
         return $this->height;
     }
 

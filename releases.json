@@ -1,8 +1,17 @@
 [
     {
+        "version": "1.0.3",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2016-01-27T11:13:00+02:00",
+        "notes": [
+            "[Added] Added size attribute and getSize method to `Imager_Imagemodel`.",
+            "[Fixed] Fixed bug in 'fixSlashes' that would create an error if run on an empty string (i.e empty awsFolder)."
+        ]
+    },
+    {
         "version": "1.0.2",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
-        "date": "2010-01-22T22:24:00+02:00",
+        "date": "2016-01-22T22:24:00+02:00",
         "notes": [
             "[Added] Added configuration setting 'awsFolder' that lets you put transformed images in a subfolder on the bucket.",
             "[Added] Imager now tries to determine which format an image is if the file doesn't have an extension.",
@@ -14,7 +23,7 @@
     {
         "version": "1.0.1",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
-        "date": "2010-01-05T11:30:00+02:00",
+        "date": "2016-01-05T11:30:00+02:00",
         "notes": [
             "[Fixed] The ImagerService class had an unnecessary dependency on Imagick, which would cause an error in the settings panel if Imagick was not installed."
         ]
@@ -22,7 +31,7 @@
     {
         "version": "1.0.0",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
-        "date": "2010-01-02T10:00:00+02:00",
+        "date": "2016-01-02T10:00:00+02:00",
         "notes": [
             "[Added] Beta has ended, initial release for all practical purposes.",
             "[Added] Possible breaking change: The transformImage method now takes a new transformDefaults parameter. This is now the third parameter, bumping configOverrides to the fourth position."

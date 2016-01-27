@@ -563,14 +563,34 @@ The model returned by the craft.imager.transformImage method.
 **mimeType**: File mime type.   
 **width**: Width of the image.   
 **height**: Height of the image.    
+**size**: Size of the image in bytes.    
 
 ### Public methods
-**getUrl()**: URL to the image.   
-**getPath()**: System path to the image file.   
-**getExtension()**: File extension.   
-**getMimeType()**: File mime type.   
-**getWidth()**: Width of the image.   
-**getHeight()**: Height of the image.   
+**getUrl() [string]**   
+URL to the image.   
+
+**getPath() [string]**   
+System path to the image file.   
+
+**getExtension() [string]**  
+File extension.   
+
+**getMimeType() [string]**  
+File mime type.   
+
+**getWidth() [string]**  
+Width of the image.   
+
+**getHeight() [string]**  
+Height of the image.   
+
+**getSize($unit='b', $precision='2') [float]**  
+Size of the image. Example:  
+
+    {{ image.getSize() }} B 
+	{{ image.getSize('k') }} KB 
+	{{ image.getSize('m', 10) }} MB 
+	{{ image.getSize('g', 10) }} GB
 
 ---
 
@@ -598,6 +618,10 @@ The plugin is released under the MIT license, meaning you can do what ever you w
 
 Changelog
 ---
+### 1.0.3 -- 2016.01.26
+* Fixed bug in `fixSlashes` that would create an error if run on an empty string (i.e empty awsFolder).
+* Added size attribute and getSize method to `Imager_Imagemodel`.
+
 ### 1.0.2 -- 2016.01.22
 * Added configuration setting `'awsFolder'` that lets you put transformed images in a subfolder on the bucket.
 * Imager now tries to determine which format an image is if the file doesn't have an extension.
