@@ -1292,11 +1292,11 @@ class ImagerService extends BaseApplicationComponent
         }
 
         if (!$this->s3->putObject($file, $this->getSetting('awsBucket'),
-          ImagerService::fixSlashes($this->getSetting('awsFolder'), true, true) . '/' . str_replace($this->getSetting('imagerSystemPath'), '', $filePath), \S3::ACL_PUBLIC_READ, array(), $headers,
+          ImagerService::fixSlashes($this->getSetting('awsFolder') . '/' . str_replace($this->getSetting('imagerSystemPath'), '', $filePath), true, true), \S3::ACL_PUBLIC_READ, array(), $headers,
           $this->_getAWSStorageClass())
         ) //fail
         {
-            ImagerPlugin::log("Upload to AWS failed for $path in ImagerService", LogLevel::Error);
+            ImagerPlugin::log("Upload to AWS failed for $filePath in ImagerService", LogLevel::Error);
         }
     }
 

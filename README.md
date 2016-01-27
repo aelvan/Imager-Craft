@@ -618,7 +618,10 @@ The plugin is released under the MIT license, meaning you can do what ever you w
 
 Changelog
 ---
-### 1.0.3 -- 2016.01.26
+### 1.0.4 -- 2016.01.27
+* Fixed bug in AWS upload.
+
+### 1.0.3 -- 2016.01.27
 * Fixed bug in `fixSlashes` that would create an error if run on an empty string (i.e empty awsFolder).
 * Added size attribute and getSize method to `Imager_Imagemodel`.
 

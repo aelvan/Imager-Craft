@@ -1,5 +1,13 @@
 [
     {
+        "version": "1.0.4",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2016-01-27T15:39:00+02:00",
+        "notes": [
+            "[Fixed] Fixed bug in AWS upload."
+        ]
+    },
+    {
         "version": "1.0.3",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2016-01-27T11:13:00+02:00",
