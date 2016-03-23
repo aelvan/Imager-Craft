@@ -294,7 +294,7 @@ Make sure you **don't** set `CURLOPT_FILE`, since it is set by Imager to be the 
    
 ### runTasksImmediatelyOnAjaxRequests [bool]  
 *Default: `true`*  
-Craft automatically runs any pending tasks on normal site requests, but not on ajax-request, leaving any optimization tasks that Imager has created in a queue that is run on the next CP request. By default Imager solves this by triggering `runPendingTasks` menually if the request was an ajax request, and a task was created (curl needed).   
+Craft automatically runs any pending tasks on normal site requests, but not on ajax-request, leaving any optimization tasks that Imager has created in a queue that is run on the next CP request. By default Imager solves this by triggering `runPendingTasks` manually if the request was an ajax request, and a task was created (curl needed).   
 
 If you for some reason want to disable this behavior, change this setting to `false`.   
 
