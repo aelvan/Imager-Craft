@@ -21,12 +21,15 @@ class Imager_ImagePathsModel extends BaseModel
      */
     public function __construct($image)
     {
+        $this->isRemote = false;
+        
         if (is_string($image)) {
 
             if (strpos($image, craft()->imager->getSetting('imagerUrl')) !== false) { // url to a file that is in the imager library
                 $this->getPathsForLocalImagerFile($image);
             } else {
                 if (strrpos($image, 'http') !== false) { // external file
+                    $this->isRemote = true;
                     $this->_getPathsForUrl($image);
                 } else { // relative path, assume that it's relative to document root
                     $this->_getPathsForLocaleFile($image);
@@ -40,6 +43,7 @@ class Imager_ImagePathsModel extends BaseModel
             } else {
                 if (get_class($image) == 'Craft\AssetFileModel') {
                     if (!$image->getSource()->getSourceType()->isSourceLocal()) { // it's a cloud source, pretend this is an external file for performance
+                        $this->isRemote = true;
                         $this->_getPathsForUrl($image->getUrl());
                     } else {  // it's a local source
                         $this->_getPathsForLocalAsset($image);
@@ -58,6 +62,7 @@ class Imager_ImagePathsModel extends BaseModel
     protected function defineAttributes()
     {
         return array(
+          'isRemote' => array(AttributeType::Bool),
           'sourcePath' => array(AttributeType::String),
           'targetPath' => array(AttributeType::String),
           'targetUrl' => array(AttributeType::String),
@@ -125,7 +130,8 @@ class Imager_ImagePathsModel extends BaseModel
      */
     private function _getPathsForUrl($image)
     {
-        $urlParts = parse_url($image);
+        $convertedImageStr = StringHelper::asciiString(urldecode($image));
+        $urlParts = parse_url($convertedImageStr);
         $pathParts = pathinfo($urlParts['path']);
         $hashRemoteUrl = craft()->imager->getSetting('hashRemoteUrl');
 
@@ -174,25 +180,41 @@ class Imager_ImagePathsModel extends BaseModel
      */
     private function _downloadFile($destinationPath, $imageUrl)
     {
+        // url encode filename to account for non-ascii characters in filenames.
+        $imageUrl = preg_replace_callback('#://([^/]+)/([^?]+)#', function ($match) {
+            return '://' . $match[1] . '/' . join('/', array_map('rawurlencode', explode('/', $match[2])));
+        }, urldecode($imageUrl));
+        
         if (function_exists('curl_init')) {
             $ch = curl_init($imageUrl);
             $fp = fopen($destinationPath, "wb");
 
-            $options = array(
+            $defaultOptions = array(
               CURLOPT_FILE => $fp,
               CURLOPT_HEADER => 0,
               CURLOPT_FOLLOWLOCATION => 1,
               CURLOPT_TIMEOUT => 30
             );
-
+            
+            // merge default options with config setting, config overrides default.
+            $options = craft()->imager->getSetting('curlOptions') + $defaultOptions;
+            
             curl_setopt_array($ch, $options);
             curl_exec($ch);
+            $curlErrorNo = curl_errno($ch);
+            $curlError = curl_error($ch);
             $httpStatus = intval(curl_getinfo($ch, CURLINFO_HTTP_CODE));
             curl_close($ch);
             fclose($fp);
 
-            if ($httpStatus != 200) {
-                if (!($httpStatus == 404 && strrpos(mime_content_type($destinationPath), 'image') !== false)) { // remote server returned a 404, but the contents was a valid image file.
+            if ($curlErrorNo !== 0) {
+                unlink($destinationPath);
+                throw new Exception(Craft::t('cURL error “{curlErrorNo}” encountered while attempting to download “{imageUrl}”. The error was: “{curlError}”',
+                  array('imageUrl' => $imageUrl, 'curlErrorNo' => $curlErrorNo, 'curlError' => $curlError)));
+            }
+
+            if ($httpStatus !== 200) {
+                if (!($httpStatus == 404 && strrpos(mime_content_type($destinationPath), 'image') !== false)) { // remote server returned a 404, but the contents was a valid image file
                     unlink($destinationPath);
                     throw new Exception(Craft::t('HTTP status “{httpStatus}” encountered while attempting to download “{imageUrl}”',
                       array('imageUrl' => $imageUrl, 'httpStatus' => $httpStatus)));

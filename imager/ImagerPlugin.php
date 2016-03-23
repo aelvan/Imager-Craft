@@ -14,7 +14,7 @@ namespace Craft;
 
 class ImagerPlugin extends BasePlugin
 {
-    protected $_version = '1.0.4',
+    protected $_version = '1.0.5',
       $_schemaVersion = null,
       $_name = 'Imager',
       $_url = 'https://github.com/aelvan/Imager-Craft',

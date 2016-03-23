@@ -1,5 +1,17 @@
 [
     {
+        "version": "1.0.5",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2016-03-23T23:44:00+02:00",
+        "notes": [
+            "[Added] Added config setting 'curlOptions' for adding or overriding curl options (see documentation for details).",
+            "[Added] If a task was created during a transform, and the request was done with ajax, any pending tasks will be triggered immediately. New config setting 'runTasksImmediatelyOnAjaxRequests' can be used to override this behavior.",
+            "[Improved] Better error handling and reporting when downloading remote images. Requests that time out will no longer leave an incomplete image in the remote images cache.",
+            "[Improved] Image urls for remote images are now url encoded to fix bugs with non-ascii characters in filenames. Transformed image filename is always converted to ascii.",
+            "[Improved] Cached remote file is now deleted when an image's transforms are cleared.",
+        ]
+    },    
+    {
         "version": "1.0.4",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2016-01-27T15:39:00+02:00",

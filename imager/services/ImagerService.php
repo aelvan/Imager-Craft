@@ -21,6 +21,7 @@ class ImagerService extends BaseApplicationComponent
     var $imageInstance = null;
     var $configModel = null;
     var $s3 = null;
+    var $taskCreated = false;
 
     // translate dictionary for translating transform keys into filename markers
     public static $transformKeyTranslate = array(
@@ -254,6 +255,14 @@ class ImagerService extends BaseApplicationComponent
         }
 
         $this->imageInstance = null;
+
+        /**
+         * If this was an ajax request, and optimization tasks were created, trigger them now.
+         */
+        if (craft()->request->isAjaxRequest() && $this->taskCreated && $this->getSetting('runTasksImmediatelyOnAjaxRequests')) {
+            $this->_triggerTasksNow();
+        }
+        
         return $r;
     }
 
@@ -412,6 +421,10 @@ class ImagerService extends BaseApplicationComponent
         if (strpos($paths->targetPath, craft()->imager->getSetting('imagerSystemPath')) !== false) {
             IOHelper::clearFolder($paths->targetPath);
             craft()->templateCache->deleteCachesByElementId($asset->id);
+            
+            if ($paths->isRemote) {
+                IOHelper::deleteFile($paths->sourcePath . $paths->sourceFilename);
+            }
         }
     }
 
@@ -1368,6 +1381,46 @@ class ImagerService extends BaseApplicationComponent
               'paths' => $paths
             ));
         }
+        
+        $this->taskCreated = true;
+    }
+
+    /**
+     * Method that triggers any pending tasks immediately.
+     */
+    private function _triggerTasksNow () {
+        $url = UrlHelper::getActionUrl('tasks/runPendingTasks');
+        
+        if (function_exists('curl_init')) {
+            $ch = curl_init($url);
+
+            $options = array(
+              CURLOPT_RETURNTRANSFER => true,
+              CURLOPT_CONNECTTIMEOUT => false,
+              CURLOPT_NOSIGNAL => true
+            );
+
+            if (defined('CURLOPT_TIMEOUT_MS')) {
+                $options[CURLOPT_TIMEOUT_MS] = 500;
+            } else {
+                $options[CURLOPT_TIMEOUT] = 1;
+            }            
+            
+            curl_setopt_array($ch, $options);
+            curl_exec($ch);
+            $curlErrorNo = curl_errno($ch);
+            $curlError = curl_error($ch);
+            $httpStatus = intval(curl_getinfo($ch, CURLINFO_HTTP_CODE));
+            curl_close($ch);
+
+            if ($curlErrorNo !== 0) {
+                ImagerPlugin::log("Request for running tasks immediately failed with error number $curlErrorNo and error message: $curlError", LogLevel::Error);
+            }
+
+            if ($httpStatus !== 200) {
+                ImagerPlugin::log("Request for running tasks immediately failed with http status $httpStatus", LogLevel::Error);
+            }
+        }        
     }
 
 

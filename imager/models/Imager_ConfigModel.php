@@ -80,6 +80,8 @@ class Imager_ConfigModel extends BaseModel
           'awsRequestHeaders' => array(AttributeType::Mixed),
           'awsStorageType' => array(AttributeType::String),
           'removeMetadata' => array(AttributeType::Bool),
+          'curlOptions' => array(AttributeType::Mixed),
+          'runTasksImmediatelyOnAjaxRequests' => array(AttributeType::Bool),
         );
     }
 

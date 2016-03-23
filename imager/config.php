@@ -59,6 +59,8 @@ return array(
   'awsFolder' => '',
   'awsCacheDuration' => 1209600, // 14 days
   'awsRequestHeaders' => array(),
-  'awsStorageType' => 'standard' // 'standard' or 'rrs' (reduced redundancy storage)
+  'awsStorageType' => 'standard', // 'standard' or 'rrs' (reduced redundancy storage)
   
+  'curlOptions' => array(),
+  'runTasksImmediatelyOnAjaxRequests' => true,
 );

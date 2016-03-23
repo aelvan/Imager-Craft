@@ -270,6 +270,34 @@ Additional request headers to send to AWS.
 *Allowed values: `'standard'`, `'rrs'`*   
 Sets the AWS storage type. 
 
+### curlOptions [array]
+*Default: `array()`*  
+Allows you to add [cURL options](http://php.net/manual/en/function.curl-setopt.php) to be used when downloading images from an external host.    
+
+**Example:**
+
+    'curlOptions' => array(
+      CURLOPT_SSL_VERIFYPEER => false,
+      CURLOPT_SSLVERSION => 1,
+      CURLOPT_SSL_CIPHER_LIST => 'TLSv1'
+    ),
+
+You can also override the default options, which currently is:  
+   
+    $defaultOptions = array(
+      CURLOPT_HEADER => 0,
+      CURLOPT_FOLLOWLOCATION => 1,
+      CURLOPT_TIMEOUT => 30
+    );   
+
+Make sure you **don't** set `CURLOPT_FILE`, since it is set by Imager to be the output location for the downloaded file.   
+   
+### runTasksImmediatelyOnAjaxRequests [bool]  
+*Default: `true`*  
+Craft automatically runs any pending tasks on normal site requests, but not on ajax-request, leaving any optimization tasks that Imager has created in a queue that is run on the next CP request. By default Imager solves this by triggering `runPendingTasks` menually if the request was an ajax request, and a task was created (curl needed).   
+
+If you for some reason want to disable this behavior, change this setting to `false`.   
+
 ---
 
 Usage
@@ -618,6 +646,13 @@ The plugin is released under the MIT license, meaning you can do what ever you w
 
 Changelog
 ---
+### 1.0.5 -- 2016.03.23
+* Added config setting `'curlOptions'` for adding or overriding curl options (see documentation for details).
+* If a task was created during a transform, and the request was done with ajax, any pending tasks will be triggered immediately. New config setting `'runTasksImmediatelyOnAjaxRequests'` can be used to override this behavior.   
+* Better error handling and reporting when downloading remote images. Requests that time out will no longer leave an incomplete image in the remote images cache.
+* Image urls for remote images are now url encoded to fix bugs with non-ascii characters in filenames. Transformed image filename is always converted to ascii.  
+* Cached remote file is now deleted when an image's transforms are cleared.
+
 ### 1.0.4 -- 2016.01.27
 * Fixed bug in AWS upload.
 
