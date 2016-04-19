@@ -14,8 +14,8 @@ namespace Craft;
 
 class ImagerPlugin extends BasePlugin
 {
-    protected $_version = '1.0.5',
-      $_schemaVersion = null,
+    protected $_version = '1.0.6',
+      $_schemaVersion = '1.0.0',
       $_name = 'Imager',
       $_url = 'https://github.com/aelvan/Imager-Craft',
       $_releaseFeedUrl = 'https://raw.githubusercontent.com/aelvan/Imager-Craft/master/releases.json',

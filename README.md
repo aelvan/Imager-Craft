@@ -515,8 +515,8 @@ Converts the image to grayscale if set to `true`.
 ### negative [bool]
 Converts the image to negative if set to `true`.
 
-### blur [int|float]
-Blurs the image.  
+### blur [int|float|bool]
+Blurs the image. If you're using GD as image driver, blur can only be toggled on/off, either with true/false or 1/0.
 
 ### sharpen [bool]
 Sharpens the image to grayscale if set to `true`.
@@ -646,6 +646,12 @@ The plugin is released under the MIT license, meaning you can do what ever you w
 
 Changelog
 ---
+### 1.0.6 -- 2016.04.19
+* Placeholder svg is now properly url encoded.    
+* Converted spaces in generated filenames to `-`.
+* Fixed a bug where uppercase file extensions would result in save options (like compression) being ignored.
+* Allow protocol-independent URLs for remote images (Thanks, intoeetive!)
+
 ### 1.0.5 -- 2016.03.23
 * Added config setting `'curlOptions'` for adding or overriding curl options (see documentation for details).
 * If a task was created during a transform, and the request was done with ajax, any pending tasks will be triggered immediately. New config setting `'runTasksImmediatelyOnAjaxRequests'` can be used to override this behavior.   

@@ -1,5 +1,16 @@
 [
     {
+        "version": "1.0.6",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2016-04-19T19:45:00+02:00",
+        "notes": [
+            "[Fixed] Placeholder svg is now properly url encoded.",
+            "[Fixed] Converted spaces in generated filenames to `-`.",
+            "[Fixed] Fixed a bug where uppercase file extensions would result in save options (like compression) being ignored.",
+            "[Added] Allow protocol-independent URLs for remote images (Thanks, intoeetive!)"
+        ]
+    }, 
+    {
         "version": "1.0.5",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2016-03-23T23:44:00+02:00",
