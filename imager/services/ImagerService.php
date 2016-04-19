@@ -144,6 +144,15 @@ class ImagerService extends BaseApplicationComponent
     }
 
 
+    /**
+     * Get dominant color of image
+     * 
+     * @param AssetFileModel|string $image
+     * @param $quality
+     * @param $colorValue
+     * @return bool|string
+     * @throws Exception
+     */
     public function getDominantColor($image, $quality, $colorValue)
     {
         $pathsModel = new Imager_ImagePathsModel($image);
@@ -162,6 +171,16 @@ class ImagerService extends BaseApplicationComponent
         return $colorValue == 'hex' ? ImagerService::rgb2hex($dominantColor) : $dominantColor;
     }
 
+    /**
+     * Gets color palette for image
+     * 
+     * @param AssetFileModel|string $image
+     * @param $colorCount
+     * @param $quality
+     * @param $colorValue
+     * @return array
+     * @throws Exception
+     */
     public function getColorPalette($image, $colorCount, $quality, $colorValue)
     {
         $pathsModel = new Imager_ImagePathsModel($image);
@@ -179,7 +198,6 @@ class ImagerService extends BaseApplicationComponent
         $palette = ColorThief::getPalette($pathsModel->sourcePath . $pathsModel->sourceFilename, $colorCount, $quality);
 
         return $colorValue == 'hex' ? $this->_paletteToHex($palette) : $palette;
-
     }
 
     /**
@@ -787,7 +805,7 @@ class ImagerService extends BaseApplicationComponent
      */
     private function _getSaveOptions($extension, $transform)
     {
-        switch ($extension) {
+        switch (strtolower($extension)) {
             case 'jpg':
             case 'jpeg':
                 return array('jpeg_quality' => $this->getSetting('jpegQuality', $transform));
@@ -1042,8 +1060,6 @@ class ImagerService extends BaseApplicationComponent
                 if ($effect == 'vignette' && is_array($value) && count($value) >= 3) {
                     $this->_vignette($imagickInstance, $value[0], $value[1], $value[2]);
                 }
-
-                // todo : implement unsharp mask
 
                 // custom filter
                 if ($effect == 'customfilter') {
