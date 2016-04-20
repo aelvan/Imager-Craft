@@ -646,6 +646,9 @@ The plugin is released under the MIT license, meaning you can do what ever you w
 
 Changelog
 ---
+### 1.0.7 -- 2016.04.20
+* Fixed encoding of placeholder svg (for realz this time).    
+
 ### 1.0.6 -- 2016.04.19
 * Placeholder svg is now properly url encoded.    
 * Converted spaces in generated filenames to `-`.

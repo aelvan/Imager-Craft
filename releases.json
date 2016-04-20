@@ -1,5 +1,13 @@
 [
     {
+        "version": "1.0.7",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2016-04-20T11:51:00+02:00",
+        "notes": [
+            "[Fixed] Fixed encoding of placeholder svg (for realz this time)."
+        ]
+    }, 
+    {
         "version": "1.0.6",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2016-04-19T19:45:00+02:00",

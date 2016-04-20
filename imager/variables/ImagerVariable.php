@@ -55,7 +55,7 @@ class ImagerVariable
      */
     public function base64Pixel($width = 1, $height = 1)
     {
-        return "data:image/svg+xml;charset=utf-8," . urlencode("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $width $height'/>");
+        return "data:image/svg+xml;charset=utf-8," . rawurlencode("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $width $height'/>");
     }
 
     /**
