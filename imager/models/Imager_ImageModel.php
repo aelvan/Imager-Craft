@@ -90,7 +90,7 @@ class Imager_ImageModel extends BaseModel
     function getSize($unit = 'b', $precision = 2)
     {
         $unit = strtolower($unit);
-        
+
         switch ($unit) {
             case "g":
             case "gb":
@@ -107,8 +107,14 @@ class Imager_ImageModel extends BaseModel
             default:
                 return $this->size;
         }
-        
+
         return $this->height;
+    }
+
+    function getDataUri()
+    {
+        $image = IOHelper::getFileContents($this->path);
+        return 'data:image/' . $this->extension . ';base64,' . base64_encode($image);
     }
 
 }
