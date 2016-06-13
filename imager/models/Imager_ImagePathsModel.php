@@ -45,7 +45,7 @@ class Imager_ImagePathsModel extends BaseModel
             if (get_class($image) == 'Craft\Imager_ImageModel') {
                 $this->getPathsForLocalImagerFile($image->url);
             } else {
-                if (get_class($image) == 'Craft\AssetFileModel') {
+                if ($image instanceof \Craft\AssetFileModel) {
                     if (!$image->getSource()->getSourceType()->isSourceLocal()) { // it's a cloud source, pretend this is an external file for performance
                         $this->isRemote = true;
                         $this->_getPathsForUrl($image->getUrl());
