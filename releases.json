@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.8",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2016-06-13T14:28:00+02:00",
+        "notes": [
+            "[Added] Added 'getDataUri' and 'getBase64Encoded' to Imager_ImageModel for all your inline needs (joshangell).",
+            "[Improved] Imager now works with models that extends AssetFileModel (mike27cubes)." 
+        ]
+    }, 
+    {
         "version": "1.0.7",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2016-04-20T11:51:00+02:00",
