@@ -620,6 +620,13 @@ Size of the image. Example:
 	{{ image.getSize('m', 10) }} MB 
 	{{ image.getSize('g', 10) }} GB
 
+**getDataUri() [string]**  
+Returns a data uri with the image base64 encoded as a string.   
+
+**getBase64Encoded() [string]**  
+Returns a string of the base64 encoded image data.   
+
+
 ---
 
 Caching and cache breaking
@@ -646,6 +653,10 @@ The plugin is released under the MIT license, meaning you can do what ever you w
 
 Changelog
 ---
+### 1.0.8 -- 2016.06.13
+* Added 'getDataUri' and 'getBase64Encoded' to Imager_ImageModel for all your inline needs (joshangell).
+* Imager now works with models that extends AssetFileModel (mike27cubes).
+
 ### 1.0.7 -- 2016.04.20
 * Fixed encoding of placeholder svg (for realz this time).    
 
