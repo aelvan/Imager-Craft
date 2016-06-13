@@ -113,8 +113,13 @@ class Imager_ImageModel extends BaseModel
 
     function getDataUri()
     {
+        $imageData = $this->getBase64Encoded();
+        return sprintf('data:image/%s;base64,%s', $this->extension, $imageData);
+    }
+    
+    function getBase64Encoded() {
         $image = IOHelper::getFileContents($this->path);
-        return 'data:image/' . $this->extension . ';base64,' . base64_encode($image);
+        return base64_encode($image);
     }
 
 }
