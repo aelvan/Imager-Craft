@@ -1131,12 +1131,12 @@ class ImagerService extends BaseApplicationComponent
         $temporary->setImageFormat('png32');
         $temporary->drawImage($draw);
 
-        $alphaChannel = $imagickInstance->clone();
+        $alphaChannel = clone $imagickInstance;
         $alphaChannel->setImageAlphaChannel(\Imagick::ALPHACHANNEL_EXTRACT);
         $alphaChannel->negateImage(false, \Imagick::CHANNEL_ALL);
         $imagickInstance->setImageClipMask($alphaChannel);
 
-        $clone = $imagickInstance->clone();
+        $clone = clone $imagickInstance;
         $clone->compositeImage($temporary, $composite_flag, 0, 0);
         $clone->setImageOpacity($alpha);
 
