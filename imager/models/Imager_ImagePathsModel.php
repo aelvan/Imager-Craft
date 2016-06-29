@@ -28,7 +28,7 @@ class Imager_ImagePathsModel extends BaseModel
             if (strpos($image, craft()->imager->getSetting('imagerUrl')) !== false) { // url to a file that is in the imager library
                 $this->getPathsForLocalImagerFile($image);
             } else {
-                if (strrpos($image, 'http') === 0 || strrpos($image, '//') === 0) { // external file
+                if (strrpos($image, 'http') === 0 || strrpos($image, 'https') === 0 || strrpos($image, '//') === 0) { // external file
                     $this->isRemote = true;
                     if (strrpos($image, '//') === 0)
                     {
