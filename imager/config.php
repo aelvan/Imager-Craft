@@ -26,6 +26,10 @@ return array(
   'cacheDurationRemoteFiles' => 1209600, // 14 days
   'jpegQuality' => 80,
   'pngCompressionLevel' => 2,
+  'webpQuality' => 80,
+  'useCwebp' => true,
+  'cwebpPath' => '/usr/bin/cwebp',
+  'cwebpOptions' => '', // additional options you want to pass to cwebp. Quality is set automatically.
   'interlace' => false, // false, true ('line'), 'none', 'line', 'plane', 'partition'
   'allowUpscale' => true,
   'resizeFilter' => 'lanczos',

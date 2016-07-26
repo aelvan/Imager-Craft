@@ -106,4 +106,13 @@ class ImagerVariable
     {
         return ImagerService::rgb2hex($color);
     }
+
+    /**
+     * Checks for webp support in image driver
+     * 
+     * @return bool
+     */
+    public function hasSupportForWebP() {
+        return craft()->imager->hasSupportForWebP();
+    }
 }
