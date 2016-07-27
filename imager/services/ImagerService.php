@@ -1038,7 +1038,19 @@ class ImagerService extends BaseApplicationComponent
      */
     private function _saveTemporaryFile($imageInstance, $sourceExtension)
     {
-        $targetFilePath = craft()->path->getRuntimePath() . 'imager/' . md5(time()) . '.' . $sourceExtension;
+        $tempPath = craft()->path->getRuntimePath() . 'imager/temp/';
+        
+        // check if the path exists
+        if (!IOHelper::getRealPath($tempPath)) {
+            IOHelper::createFolder($tempPath, craft()->config->get('defaultFolderPermissions'), true);
+
+            if (!IOHelper::getRealPath($tempPath)) {
+                throw new Exception(Craft::t('Temp folder “{tempPath}” does not exist and could not be created',
+                  array('tempPath' => $tempPath)));
+            }
+        }
+        
+        $targetFilePath = $tempPath . md5(time()) . '.' . $sourceExtension;
 
         $saveOptions = array(
           'jpeg_quality' => 100,

@@ -57,6 +57,7 @@ class Imager_ConfigModel extends BaseModel
           'position' => array(AttributeType::String),
           'letterbox' => array(AttributeType::Mixed),
           'hashFilename' => array(AttributeType::Bool),
+          'hashPath' => array(AttributeType::Bool),
           'hashRemoteUrl' => array(AttributeType::Bool),
           'cacheEnabled' => array(AttributeType::Bool),
           'cacheDuration' => array(AttributeType::Number),
