@@ -112,7 +112,16 @@ class ImagerVariable
      * 
      * @return bool
      */
-    public function hasSupportForWebP() {
+    public function serverSupportsWebp() {
         return craft()->imager->hasSupportForWebP();
+    }
+    
+    /**
+     * Checks for webp support in browser
+     * 
+     * @return bool
+     */
+    public function clientSupportsWebp() {
+        return strpos(craft()->request->getAcceptTypes(), 'image/webp') !== false;
     }
 }
