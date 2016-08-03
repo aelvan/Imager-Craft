@@ -464,7 +464,7 @@ The following parameters are available in the transform object.
 
 ### format [string]
 *Default: `null`*  
-*Allowed values: `null`, `'jpg'`, `'png'`, `'gif'`*   
+*Allowed values: `null`, `'jpg'`, `'png'`, `'gif'`, `'webp'`*   
 Format of the created image. If unset (default) it will be the same format as the source image.
 
 ### width [int]
