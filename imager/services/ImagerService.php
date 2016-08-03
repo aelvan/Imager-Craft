@@ -39,6 +39,7 @@ class ImagerService extends BaseApplicationComponent
       'pngCompressionLevel' => 'PNGC',
       'jpegQuality' => 'Q',
       'webpQuality' => 'WQ',
+      'webpImagickOptions' => 'WIO',
       'interlace' => 'I',
       'instanceReuseEnabled' => 'REUSE',
       'watermark' => 'WM',
@@ -592,6 +593,13 @@ class ImagerService extends BaseApplicationComponent
 
                     $r .= '_' . (isset(ImagerService::$transformKeyTranslate[$k]) ? ImagerService::$transformKeyTranslate[$k] : $k) . '_' . substr(md5($watermarkString),
                         0, 10);
+                } elseif ($k == 'webpImagickOptions') {
+                    $optString = '';
+                    foreach ($v as $optK => $optV) {
+                        $optString .= ($optK . '-' . $optV . '-');
+                    }
+
+                    $r .= '_' . (isset(ImagerService::$transformKeyTranslate[$k]) ? ImagerService::$transformKeyTranslate[$k] : $k) . '_' . substr($optString, 0, strlen($optString)-1);
                 } else {
                     $r .= '_' . (isset(ImagerService::$transformKeyTranslate[$k]) ? ImagerService::$transformKeyTranslate[$k] : $k) . (is_array($v) ? implode("-",
                         $v) : $v);
@@ -827,7 +835,7 @@ class ImagerService extends BaseApplicationComponent
                 return array('png_compression_level' => $this->getSetting('pngCompressionLevel', $transform));
                 break;
             case 'webp':
-                return array('webp_quality' => $this->getSetting('webpQuality', $transform));
+                return array('webp_quality' => $this->getSetting('webpQuality', $transform), 'webp_imagick_options' => $this->getSetting('webpImagickOptions', $transform));
                 break;
         }
         return array();
@@ -998,9 +1006,15 @@ class ImagerService extends BaseApplicationComponent
                 $instance->setImageAlphaChannel(\Imagick::ALPHACHANNEL_ACTIVATE);
                 $instance->setBackgroundColor(new \ImagickPixel('transparent'));
                 $instance->setImageCompressionQuality($saveOptions['webp_quality']);
-                //$instance->setOption('webp:lossless', 'true');
-                //$instance->setOption('webp:method', '1'); 
-                $instance->setOption('webp:no_alpha', true);
+                
+                $imagickOptions = $saveOptions['webp_imagick_options'];
+                
+                if ($imagickOptions && count($imagickOptions)>0) {
+                    foreach ($imagickOptions as $key=>$val) {
+                        $instance->setOption('webp:' . $key, $val);
+                    }
+                }
+                
                 $instance->writeImage($path);
             }
         }

@@ -46,6 +46,7 @@ class Imager_ConfigModel extends BaseModel
           'jpegQuality' => array(AttributeType::Number),
           'pngCompressionLevel' => array(AttributeType::Number),
           'webpQuality' => array(AttributeType::Number),
+          'webpImagickOptions' => array(AttributeType::Mixed),
           'useCwebp' => array(AttributeType::Bool),
           'cwebpPath' => array(AttributeType::String),
           'cwebpOptions' => array(AttributeType::String),
