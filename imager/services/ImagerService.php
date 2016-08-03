@@ -346,11 +346,11 @@ class ImagerService extends BaseApplicationComponent
             $filterMethod = $this->_getFilterMethod($transform);
 
             if ($this->imageDriver == 'imagick' && $this->getSetting('smartResizeEnabled', $transform) && version_compare(craft()->getVersion(), '2.5', '>=')) {
-                $this->imageInstance->smartResize($resizeSize, false, $this->getSetting('jpegQuality', $transform));
+                $this->imageInstance->smartResize($resizeSize, (bool) craft()->config->get('preserveImageColorProfiles'), $this->getSetting('jpegQuality', $transform));
             } else {
                 $this->imageInstance->resize($resizeSize, $filterMethod);
             }
-
+            
             // If Image Driver is imagick and removeMetadata is true
             // remove Metadata to reduce the image size by a significant amount
             if ($this->imageDriver == 'imagick' && $this->getSetting('removeMetadata', $transform)) {
