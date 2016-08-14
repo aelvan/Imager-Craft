@@ -20,18 +20,29 @@ class Imager_ImageModel extends BaseModel
      * @param null $imagePath
      * @param null $imageUrl
      */
-    public function __construct($imagePath = null, $imageUrl = null)
+    public function __construct($imagePath = null, $imageUrl = null, $paths = null, $transform = null)
     {
         if ($imagePath != 'null') {
             $this['path'] = $imagePath;
 
-            $imageInfo = @getimagesize($imagePath);
-            $this['width'] = $imageInfo[0];
-            $this['height'] = $imageInfo[1];
-
             $this['extension'] = IOHelper::getExtension($imagePath);
             $this['mimeType'] = IOHelper::getMimeType($imagePath);
             $this['size'] = IOHelper::getFileSize($imagePath);
+
+            $imageInfo = @getimagesize($imagePath);
+
+            if (is_array($imageInfo) && $imageInfo[0] !== '' && $imageInfo[1] !== '') {
+                $this['width'] = $imageInfo[0];
+                $this['height'] = $imageInfo[1];
+            } else {
+                // Couldn't get size. Calculate size based on source image and transform.
+                $sourceImageInfo = @getimagesize($paths->sourcePath . $paths->sourceFilename);
+                $sourceSize = new \Imagine\Image\Box($sourceImageInfo[0], $sourceImageInfo[1]);
+                $targetCrop = craft()->imager->getCropSize($sourceSize, $transform);
+                
+                $this['width'] = $targetCrop->getWidth();
+                $this['height'] = $targetCrop->getHeight();
+            }
         }
 
         if ($imageUrl != 'null') {
@@ -94,15 +105,15 @@ class Imager_ImageModel extends BaseModel
         switch ($unit) {
             case "g":
             case "gb":
-                return round(((int)$this->size)/1024/1024/1024, $precision);
+                return round(((int)$this->size) / 1024 / 1024 / 1024, $precision);
                 break;
             case "m":
             case "mb":
-                return round(((int)$this->size)/1024/1024, $precision);
+                return round(((int)$this->size) / 1024 / 1024, $precision);
                 break;
             case "k":
             case "kb":
-                return round(((int)$this->size)/1024, $precision);
+                return round(((int)$this->size) / 1024, $precision);
                 break;
             default:
                 return $this->size;
@@ -116,8 +127,9 @@ class Imager_ImageModel extends BaseModel
         $imageData = $this->getBase64Encoded();
         return sprintf('data:image/%s;base64,%s', $this->extension, $imageData);
     }
-    
-    function getBase64Encoded() {
+
+    function getBase64Encoded()
+    {
         $image = IOHelper::getFileContents($this->path);
         return base64_encode($image);
     }

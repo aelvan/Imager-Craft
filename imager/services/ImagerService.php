@@ -340,8 +340,8 @@ class ImagerService extends BaseApplicationComponent
 
             // Do the resize
             $originalSize = $this->imageInstance->getSize();
-            $cropSize = $this->_getCropSize($originalSize, $transform);
-            $resizeSize = $this->_getResizeSize($originalSize, $transform);
+            $cropSize = $this->getCropSize($originalSize, $transform);
+            $resizeSize = $this->getResizeSize($originalSize, $transform);
             $saveOptions = $this->_getSaveOptions($targetExtension, $transform);
             $filterMethod = $this->_getFilterMethod($transform);
 
@@ -350,7 +350,7 @@ class ImagerService extends BaseApplicationComponent
             } else {
                 $this->imageInstance->resize($resizeSize, $filterMethod);
             }
-            
+
             // If Image Driver is imagick and removeMetadata is true
             // remove Metadata to reduce the image size by a significant amount
             if ($this->imageDriver == 'imagick' && $this->getSetting('removeMetadata', $transform)) {
@@ -432,7 +432,7 @@ class ImagerService extends BaseApplicationComponent
         }
 
         // create Imager_ImageModel for transformed image
-        $imagerImage = new Imager_ImageModel($targetFilePath, $targetFileUrl);
+        $imagerImage = new Imager_ImageModel($targetFilePath, $targetFileUrl, $paths, $transform);
 
 
         return $imagerImage;
@@ -618,7 +618,7 @@ class ImagerService extends BaseApplicationComponent
      * @param $transform
      * @return \Imagine\Image\Box
      */
-    private function _getCropSize($originalSize, $transform)
+    public function getCropSize($originalSize, $transform)
     {
         $width = $originalSize->getWidth();
         $height = $originalSize->getHeight();
@@ -655,7 +655,7 @@ class ImagerService extends BaseApplicationComponent
      * @param $transform
      * @return \Imagine\Image\Box
      */
-    private function _getResizeSize($originalSize, $transform)
+    public function getResizeSize($originalSize, $transform)
     {
         $width = $originalSize->getWidth();
         $height = $originalSize->getHeight();
