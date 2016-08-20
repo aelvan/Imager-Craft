@@ -88,6 +88,8 @@ class Imager_ConfigModel extends BaseModel
           'awsCacheDuration' => array(AttributeType::Number),
           'awsRequestHeaders' => array(AttributeType::Mixed),
           'awsStorageType' => array(AttributeType::String),
+          'cloudfrontInvalidateEnabled' => array(AttributeType::String),
+          'cloudfrontDistributionId' => array(AttributeType::String),
           'removeMetadata' => array(AttributeType::Bool),
           'curlOptions' => array(AttributeType::Mixed),
           'runTasksImmediatelyOnAjaxRequests' => array(AttributeType::Bool),

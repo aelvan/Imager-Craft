@@ -68,7 +68,7 @@ class ImagerVariable
      */
     public function getDominantColor($image, $quality = 10, $colorValue='hex')
     {
-        return craft()->imager->getDominantColor($image, $quality, $colorValue);
+        return craft()->imager_color->getDominantColor($image, $quality, $colorValue);
     }
 
     /**
@@ -82,7 +82,7 @@ class ImagerVariable
      */
     public function getColorPalette($image, $colorCount = 8, $quality = 10, $colorValue='hex')
     {
-        return craft()->imager->getColorPalette($image, $colorCount, $quality, $colorValue);
+        return craft()->imager_color->getColorPalette($image, $colorCount, $quality, $colorValue);
     }
 
     /**
@@ -93,7 +93,7 @@ class ImagerVariable
      */
     public function hex2rgb($color) 
     {
-        return ImagerService::hex2rgb($color);
+        return Imager_ColorService::hex2rgb($color);
     }
     
     /**
@@ -104,7 +104,7 @@ class ImagerVariable
      */
     public function rgb2hex($color) 
     {
-        return ImagerService::rgb2hex($color);
+        return Imager_ColorService::rgb2hex($color);
     }
 
     /**
