@@ -325,8 +325,10 @@ class ImagerService extends BaseApplicationComponent
         /**
          * Check if the image already exists, if caching is turned on or if the cache has expired.
          */
-        if (!$this->getSetting('cacheEnabled',
-            $transform) || !IOHelper::fileExists($targetFilePath) || (IOHelper::getLastTimeModified($targetFilePath)->format('U') + $this->getSetting('cacheDuration', $transform) < time())
+
+        if (!$this->getSetting('cacheEnabled', $transform) ||
+          !IOHelper::fileExists($targetFilePath) ||
+          (($this->getSetting('cacheDuration', $transform) !== false) && (IOHelper::getLastTimeModified($targetFilePath)->format('U') + $this->getSetting('cacheDuration', $transform) < time()))
         ) {
             // create the imageInstance. only once if reuse is enabled, or always
             if (!$this->getSetting('instanceReuseEnabled', $transform) || $this->imageInstance == null) {
@@ -346,7 +348,7 @@ class ImagerService extends BaseApplicationComponent
             $filterMethod = $this->_getFilterMethod($transform);
 
             if ($this->imageDriver == 'imagick' && $this->getSetting('smartResizeEnabled', $transform) && version_compare(craft()->getVersion(), '2.5', '>=')) {
-                $this->imageInstance->smartResize($resizeSize, (bool) craft()->config->get('preserveImageColorProfiles'), $this->getSetting('jpegQuality', $transform));
+                $this->imageInstance->smartResize($resizeSize, (bool)craft()->config->get('preserveImageColorProfiles'), $this->getSetting('jpegQuality', $transform));
             } else {
                 $this->imageInstance->resize($resizeSize, $filterMethod);
             }
@@ -599,7 +601,7 @@ class ImagerService extends BaseApplicationComponent
                         $optString .= ($optK . '-' . $optV . '-');
                     }
 
-                    $r .= '_' . (isset(ImagerService::$transformKeyTranslate[$k]) ? ImagerService::$transformKeyTranslate[$k] : $k) . '_' . substr($optString, 0, strlen($optString)-1);
+                    $r .= '_' . (isset(ImagerService::$transformKeyTranslate[$k]) ? ImagerService::$transformKeyTranslate[$k] : $k) . '_' . substr($optString, 0, strlen($optString) - 1);
                 } else {
                     $r .= '_' . (isset(ImagerService::$transformKeyTranslate[$k]) ? ImagerService::$transformKeyTranslate[$k] : $k) . (is_array($v) ? implode("-",
                         $v) : $v);
@@ -970,21 +972,21 @@ class ImagerService extends BaseApplicationComponent
     private function _saveAsWebp($imageInstance, $path, $sourceExtension, $saveOptions)
     {
         if ($this->getSetting('useCwebp')) {
-            
+
             // save temp file
             $tempFile = $this->_saveTemporaryFile($imageInstance, $sourceExtension);
-            
+
             // convert to webp with cwebp
-            $command = escapeshellcmd($this->getSetting('cwebpPath') . ' ' . $this->getSetting('cwebpOptions') .  ' -q ' . $saveOptions['webp_quality'] . ' ' . $tempFile . ' -o ' . $path);
+            $command = escapeshellcmd($this->getSetting('cwebpPath') . ' ' . $this->getSetting('cwebpOptions') . ' -q ' . $saveOptions['webp_quality'] . ' ' . $tempFile . ' -o ' . $path);
             $r = shell_exec($command);
-            
+
             if (!IOHelper::fileExists($path)) {
                 throw new Exception(Craft::t('Save operation failed'));
             }
-            
+
             // delete temp file
             IOHelper::deleteFile($tempFile);
-            
+
         } else {
             if ($this->imageDriver === 'gd') {
                 $instance = $imageInstance->getGdResource();
@@ -1006,15 +1008,15 @@ class ImagerService extends BaseApplicationComponent
                 $instance->setImageAlphaChannel(\Imagick::ALPHACHANNEL_ACTIVATE);
                 $instance->setBackgroundColor(new \ImagickPixel('transparent'));
                 $instance->setImageCompressionQuality($saveOptions['webp_quality']);
-                
+
                 $imagickOptions = $saveOptions['webp_imagick_options'];
-                
-                if ($imagickOptions && count($imagickOptions)>0) {
-                    foreach ($imagickOptions as $key=>$val) {
+
+                if ($imagickOptions && count($imagickOptions) > 0) {
+                    foreach ($imagickOptions as $key => $val) {
                         $instance->setOption('webp:' . $key, $val);
                     }
                 }
-                
+
                 $instance->writeImage($path);
             }
         }
@@ -1045,7 +1047,7 @@ class ImagerService extends BaseApplicationComponent
 
     /**
      * Save temporary file and return filename
-     * 
+     *
      * @param $imageInstance
      * @param $sourceExtension
      * @return string
@@ -1053,7 +1055,7 @@ class ImagerService extends BaseApplicationComponent
     private function _saveTemporaryFile($imageInstance, $sourceExtension)
     {
         $tempPath = craft()->path->getRuntimePath() . 'imager/temp/';
-        
+
         // check if the path exists
         if (!IOHelper::getRealPath($tempPath)) {
             IOHelper::createFolder($tempPath, craft()->config->get('defaultFolderPermissions'), true);
@@ -1063,7 +1065,7 @@ class ImagerService extends BaseApplicationComponent
                   array('tempPath' => $tempPath)));
             }
         }
-        
+
         $targetFilePath = $tempPath . md5(time()) . '.' . $sourceExtension;
 
         $saveOptions = array(

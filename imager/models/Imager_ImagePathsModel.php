@@ -22,7 +22,7 @@ class Imager_ImagePathsModel extends BaseModel
     public function __construct($image)
     {
         $this->isRemote = false;
-        
+
         if (is_string($image)) {
 
             if (strpos($image, craft()->imager->getSetting('imagerUrl')) !== false) { // url to a file that is in the imager library
@@ -30,9 +30,8 @@ class Imager_ImagePathsModel extends BaseModel
             } else {
                 if (strrpos($image, 'http') === 0 || strrpos($image, 'https') === 0 || strrpos($image, '//') === 0) { // external file
                     $this->isRemote = true;
-                    if (strrpos($image, '//') === 0)
-                    {
-                        $image = 'https:'.$image;
+                    if (strrpos($image, '//') === 0) {
+                        $image = 'https:' . $image;
                     }
                     $this->_getPathsForUrl($image);
                 } else { // relative path, assume that it's relative to document root
@@ -90,13 +89,13 @@ class Imager_ImagePathsModel extends BaseModel
         }
 
         $hashPath = craft()->imager->getSetting('hashPath');
-        
+
         if ($hashPath) {
             $targetFolder = '/' . md5($assetSourcePath . $image->getFolder()->path) . '/';
         } else {
             $targetFolder = $assetSourcePath . $image->getFolder()->path;
         }
-        
+
         $this->sourcePath = ImagerService::fixSlashes(craft()->config->parseEnvironmentString($image->getSource()->settings['path']) . $image->getFolder()->path);
         $this->targetPath = ImagerService::fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $targetFolder) . $image->id . '/';
         $this->targetUrl = craft()->imager->getSetting('imagerUrl') . ImagerService::fixSlashes($targetFolder, true) . $image->id . '/';
@@ -128,7 +127,7 @@ class Imager_ImagePathsModel extends BaseModel
     {
         $pathParts = pathinfo($image);
         $hashPath = craft()->imager->getSetting('hashPath');
-        
+
         if ($hashPath) {
             $targetFolder = md5($pathParts['dirname']);
         } else {
@@ -155,13 +154,13 @@ class Imager_ImagePathsModel extends BaseModel
         $hashRemoteUrl = craft()->imager->getSetting('hashRemoteUrl');
         $hashPath = craft()->imager->getSetting('hashPath');
 
-        
+
         if ($hashPath) {
             $targetFolder = '/' . md5($pathParts['dirname']);
         } else {
             $targetFolder = $pathParts['dirname'];
         }
-        
+
         if ($hashRemoteUrl) {
             if (is_string($hashRemoteUrl) && $hashRemoteUrl == 'host') {
                 $parsedDirname = substr(md5($urlParts['host']), 0, 10) . $targetFolder;
@@ -188,7 +187,9 @@ class Imager_ImagePathsModel extends BaseModel
         }
 
         // check if the file is already downloaded
-        if (!IOHelper::fileExists($this->sourcePath . $this->sourceFilename) || (IOHelper::getLastTimeModified($this->sourcePath . $this->sourceFilename)->format('U') + craft()->imager->getSetting('cacheDurationRemoteFiles') < time())) {
+        if (!IOHelper::fileExists($this->sourcePath . $this->sourceFilename) ||
+          ((craft()->imager->getSetting('cacheDurationRemoteFiles') !== false) && (IOHelper::getLastTimeModified($this->sourcePath . $this->sourceFilename)->format('U') + craft()->imager->getSetting('cacheDurationRemoteFiles') < time()))
+        ) {
             $this->_downloadFile($this->sourcePath . $this->sourceFilename, $image);
 
             if (!IOHelper::fileExists($this->sourcePath . $this->sourceFilename)) {
@@ -211,7 +212,7 @@ class Imager_ImagePathsModel extends BaseModel
         $imageUrl = preg_replace_callback('#://([^/]+)/([^?]+)#', function ($match) {
             return '://' . $match[1] . '/' . join('/', array_map('rawurlencode', explode('/', $match[2])));
         }, urldecode($imageUrl));
-        
+
         if (function_exists('curl_init')) {
             $ch = curl_init($imageUrl);
             $fp = fopen($destinationPath, "wb");
@@ -222,10 +223,10 @@ class Imager_ImagePathsModel extends BaseModel
               CURLOPT_FOLLOWLOCATION => 1,
               CURLOPT_TIMEOUT => 30
             );
-            
+
             // merge default options with config setting, config overrides default.
             $options = craft()->imager->getSetting('curlOptions') + $defaultOptions;
-            
+
             curl_setopt_array($ch, $options);
             curl_exec($ch);
             $curlErrorNo = curl_errno($ch);
