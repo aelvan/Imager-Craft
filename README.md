@@ -242,7 +242,19 @@ Sets the path to your jpegtran executable.
 
 ### jpegtranOptionString [string]
 *Default: `'-optimize -copy none'`*  
-Sets the options to use when running jpegoptim. By default huffman tables are optimized, and no markers are copied from the source file.
+Sets the options to use when running jpegtran. By default huffman tables are optimized, and no markers are copied from the source file.
+
+### mozjpegEnabled [bool]
+*Default: `false`*  
+Enable or disable image optimizations with [mozjpeg](https://github.com/mozilla/mozjpeg).
+
+### mozjpegPath [string]
+*Default: `'/usr/bin/mozjpeg'`*  
+Sets the path to your mozjpeg executable.
+
+### mozjpegOptionString [string]
+*Default: `'-optimize -copy none'`*  
+Sets the options to use when running mozjpeg. By default huffman tables are optimized, and no markers are copied from the source file.
 
 ### optipngEnabled [bool]
 *Default: `false`*  
@@ -310,6 +322,18 @@ Additional request headers to send to AWS.
 *Allowed values: `'standard'`, `'rrs'`*   
 Sets the AWS storage type. 
 
+### cloudfrontInvalidateEnabled [bool]
+*Default: `false`*  
+Enabled or disables the sending of invalidation requests to Cloudfront when a transform is generated.
+ 
+*Please note: Imager has no way of knowing if the file currently on Cloudfront differs from the one being 
+generated, so an invalidation request is sent every time a transform is created. The first 1000 invalidation
+requests per month is free, after that Amazon will start charging you.*
+
+### cloudfrontDistributionId [string]
+*Default: `''`*  
+Set this to your Cloudfront distribution ID if cloudfront invalidation is enabled. 
+
 ### curlOptions [array]
 *Default: `array()`*  
 Allows you to add [cURL options](http://php.net/manual/en/function.curl-setopt.php) to be used when downloading images from an external host.    
@@ -337,6 +361,11 @@ Make sure you **don't** set `CURLOPT_FILE`, since it is set by Imager to be the 
 Craft automatically runs any pending tasks on normal site requests, but not on ajax-request, leaving any optimization tasks that Imager has created in a queue that is run on the next CP request. By default Imager solves this by triggering `runPendingTasks` manually if the request was an ajax request, and a task was created (curl needed).   
 
 If you for some reason want to disable this behavior, change this setting to `false`.   
+
+### clearKey [string]  
+*Default: `''`*  
+Key to use when clearing the transform or remote images cache with the controller actions. An empty string means clearing is disabled
+
 
 ---
 
@@ -678,6 +707,22 @@ Returns a data uri with the image base64 encoded as a string.
 **getBase64Encoded() [string]**  
 Returns a string of the base64 encoded image data.   
 
+---
+
+Controller actions
+---
+Imager has two controller actions, one for clearing the transformed images cache, and one for clearing remote images.
+You can use this if you wish to clear the cache as part of your deploy process, or similar.
+
+Both actions needs a parameter `key`, which is set with the `clearKey` config setting.
+ 
+Clearing transform images cache:  
+    
+    http://yourdomain.com/actions/imager/clearTransforms?key=<your_key>
+
+Clearing external images cache:  
+    
+    http://yourdomain.com/actions/imager/clearRemoteImages?key=<your_key>
 
 ---
 
