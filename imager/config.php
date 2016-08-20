@@ -69,4 +69,5 @@ return array(
   
   'curlOptions' => array(),
   'runTasksImmediatelyOnAjaxRequests' => true,
+  'clearKey' => '', // Key that should be passed to the clear controller action. Empty string means clearing is disabled.
 );

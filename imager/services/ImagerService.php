@@ -459,6 +459,21 @@ class ImagerService extends BaseApplicationComponent
         }
     }
 
+    /**
+     * Clear all image transforms caches
+     */
+    public function deleteImageTransformCaches()
+    {
+        IOHelper::clearFolder(craft()->imager->getSetting('imagerSystemPath'));
+    }
+
+    /**
+     * Clear all remote image caches
+     */
+    public function deleteRemoteImageCaches()
+    {
+        IOHelper::clearFolder(craft()->path->getRuntimePath() . 'imager/');
+    }
 
     /**
      * Creates the target filename

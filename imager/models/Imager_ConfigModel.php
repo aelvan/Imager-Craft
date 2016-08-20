@@ -88,6 +88,7 @@ class Imager_ConfigModel extends BaseModel
           'removeMetadata' => array(AttributeType::Bool),
           'curlOptions' => array(AttributeType::Mixed),
           'runTasksImmediatelyOnAjaxRequests' => array(AttributeType::Bool),
+          'clearKey' => array(AttributeType::String),
         );
     }
 
