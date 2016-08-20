@@ -416,6 +416,9 @@ class ImagerService extends BaseApplicationComponent
                     if ($this->getSetting('jpegtranEnabled', $transform)) {
                         $this->postOptimize('jpegtran', $targetFilePath);
                     }
+                    if ($this->getSetting('mozjpegEnabled', $transform)) {
+                        $this->postOptimize('mozjpeg', $targetFilePath);
+                    }
                 }
 
                 if ($targetExtension == 'png' && $this->getSetting('optipngEnabled', $transform)) {
@@ -1346,6 +1349,9 @@ class ImagerService extends BaseApplicationComponent
                 case 'jpegtran':
                     $this->makeTask('Imager_Jpegtran', $file);
                     break;
+                case 'mozjpeg':
+                    $this->makeTask('Imager_Mozjpeg', $file);
+                    break;
                 case 'optipng':
                     $this->makeTask('Imager_Optipng', $file);
                     break;
@@ -1360,6 +1366,9 @@ class ImagerService extends BaseApplicationComponent
                     break;
                 case 'jpegtran':
                     $this->runJpegtran($file);
+                    break;
+                case 'mozjpeg':
+                    $this->runMozjpeg($file);
                     break;
                 case 'optipng':
                     $this->runOptipng($file);
@@ -1399,6 +1408,25 @@ class ImagerService extends BaseApplicationComponent
         $cmd = $this->getSetting('jpegtranPath');
         $cmd .= ' ';
         $cmd .= $this->getSetting('jpegtranOptionString');
+        $cmd .= ' -outfile ';
+        $cmd .= $file;
+        $cmd .= ' ';
+        $cmd .= $file;
+
+        $this->executeOptimize($cmd, $file);
+    }
+
+    /**
+     * Run mozjpeg optimization
+     *
+     * @param $file
+     * @param $transform
+     */
+    public function runMozjpeg($file)
+    {
+        $cmd = $this->getSetting('mozjpegPath');
+        $cmd .= ' ';
+        $cmd .= $this->getSetting('mozjpegOptionString');
         $cmd .= ' -outfile ';
         $cmd .= $file;
         $cmd .= ' ';
