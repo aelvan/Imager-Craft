@@ -1,5 +1,13 @@
 [
     {
+        "version": "1.2.1",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2016-09-01T12:32:00+02:00",
+        "notes": [
+            "[Fixed] Fixed a bug where tasks wouldn't upload optimized images to AWS after refactoring. Also improved the error message for this."
+        ]
+    },    
+    {
         "version": "1.2.0",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2016-08-21T00:42:00+02:00",
