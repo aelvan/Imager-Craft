@@ -55,9 +55,9 @@ class Imager_OptipngTask extends BaseTask
         // if AWS is enabled, upload file
         if (craft()->imager->getSetting('awsEnabled')) {
             try {
-                craft()->imager->uploadToAWS($path);
+                craft()->imager_aws->uploadToAWS($path);
             } catch (\Exception $e) {
-                ImagerPlugin::log("Upload to AWS failed for $path in Imager_OptipngTask", LogLevel::Error);
+                ImagerPlugin::log("Upload to AWS failed for $path in Imager_OptipngTask: " . $e->getMessage(), LogLevel::Error);
             }
         }
 

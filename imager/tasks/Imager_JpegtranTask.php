@@ -55,9 +55,9 @@ class Imager_JpegtranTask extends BaseTask
         // if AWS is enabled, upload file
         if (craft()->imager->getSetting('awsEnabled')) {
             try {
-                craft()->imager->uploadToAWS($path);
+                craft()->imager_aws->uploadToAWS($path);
             } catch (\Exception $e) {
-                ImagerPlugin::log("Upload to AWS failed for $path in Imager_JpegtranTask", LogLevel::Error);
+                ImagerPlugin::log("Upload to AWS failed for $path in Imager_JpegtranTask: " . $e->getMessage(), LogLevel::Error);
             }
         }
 

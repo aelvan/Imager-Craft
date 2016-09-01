@@ -55,9 +55,9 @@ class Imager_TinyPngTask extends BaseTask
         // if AWS is enabled, upload file
         if (craft()->imager->getSetting('awsEnabled')) {
             try {
-                craft()->imager->uploadToAWS($path);
+                craft()->imager_aws->uploadToAWS($path);
             } catch (\Exception $e) {
-                ImagerPlugin::log("Upload to AWS failed for $path in Imager_TinyPngTask", LogLevel::Error);
+                ImagerPlugin::log("Upload to AWS failed for $path in Imager_TinyPngTask: " . $e->getMessage(), LogLevel::Error);
             }
         }
 
