@@ -176,12 +176,13 @@ class ImagerService extends BaseApplicationComponent
 
         if (!IOHelper::getRealPath($pathsModel->targetPath)) {
             IOHelper::createFolder($pathsModel->targetPath, craft()->config->get('defaultFolderPermissions'), true);
-            $pathsModel->targetPath = IOHelper::getRealPath($pathsModel->targetPath);
 
             if (!IOHelper::getRealPath($pathsModel->targetPath)) {
                 throw new Exception(Craft::t('Target folder “{targetPath}” does not exist and could not be created',
                   array('targetPath' => $pathsModel->targetPath)));
             }
+            
+            $pathsModel->targetPath = IOHelper::getRealPath($pathsModel->targetPath);
         }
 
         if ($pathsModel->targetPath && !IOHelper::isWritable($pathsModel->targetPath)) {
