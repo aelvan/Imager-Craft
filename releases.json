@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.2.2",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2016-10-28T20:56:00+02:00",
+        "notes": [
+            "[Fixed] Fixed a silent error that would occur if Imager could not create the target path.",
+            "[Fixed] Fixed error in error message about missing webp support."
+        ]
+    },    
+    {
         "version": "1.2.1",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2016-09-01T12:32:00+02:00",
