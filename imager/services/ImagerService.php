@@ -349,7 +349,7 @@ class ImagerService extends BaseApplicationComponent
                 if ($this->hasSupportForWebP()) {
                     $this->_saveAsWebp($this->imageInstance, $targetFilePath, $sourceExtension, $saveOptions);
                 } else {
-                    throw new Exception(Craft::t('This version of {imageDriver} does not support the webp format. You should use “craft.imager.hasSupportForWebP” in your templates to test for it.',
+                    throw new Exception(Craft::t('This version of {imageDriver} does not support the webp format. You should use “craft.imager.serverSupportsWebp” in your templates to test for it.',
                       array('imageDriver' => $this->imageDriver == 'gd' ? 'GD' : 'Imagick')));
                 }
             } else {
