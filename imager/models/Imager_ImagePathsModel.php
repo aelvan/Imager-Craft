@@ -24,13 +24,13 @@ class Imager_ImagePathsModel extends BaseModel
         $this->isRemote = false;
 
         if (is_string($image)) {
-
-            if (strpos($image, craft()->imager->getSetting('imagerUrl')) !== false) { // url to a file that is in the imager library
+            
+            if (strncmp($image, craft()->imager->getSetting('imagerUrl'), strlen(craft()->imager->getSetting('imagerUrl'))) === 0) { // url to a file that is in the imager library
                 $this->getPathsForLocalImagerFile($image);
             } else {
-                if (strpos($image, 'http') === 0 || strpos($image, 'https') === 0 || strpos($image, '//') === 0) { // external file
+                if (strncmp($image, 'http', 4) === 0 || strncmp($image, 'https', 5) === 0 || strncmp($image, '//', 2) === 0) { // external file
                     $this->isRemote = true;
-                    if (strrpos($image, '//') === 0) {
+                    if (strncmp($image, '//', 2) === 0) {
                         $image = 'https:' . $image;
                     }
                     $this->_getPathsForUrl($image);
@@ -83,7 +83,7 @@ class Imager_ImagePathsModel extends BaseModel
     {
         $assetSourcePath = craft()->config->parseEnvironmentString($image->getSource()->settings['url']);
 
-        if (strrpos($assetSourcePath, 'http') !== false) {
+        if (strncmp($assetSourcePath, 'http', 4) === 0) {
             $parsedUrl = parse_url($assetSourcePath);
             $assetSourcePath = $parsedUrl['path'];
         }
