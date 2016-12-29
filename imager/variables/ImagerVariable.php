@@ -40,9 +40,13 @@ class ImagerVariable
     public function srcset($images, $descriptor = 'w')
     {
         $r = '';
+        $widths = array();
 
         foreach ($images as $image) {
-            $r .= $image->getUrl() . ' ' . $image->getWidth() . 'w, ';
+            if (!isset($widths[$image->getWidth()])) {
+                $r .= $image->getUrl() . ' ' . $image->getWidth() . 'w, ';
+                $widths[$image->getWidth()] = true;
+            }
         }
 
         return substr($r, 0, strlen($r) - 2);
