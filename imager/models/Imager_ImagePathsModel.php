@@ -67,6 +67,7 @@ class Imager_ImagePathsModel extends BaseModel
         return array(
           'isRemote' => array(AttributeType::Bool),
           'sourcePath' => array(AttributeType::String),
+          'sourceUrl' => array(AttributeType::String),
           'targetPath' => array(AttributeType::String),
           'targetUrl' => array(AttributeType::String),
           'sourceFilename' => array(AttributeType::String),
@@ -97,6 +98,7 @@ class Imager_ImagePathsModel extends BaseModel
         }
 
         $this->sourcePath = ImagerService::fixSlashes(craft()->config->parseEnvironmentString($image->getSource()->settings['path']) . $image->getFolder()->path);
+        $this->sourceUrl = $image->getUrl();
         $this->targetPath = ImagerService::fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $targetFolder) . $image->id . '/';
         $this->targetUrl = craft()->imager->getSetting('imagerUrl') . ImagerService::fixSlashes($targetFolder, true) . $image->id . '/';
         $this->sourceFilename = $this->targetFilename = $image->filename;
@@ -113,6 +115,7 @@ class Imager_ImagePathsModel extends BaseModel
         $pathParts = pathinfo($imageString);
 
         $this->sourcePath = craft()->imager->getSetting('imagerSystemPath') . $pathParts['dirname'] . '/';
+        $this->sourceUrl = $image;
         $this->targetPath = ImagerService::fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $pathParts['dirname'] . '/');
         $this->targetUrl = craft()->imager->getSetting('imagerUrl') . ImagerService::fixSlashes($pathParts['dirname'] . '/', true);
         $this->sourceFilename = $this->targetFilename = $pathParts['basename'];
@@ -135,6 +138,7 @@ class Imager_ImagePathsModel extends BaseModel
         }
 
         $this->sourcePath = $_SERVER['DOCUMENT_ROOT'] . $pathParts['dirname'] . '/';
+        $this->sourceUrl = $image;
         $this->targetPath = ImagerService::fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $targetFolder . '/');
         $this->targetUrl = craft()->imager->getSetting('imagerUrl') . ImagerService::fixSlashes($targetFolder . '/', true);
         $this->sourceFilename = $this->targetFilename = $pathParts['basename'];
@@ -172,6 +176,7 @@ class Imager_ImagePathsModel extends BaseModel
         }
 
         $this->sourcePath = craft()->path->getRuntimePath() . 'imager/' . $parsedDirname . '/';
+        $this->sourceUrl = $image;
         $this->targetPath = craft()->imager->getSetting('imagerSystemPath') . $parsedDirname . '/';
         $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $parsedDirname . '/';
         $this->sourceFilename = $this->targetFilename = str_replace(' ', '-', $pathParts['basename']);

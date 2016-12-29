@@ -247,6 +247,10 @@ class ImagerService extends BaseApplicationComponent
      */
     private function _getTransformedImage($paths, $transform)
     {
+        if ($this->getSetting('noop')) {
+            return new Imager_ImageModel($paths->sourcePath, $paths->sourceUrl, $paths, $transform);
+        }
+        
         // break up the image filename to get extension and actual filename 
         $pathParts = pathinfo($paths->targetFilename);
 

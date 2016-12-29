@@ -64,6 +64,7 @@ class Imager_ConfigModel extends BaseModel
           'cacheDuration' => array(AttributeType::Number),
           'cacheDurationRemoteFiles' => array(AttributeType::Number),
           'instanceReuseEnabled' => array(AttributeType::Bool),
+          'noop' => array(AttributeType::Bool),
           'jpegoptimEnabled' => array(AttributeType::Bool),
           'jpegoptimPath' => array(AttributeType::String),
           'jpegoptimOptionString' => array(AttributeType::String),
