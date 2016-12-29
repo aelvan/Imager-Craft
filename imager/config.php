@@ -44,6 +44,7 @@ return array(
   'hashRemoteUrl' => false, // true, false, or 'host' (meaning only the host part of the url is hashed) 
   'instanceReuseEnabled' => false,
   'noop' => false,
+  'suppressExceptions' => false,
   
   'jpegoptimEnabled' => false,
   'jpegoptimPath' => '/usr/bin/jpegoptim',

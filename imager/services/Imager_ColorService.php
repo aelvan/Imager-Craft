@@ -38,13 +38,25 @@ class Imager_ColorService extends BaseApplicationComponent
         $pathsModel = new Imager_ImagePathsModel($image);
 
         if (!IOHelper::getRealPath($pathsModel->sourcePath)) {
-            throw new Exception(Craft::t('Source folder “{sourcePath}” does not exist',
-              array('sourcePath' => $pathsModel->sourcePath)));
+            $msg = Craft::t('Source folder “{sourcePath}” does not exist', array('sourcePath' => $pathsModel->sourcePath));
+            
+            if (craft()->imager->getSetting('suppressExceptions')===true) {
+                ImagerPlugin::log($msg, LogLevel::Error);
+                return null;
+            } else {
+                throw new Exception($msg);
+            }
         }
 
         if (!IOHelper::fileExists($pathsModel->sourcePath . $pathsModel->sourceFilename)) {
-            throw new Exception(Craft::t('Requested image “{fileName}” does not exist in path “{sourcePath}”',
-              array('fileName' => $pathsModel->sourceFilename, 'sourcePath' => $pathsModel->sourcePath)));
+            $msg = Craft::t('Requested image “{fileName}” does not exist in path “{sourcePath}”', array('fileName' => $pathsModel->sourceFilename, 'sourcePath' => $pathsModel->sourcePath));
+            
+            if (craft()->imager->getSetting('suppressExceptions')===true) {
+                ImagerPlugin::log($msg, LogLevel::Error);
+                return null;
+            } else {
+                throw new Exception($msg);
+            }
         }
 
         $dominantColor = ColorThief::getColor($pathsModel->sourcePath . $pathsModel->sourceFilename, $quality);
@@ -66,13 +78,26 @@ class Imager_ColorService extends BaseApplicationComponent
         $pathsModel = new Imager_ImagePathsModel($image);
 
         if (!IOHelper::getRealPath($pathsModel->sourcePath)) {
-            throw new Exception(Craft::t('Source folder “{sourcePath}” does not exist',
-              array('sourcePath' => $pathsModel->sourcePath)));
+            $msg = Craft::t('Source folder “{sourcePath}” does not exist', array('sourcePath' => $pathsModel->sourcePath));
+            
+            if (craft()->imager->getSetting('suppressExceptions')===true) {
+                ImagerPlugin::log($msg, LogLevel::Error);
+                return null;
+            } else {
+                throw new Exception($msg);
+            }
+            
         }
 
         if (!IOHelper::fileExists($pathsModel->sourcePath . $pathsModel->sourceFilename)) {
-            throw new Exception(Craft::t('Requested image “{fileName}” does not exist in path “{sourcePath}”',
-              array('fileName' => $pathsModel->sourceFilename, 'sourcePath' => $pathsModel->sourcePath)));
+            $msg = Craft::t('Requested image “{fileName}” does not exist in path “{sourcePath}”', array('fileName' => $pathsModel->sourceFilename, 'sourcePath' => $pathsModel->sourcePath));
+            
+            if (craft()->imager->getSetting('suppressExceptions')===true) {
+                ImagerPlugin::log($msg, LogLevel::Error);
+                return null;
+            } else {
+                throw new Exception($msg);
+            }
         }
 
         $palette = ColorThief::getPalette($pathsModel->sourcePath . $pathsModel->sourceFilename, $colorCount, $quality);

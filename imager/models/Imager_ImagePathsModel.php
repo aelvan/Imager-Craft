@@ -186,8 +186,14 @@ class Imager_ImagePathsModel extends BaseModel
             IOHelper::createFolder($this->sourcePath, craft()->config->get('defaultFolderPermissions'), true);
 
             if (!IOHelper::getRealPath($this->sourcePath)) {
-                throw new Exception(Craft::t('Temp folder “{sourcePath}” does not exist and could not be created',
-                  array('sourcePath' => $this->sourcePath)));
+                $msg = Craft::t('Temp folder “{sourcePath}” does not exist and could not be created', array('sourcePath' => $this->sourcePath));
+                
+                if (craft()->imager->getSetting('suppressExceptions')===true) {
+                    ImagerPlugin::log($msg, LogLevel::Error);
+                    return null;
+                } else {
+                    throw new Exception($msg);
+                }
             }
         }
 
@@ -198,8 +204,13 @@ class Imager_ImagePathsModel extends BaseModel
             $this->_downloadFile($this->sourcePath . $this->sourceFilename, $image);
 
             if (!IOHelper::fileExists($this->sourcePath . $this->sourceFilename)) {
-                throw new Exception(Craft::t('File could not be downloaded and saved to “{sourcePath}”',
-                  array('sourcePath' => $this->sourcePath)));
+                $msg = Craft::t('File could not be downloaded and saved to “{sourcePath}”', array('sourcePath' => $this->sourcePath));
+                
+                if (craft()->imager->getSetting('suppressExceptions')===true) {
+                    ImagerPlugin::log($msg, LogLevel::Error);
+                } else {
+                    throw new Exception($msg);
+                }
             }
         }
     }
@@ -242,26 +253,51 @@ class Imager_ImagePathsModel extends BaseModel
 
             if ($curlErrorNo !== 0) {
                 unlink($destinationPath);
-                throw new Exception(Craft::t('cURL error “{curlErrorNo}” encountered while attempting to download “{imageUrl}”. The error was: “{curlError}”',
-                  array('imageUrl' => $imageUrl, 'curlErrorNo' => $curlErrorNo, 'curlError' => $curlError)));
+                $msg = Craft::t('cURL error “{curlErrorNo}” encountered while attempting to download “{imageUrl}”. The error was: “{curlError}”', array('imageUrl' => $imageUrl, 'curlErrorNo' => $curlErrorNo, 'curlError' => $curlError));
+                
+                if (craft()->imager->getSetting('suppressExceptions')===true) {
+                    ImagerPlugin::log($msg, LogLevel::Error);
+                    return null;
+                } else {
+                    throw new Exception($msg);
+                }
             }
 
             if ($httpStatus !== 200) {
                 if (!($httpStatus == 404 && strrpos(mime_content_type($destinationPath), 'image') !== false)) { // remote server returned a 404, but the contents was a valid image file
                     unlink($destinationPath);
-                    throw new Exception(Craft::t('HTTP status “{httpStatus}” encountered while attempting to download “{imageUrl}”',
-                      array('imageUrl' => $imageUrl, 'httpStatus' => $httpStatus)));
+                    $msg = Craft::t('HTTP status “{httpStatus}” encountered while attempting to download “{imageUrl}”', array('imageUrl' => $imageUrl, 'httpStatus' => $httpStatus));
+                    
+                    if (craft()->imager->getSetting('suppressExceptions')===true) {
+                        ImagerPlugin::log($msg, LogLevel::Error);
+                        return null;
+                    } else {
+                        throw new Exception($msg);
+                    }
                 }
             }
         } elseif (ini_get('allow_url_fopen')) {
             if (!@file_put_contents($destinationPath, file_get_contents($imageUrl))) {
                 unlink($destinationPath);
                 $httpStatus = $http_response_header[0];
-                throw new Exception(Craft::t('“{httpStatus}” encountered while attempting to download “{imageUrl}”',
-                  array('imageUrl' => $imageUrl, 'httpStatus' => $httpStatus)));
+                $msg = Craft::t('“{httpStatus}” encountered while attempting to download “{imageUrl}”', array('imageUrl' => $imageUrl, 'httpStatus' => $httpStatus));
+                
+                if (craft()->imager->getSetting('suppressExceptions')===true) {
+                    ImagerPlugin::log($msg, LogLevel::Error);
+                    return null;
+                } else {
+                    throw new Exception($msg);
+                }
             }
         } else {
-            throw new Exception(Craft::t('Looks like allow_url_fopen is off and cURL is not enabled. To download external files, one of these methods has to be enabled.'));
+            $msg = Craft::t('Looks like allow_url_fopen is off and cURL is not enabled. To download external files, one of these methods has to be enabled.');
+            
+            if (craft()->imager->getSetting('suppressExceptions')===true) {
+                ImagerPlugin::log($msg, LogLevel::Error);
+                return null;
+            } else {
+                throw new Exception($msg);
+            }
         }
     }
 

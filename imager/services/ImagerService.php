@@ -154,7 +154,7 @@ class ImagerService extends BaseApplicationComponent
      * @param Array $configOverrides
      *
      * @throws Exception
-     * @return Image
+     * @return array|Image
      */
     public function transformImage($image, $transform, $transformDefaults, $configOverrides)
     {
@@ -170,33 +170,64 @@ class ImagerService extends BaseApplicationComponent
          * Check all the things that could go wrong(tm)
          */
         if (!IOHelper::getRealPath($pathsModel->sourcePath)) {
-            throw new Exception(Craft::t('Source folder “{sourcePath}” does not exist',
-              array('sourcePath' => $pathsModel->sourcePath)));
+            $msg = Craft::t('Source folder “{sourcePath}” does not exist', array('sourcePath' => $pathsModel->sourcePath));
+            
+            if (craft()->imager->getSetting('suppressExceptions')===true) {
+                ImagerPlugin::log($msg, LogLevel::Error);
+                return null;
+            } else {
+                throw new Exception($msg);
+            }
         }
 
         if (!IOHelper::getRealPath($pathsModel->targetPath)) {
             IOHelper::createFolder($pathsModel->targetPath, craft()->config->get('defaultFolderPermissions'), true);
 
             if (!IOHelper::getRealPath($pathsModel->targetPath)) {
-                throw new Exception(Craft::t('Target folder “{targetPath}” does not exist and could not be created',
-                  array('targetPath' => $pathsModel->targetPath)));
+                $msg = Craft::t('Target folder “{targetPath}” does not exist and could not be created', array('targetPath' => $pathsModel->targetPath));
+                
+                if (craft()->imager->getSetting('suppressExceptions')===true) {
+                    ImagerPlugin::log($msg, LogLevel::Error);
+                    return null;
+                } else {
+                    throw new Exception($msg);
+                }
             }
 
             $pathsModel->targetPath = IOHelper::getRealPath($pathsModel->targetPath);
         }
 
         if ($pathsModel->targetPath && !IOHelper::isWritable($pathsModel->targetPath)) {
-            throw new Exception(Craft::t('Target folder “{targetPath}” is not writeable',
-              array('targetPath' => $pathsModel->targetPath)));
+            $msg = Craft::t('Target folder “{targetPath}” is not writeable', array('targetPath' => $pathsModel->targetPath));
+            
+            if (craft()->imager->getSetting('suppressExceptions')===true) {
+                ImagerPlugin::log($msg, LogLevel::Error);
+                return null;
+            } else {
+                throw new Exception($msg);
+            }            
         }
 
         if (!IOHelper::fileExists($pathsModel->sourcePath . $pathsModel->sourceFilename)) {
-            throw new Exception(Craft::t('Requested image “{fileName}” does not exist in path “{sourcePath}”',
-              array('fileName' => $pathsModel->sourceFilename, 'sourcePath' => $pathsModel->sourcePath)));
+            $msg = Craft::t('Requested image “{fileName}” does not exist in path “{sourcePath}”', array('fileName' => $pathsModel->sourceFilename, 'sourcePath' => $pathsModel->sourcePath));
+            
+            if (craft()->imager->getSetting('suppressExceptions')===true) {
+                ImagerPlugin::log($msg, LogLevel::Error);
+                return null;
+            } else {
+                throw new Exception($msg);
+            }    
         }
 
         if (!craft()->images->checkMemoryForImage($pathsModel->sourcePath . $pathsModel->sourceFilename)) {
-            throw new Exception(Craft::t("Not enough memory available to perform this image operation."));
+            $msg = Craft::t("Not enough memory available to perform this image operation.");
+
+            if (craft()->imager->getSetting('suppressExceptions')===true) {
+                ImagerPlugin::log($msg, LogLevel::Error);
+                return null;
+            } else {
+                throw new Exception($msg);
+            }    
         }
 
 
