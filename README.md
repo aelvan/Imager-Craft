@@ -220,6 +220,16 @@ By default, both in Imager and Craft's built in transform functionality, the ori
 
 If set to `true`, the original image is only loaded once, and every transform will continue working on the same image instance. This significantly increases performance and memory use, but will most likely decrease quality. See [this demo page](http://imager.vaersaagod.no/?img=5&demo=batch-reuse) for an example of how it works.
 
+### noop [bool]
+*Default: `false`*  
+Setting `noop` (no operation) to `true` makes Imager return the source image untouched. Useful if you don't want to do image transforms in
+some environments.
+
+### suppressExceptions [bool]
+*Default: `false`*  
+By default Imager throws exceptions if file based operations fail, an external image can't be downloaded, etc. If `suppressExceptions` is set 
+to `true`, Imager will instead log errors to the log file, and return `null` to the template.   
+
 ### jpegoptimEnabled [bool]
 *Default: `false`*  
 Enable or disable image optimizations with [jpegoptim](https://github.com/tjko/jpegoptim).
@@ -267,6 +277,18 @@ Sets the path to your optipng executable.
 ### optipngOptionString [string]
 *Default: `'-o5'`*  
 Sets the options to use when running optipng. By default the image file is optimized with level 5 optimizations.
+
+### pngquantEnabled [bool]
+*Default: `false`*  
+Enable or disable image optimizations with [pngquant](https://pngquant.org/).
+
+### pngquantPath [string]
+*Default: `'/usr/bin/pngquant'`*  
+Sets the path to your pngquant executable.
+
+### pngquantOptionString [string]
+*Default: `'--strip --skip-if-larger'`*  
+Sets the options to use when running pngquant. Output file (`-o`) and force overwrite (`-f`) is added by Imager and should not be set in `pngquantOptionString`. 
 
 ### tinyPngEnabled [bool]
 *Default: `false`*  
