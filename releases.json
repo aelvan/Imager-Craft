@@ -1,5 +1,17 @@
 [
     {
+        "version": "1.3.0",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2016-12-30T00:47:00+02:00",
+        "notes": [
+            "[Added] Added suppressExceptions config setting for suppressing most exceptions and instead log the error and return null to the templates.",
+            "[Added] Added support for pngquant.",
+            "[Added] Added noop config setting for returning source image without doing any transforms on it.",
+            "[Fixed] Only output images that have different widths whet using craft.imager.srcset.",
+            "[Fixed] Fixed error that would occur if an external image url contained the imagerSystemPath. Improved check for external images."
+        ]
+    },    
+    {
         "version": "1.2.2",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2016-10-28T20:56:00+02:00",
