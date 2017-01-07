@@ -1388,13 +1388,17 @@ class ImagerService extends BaseApplicationComponent
      */
     public function runJpegoptim($file)
     {
-        $cmd = $this->getSetting('jpegoptimPath');
-        $cmd .= ' ';
-        $cmd .= $this->getSetting('jpegoptimOptionString');
-        $cmd .= ' ';
-        $cmd .= $file;
-
-        $this->executeOptimize($cmd, $file);
+        if (file_exists($this->getSetting('jpegoptimPath'))) {
+            $cmd = $this->getSetting('jpegoptimPath');
+            $cmd .= ' ';
+            $cmd .= $this->getSetting('jpegoptimOptionString');
+            $cmd .= ' ';
+            $cmd .= $file;
+    
+            $this->executeOptimize($cmd, $file);
+        } else {
+            ImagerPlugin::log("jpegoptim could not be found in the supplied path (" . $this->getSetting('jpegoptimPath') . ")", LogLevel::Error);
+        }
     }
 
     /**
@@ -1405,15 +1409,19 @@ class ImagerService extends BaseApplicationComponent
      */
     public function runJpegtran($file)
     {
-        $cmd = $this->getSetting('jpegtranPath');
-        $cmd .= ' ';
-        $cmd .= $this->getSetting('jpegtranOptionString');
-        $cmd .= ' -outfile ';
-        $cmd .= $file;
-        $cmd .= ' ';
-        $cmd .= $file;
-
-        $this->executeOptimize($cmd, $file);
+        if (file_exists($this->getSetting('jpegtranPath'))) {
+            $cmd = $this->getSetting('jpegtranPath');
+            $cmd .= ' ';
+            $cmd .= $this->getSetting('jpegtranOptionString');
+            $cmd .= ' -outfile ';
+            $cmd .= $file;
+            $cmd .= ' ';
+            $cmd .= $file;
+    
+            $this->executeOptimize($cmd, $file);
+        } else {
+            ImagerPlugin::log("jpegtran could not be found in the supplied path (" . $this->getSetting('jpegtranPath') . ")", LogLevel::Error);
+        }
     }
 
     /**
@@ -1424,15 +1432,19 @@ class ImagerService extends BaseApplicationComponent
      */
     public function runMozjpeg($file)
     {
-        $cmd = $this->getSetting('mozjpegPath');
-        $cmd .= ' ';
-        $cmd .= $this->getSetting('mozjpegOptionString');
-        $cmd .= ' -outfile ';
-        $cmd .= $file;
-        $cmd .= ' ';
-        $cmd .= $file;
-
-        $this->executeOptimize($cmd, $file);
+        if (file_exists($this->getSetting('mozjpegPath'))) {
+            $cmd = $this->getSetting('mozjpegPath');
+            $cmd .= ' ';
+            $cmd .= $this->getSetting('mozjpegOptionString');
+            $cmd .= ' -outfile ';
+            $cmd .= $file;
+            $cmd .= ' ';
+            $cmd .= $file;
+    
+            $this->executeOptimize($cmd, $file);
+        } else {
+            ImagerPlugin::log("mozjpeg could not be found in the supplied path (" . $this->getSetting('mozjpegPath') . ")", LogLevel::Error);
+        }
     }
 
     /**
@@ -1443,13 +1455,17 @@ class ImagerService extends BaseApplicationComponent
      */
     public function runOptipng($file)
     {
-        $cmd = $this->getSetting('optipngPath');
-        $cmd .= ' ';
-        $cmd .= $this->getSetting('optipngOptionString');
-        $cmd .= ' ';
-        $cmd .= $file;
-
-        $this->executeOptimize($cmd, $file);
+        if (file_exists($this->getSetting('optipngPath'))) {
+            $cmd = $this->getSetting('optipngPath');
+            $cmd .= ' ';
+            $cmd .= $this->getSetting('optipngOptionString');
+            $cmd .= ' ';
+            $cmd .= $file;
+    
+            $this->executeOptimize($cmd, $file);
+        } else {
+            ImagerPlugin::log("optipng could not be found in the supplied path (" . $this->getSetting('optipngPath') . ")", LogLevel::Error);
+        }
     }
 
     /**
@@ -1460,16 +1476,20 @@ class ImagerService extends BaseApplicationComponent
      */
     public function runPngquant($file)
     {
-        $cmd = $this->getSetting('pngquantPath');
-        $cmd .= ' ';
-        $cmd .= $this->getSetting('pngquantOptionString');
-        $cmd .= ' ';
-        $cmd .= '-f -o ';
-        $cmd .= $file;
-        $cmd .= ' ';
-        $cmd .= $file;
-
-        $this->executeOptimize($cmd, $file);
+        if (file_exists($this->getSetting('pngquantPath'))) {
+            $cmd = $this->getSetting('pngquantPath');
+            $cmd .= ' ';
+            $cmd .= $this->getSetting('pngquantOptionString');
+            $cmd .= ' ';
+            $cmd .= '-f -o ';
+            $cmd .= $file;
+            $cmd .= ' ';
+            $cmd .= $file;
+    
+            $this->executeOptimize($cmd, $file);
+        } else {
+            ImagerPlugin::log("pngquant could not be found in the supplied path (" . $this->getSetting('pngquantPath') . ")", LogLevel::Error);
+        }
     }
 
     /**
