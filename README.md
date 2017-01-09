@@ -401,7 +401,7 @@ If you've ever done an image transform in a Craft template, this probably looks 
 The same code using Imager would look like this:
 
     {% set image = craft.assets().limit(1).first() %}
-    {% set transformedImage = craft.imager.transformImage(image, { width: 1000 })
+    {% set transformedImage = craft.imager.transformImage(image, { width: 1000 }) %}
     <img src="{{ transformedImage.url }}">
 
 So far, it's more code than the Craft way. But, let's say you need to resize the image to six different widths, because you're using <picture> and srcset to serve up responsive images (in a modern and futureproof way). And you want the crop position on all the images to be in the bottom-right corner, an aspect ratio of 16:9, and while the large images should have a high jpeg quality, the smaller ones should be more optimized. 
