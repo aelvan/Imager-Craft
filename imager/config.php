@@ -73,7 +73,14 @@ return array(
   'awsFolder' => '',
   'awsCacheDuration' => 1209600, // 14 days
   'awsRequestHeaders' => array(),
-  'awsStorageType' => 'standard', // 'standard' or 'rrs' (reduced redundancy storage)
+  'awsStorageType' => 'standard', // 'standard' or 'rrs' (reduced redundancy storage),
+
+  'gcsEnabled' => false,
+  'gcsAccessKey' => '',
+  'gcsSecretAccessKey' => '',
+  'gcsBucket' => '',
+  'gcsFolder' => '',
+  'gcsCacheDuration' => 1209600, // 14 days
 
   'cloudfrontInvalidateEnabled' => false,
   'cloudfrontDistributionId' => '',
