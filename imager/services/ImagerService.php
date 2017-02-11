@@ -428,6 +428,11 @@ class ImagerService extends BaseApplicationComponent
                         $this->invalidatePaths[] = $parsedUrl['path'];
                     }
                 }
+
+                // if GCS is enabled, upload file
+                if (craft()->imager->getSetting('gcsEnabled')) {
+                    craft()->imager_gcs->uploadToGCS($targetFilePath);
+                }
             }
         }
 

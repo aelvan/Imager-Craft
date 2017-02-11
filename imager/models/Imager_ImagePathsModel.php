@@ -84,7 +84,7 @@ class Imager_ImagePathsModel extends BaseModel
     {
         $assetSourcePath = craft()->config->parseEnvironmentString($image->getSource()->settings['url']);
 
-        if (strncmp($assetSourcePath, 'http', 4) === 0) {
+        if (strncmp($assetSourcePath, 'http', 4) === 0 || strncmp($assetSourcePath, '//', 2) === 0) {
             $parsedUrl = parse_url($assetSourcePath);
             $assetSourcePath = $parsedUrl['path'];
         }
@@ -174,7 +174,8 @@ class Imager_ImagePathsModel extends BaseModel
             $parsedDirname = str_replace('.', '_', $urlParts['host']) . $targetFolder;
         }
 
-        $this->sourcePath = ImagerService::fixSlashes(craft()->path->getRuntimePath() . 'imager/' . $parsedDirname . '/');
+        $runtimePath = IOHelper::getRealPath(craft()->path->getRuntimePath());
+        $this->sourcePath = ImagerService::fixSlashes($runtimePath . 'imager/' . $parsedDirname . '/');
         $this->sourceUrl = $image;
         $this->targetPath = ImagerService::fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $parsedDirname . '/');
         $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $parsedDirname . '/';

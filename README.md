@@ -344,6 +344,34 @@ Additional request headers to send to AWS.
 *Allowed values: `'standard'`, `'rrs'`*   
 Sets the AWS storage type. 
 
+### gcsEnabled [bool]
+*Default: `false`*  
+Enables or disables uploading of transformed images to Google Cloud Storage.
+
+*Please note; even if images are uploaded to GCS, they will also be stored in the Imager system path for caching and cache breaking purposes. *
+
+### gcsAccessKey [string]
+*Default: `''`*  
+Google Cloud Storage access key.
+
+### gcsSecretAccessKey [string]
+*Default: `''`*  
+Google Cloud Storage secret key.
+
+### gcsBucket [string]
+*Default: `''`*  
+Google Cloud Storage bucket name.
+
+### gcsFolder [string]
+*Default: `''`*  
+Subfolder inside the Google Cloud Storage bucket where you want to put the transformed images.
+
+### gcsCacheDuration [int]
+*Default: `1209600`*  
+Cache duration of files on Google Cloud Storage.
+
+*Please note; this has nothing to do with how long a transform is cached, it is only used to tell Google what HTTP expiry headers to set on the file.*
+
 ### cloudfrontInvalidateEnabled [bool]
 *Default: `false`*  
 Enabled or disables the sending of invalidation requests to Cloudfront when a transform is generated.
