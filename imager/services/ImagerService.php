@@ -11,8 +11,6 @@ namespace Craft;
  * @link        https://github.com/aelvan/Imager-Craft
  */
 
-use Tinify;
-
 class ImagerService extends BaseApplicationComponent
 {
     var $imageDriver = 'gd';
@@ -1136,7 +1134,14 @@ class ImagerService extends BaseApplicationComponent
 
             if ($effect == 'colorize') {
                 $color = $imageInstance->palette()->color($value);
-                $imageInstance->effects()->colorize($color);
+                
+                // Fix for new behavior of colorizeImage in newer versions of imagick. Fixed in upstream version of Imagine, but not merged with Craft yet. Remove when added. 
+                if ($this->imageDriver==='imagick') {
+                    $imagickInstance = $imageInstance->getImagick();
+                    $imagickInstance->colorizeImage((string) $color, new \ImagickPixel(sprintf('rgba(%d, %d, %d, 1)', $color->getRed(), $color->getGreen(), $color->getBlue())));
+                } else {
+                    $imageInstance->effects()->colorize($color);
+                }
             }
 
             /**
