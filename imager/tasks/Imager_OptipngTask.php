@@ -61,6 +61,15 @@ class Imager_OptipngTask extends BaseTask
             }
         }
 
+        // if GCS is enabled, upload file
+        if (craft()->imager->getSetting('gcsEnabled')) {
+            try {
+                craft()->imager_gcs->uploadToGCS($path);
+            } catch (\Exception $e) {
+                ImagerPlugin::log("Upload to GCS failed for $path in Imager_OptipngTask: " . $e->getMessage(), LogLevel::Error);
+            }
+        }
+
         return true;
     }
 
