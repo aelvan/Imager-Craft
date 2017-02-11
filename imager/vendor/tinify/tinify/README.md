@@ -2,7 +2,7 @@
 
 # Tinify API client for PHP
 
-PHP client for the Tinify API. Tinify compresses your images intelligently. Read more at https://tinify.com.
+PHP client for the Tinify API, used for [TinyPNG](https://tinypng.com) and [TinyJPG](https://tinyjpg.com). Tinify compresses your images intelligently. Read more at [http://tinify.com](http://tinify.com).
 
 ## Documentation
 
@@ -44,6 +44,13 @@ Tinify\fromFile("unoptimized.png")->toFile("optimized.png");
 ```
 composer install
 vendor/bin/phpunit
+```
+
+### Integration tests
+
+```
+composer install
+TINIFY_KEY=$YOUR_API_KEY vendor/bin/phpunit --no-configuration test/integration.php
 ```
 
 ## License

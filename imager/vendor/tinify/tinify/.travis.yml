@@ -4,11 +4,19 @@ php:
 - 5.4
 - 5.5
 - 5.6
+- 7.0
 - hhvm
 - nightly
+env:
+  global:
+    secure: BFdcLqU/07l3/NGaSZA5+VSB5FSVSwTL9wAyrJSD1N7jN2HzFTE4xxxmcVrAqq6t+jhZqajXcSf8/DTUKyLcmWXGw3JkseHx3ofHw5p2E4Mp+dUvNMh+3KgAABCPm5zEBUgnhNGwFqL+WA/cgXIJY1/sv87u/mg63ojvf3orKJ3KMxFFsVbGo553XYVsiSUXfzvV3foqPdcV9D0SZ0v7IiLcsuwtDRtfJ/udgSZ2C2LFiOek1dLwbjM3inMBPkfLcpuvC2l8Z1CyW5ptxYRrHHJqCMbdRmmwGH04hxRju54EJKX5PGTyDhfG9Kyiu8/hQCtDL4jNQlVNAKbvHrRTnLogoMKhHMRaAIDMNI+lcQB9OHHuureYAqL7gJvRmE2sfN/OAbzizYJ2z+yXvjaKJsd2htrHff8hgvl0M3guhP+mA5C9ubibzGiCD66kdeqS5tJi3EH7wk9GO75lFm3tlZEWZ4FJCwgyFQRZGMGSRJC5cWvW4QlGLHeVnWwnf9CM9/B2oD21LraccgCZhpIbib5/XJ2vTQO0V2ke3kXT1D9E3P8E2eClxnge1aShUSy+d5kMTNeLxkfalgGEviWqA236XLzS8+MjWzNWy3+roBb63Vh0OPp4GyTO810U16Y5lwCMegVrxusnz9bCo1HbK1w2k8D7Ueb/O7LEFYaZSD4=
 matrix:
   allow_failures:
-    - php: nightly
+  - php: nightly
+  include:
+  - php: 5.6
+    env: INTEGRATION_TESTS=true
+    script: "if [ \"$TRAVIS_PULL_REQUEST\" == \"false\" ]; then vendor/bin/phpunit --no-configuration test/integration.php; fi"
 before_script: composer install
 script: vendor/bin/phpunit
 notifications:

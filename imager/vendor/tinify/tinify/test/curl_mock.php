@@ -30,7 +30,7 @@ class CurlMock {
         return array_key_exists($key, $lastReq->options);
     }
 
-    public static function last($key) {
+    public static function last($key = null) {
         $lastReq = self::$requests[count(self::$requests) - 1];
         if ($key) {
             return $lastReq->options[$key];

@@ -20,6 +20,7 @@ class Exception extends \Exception {
 
     function __construct($message, $type = NULL, $status = NULL) {
         if ($status) {
+            $this->status = $status;
             parent::__construct($message . " (HTTP " . $status . "/" . $type . ")");
         } else {
             parent::__construct($message);

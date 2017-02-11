@@ -2,28 +2,33 @@
 namespace ColorThief\Image\Adapter;
 
 /**
-* Basic interface for all image adapters.
-*/
+ * Basic interface for all image adapters.
+ */
 interface IImageAdapter
 {
     /**
      * Loads an image from file.
      *
-     * @param string $file
+     * @param string $path
      */
     public function loadFile($path);
 
     /**
-     * Loads an image ressource.
+     * Loads an image from a binary string representation.
      *
-     * @param mixed $ressource
+     * @param string $data
      */
-    public function load($ressource);
+    public function loadBinaryString($data);
+
+    /**
+     * Loads an image resource.
+     *
+     * @param resource|object $resource
+     */
+    public function load($resource);
 
     /**
      * Destroys the image.
-     *
-     * @param string $file
      */
     public function destroy();
 
@@ -44,14 +49,16 @@ interface IImageAdapter
     /**
      * Returns the color of the specified pixel.
      *
-     * @param string $file
+     * @param int $x
+     * @param int $y
+     * @return object
      */
     public function getPixelColor($x, $y);
 
     /**
      * Get the raw resource
      *
-     * @return mixed
+     * @return resource
      */
     public function getResource();
 }
