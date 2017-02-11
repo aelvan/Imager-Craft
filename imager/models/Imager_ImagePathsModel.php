@@ -84,7 +84,7 @@ class Imager_ImagePathsModel extends BaseModel
     {
         $assetSourcePath = craft()->config->parseEnvironmentString($image->getSource()->settings['url']);
 
-        if (strncmp($assetSourcePath, 'http', 4) === 0) {
+        if (strncmp($assetSourcePath, 'http', 4) === 0 || strncmp($assetSourcePath, '//', 2) === 0) {
             $parsedUrl = parse_url($assetSourcePath);
             $assetSourcePath = $parsedUrl['path'];
         }
