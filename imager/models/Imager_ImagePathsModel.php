@@ -228,10 +228,10 @@ class Imager_ImagePathsModel extends BaseModel
         $imageUrlArr = explode('?', $imageUrl);
         
         $imageUrlArr[0] = preg_replace_callback('#://([^/]+)/([^?]+)#', function ($match) {
-            return '://' . $match[1] . '/' . join('/', array_map('rawurlencode', explode('/', $match[2])));
+            return '://' . $match[1] . '/' . implode('/', array_map('rawurlencode', explode('/', $match[2])));
         }, urldecode($imageUrlArr[0]));
         
-        $imageUrl = join('?', $imageUrlArr);
+        $imageUrl = implode('?', $imageUrlArr);
 
         if (function_exists('curl_init')) {
             $ch = curl_init($imageUrl);
