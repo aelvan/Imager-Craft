@@ -175,7 +175,8 @@ class Imager_ImagePathsModel extends BaseModel
             $parsedDirname = str_replace('.', '_', $urlParts['host']) . $targetFolder;
         }
 
-        $this->sourcePath = craft()->path->getRuntimePath() . 'imager/' . $parsedDirname . '/';
+        $runtimePath = IOHelper::getRealPath(craft()->path->getRuntimePath());
+        $this->sourcePath = $runtimePath . 'imager/' . $parsedDirname . '/';
         $this->sourceUrl = $image;
         $this->targetPath = craft()->imager->getSetting('imagerSystemPath') . $parsedDirname . '/';
         $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $parsedDirname . '/';
