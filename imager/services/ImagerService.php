@@ -373,7 +373,7 @@ class ImagerService extends BaseApplicationComponent
 
             // if file was created, check if optimization should be done
             if (IOHelper::fileExists($targetFilePath)) {
-                if ($targetExtension == 'jpg' || $targetExtension == 'jpeg') {
+                if ($targetExtension === 'jpg' || $targetExtension === 'jpeg') {
                     if ($this->getSetting('jpegoptimEnabled', $transform)) {
                         $this->postOptimize('jpegoptim', $targetFilePath);
                     }
@@ -385,12 +385,18 @@ class ImagerService extends BaseApplicationComponent
                     }
                 }
 
-                if ($targetExtension == 'png') {
+                if ($targetExtension === 'png') {
                     if ($this->getSetting('optipngEnabled', $transform)) {
                         $this->postOptimize('optipng', $targetFilePath);
                     }
                     if ($this->getSetting('pngquantEnabled', $transform)) {
                         $this->postOptimize('pngquant', $targetFilePath);
+                    }
+                }
+
+                if ($targetExtension === 'gif') {
+                    if ($this->getSetting('gifsicleEnabled', $transform)) {
+                        $this->postOptimize('gifsicle', $targetFilePath);
                     }
                 }
 
@@ -1443,6 +1449,9 @@ class ImagerService extends BaseApplicationComponent
                 case 'pngquant':
                     $this->makeTask('Imager_Pngquant', $file);
                     break;
+                case 'gifsicle':
+                    $this->makeTask('Imager_Gifsicle', $file);
+                    break;
                 case 'tinypng':
                     $this->makeTask('Imager_TinyPng', $file);
                     break;
@@ -1463,6 +1472,9 @@ class ImagerService extends BaseApplicationComponent
                     break;
                 case 'pngquant':
                     $this->runPngquant($file);
+                    break;
+                case 'gifsicle':
+                    $this->runGifsicle($file);
                     break;
                 case 'tinypng':
                     $this->runTinyPng($file);
@@ -1580,6 +1592,28 @@ class ImagerService extends BaseApplicationComponent
             $this->executeOptimize($cmd, $file);
         } else {
             ImagerPlugin::log("pngquant could not be found in the supplied path (" . $this->getSetting('pngquantPath') . ")", LogLevel::Error);
+        }
+    }
+
+    /**
+     * Run gifsicle optimization
+     *
+     * @param $file
+     * @param $transform
+     */
+    public function runGifsicle($file)
+    {
+        if (file_exists($this->getSetting('gifsiclePath'))) {
+            $cmd = $this->getSetting('gifsiclePath');
+            $cmd .= ' ';
+            $cmd .= $this->getSetting('gifsicleOptionString');
+            $cmd .= ' ';
+            $cmd .= '-b ';
+            $cmd .= $file;
+            
+            $this->executeOptimize($cmd, $file);
+        } else {
+            ImagerPlugin::log("gifsicle could not be found in the supplied path (" . $this->getSetting('gifsiclePath') . ")", LogLevel::Error);
         }
     }
 

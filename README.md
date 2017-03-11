@@ -11,7 +11,7 @@ Whenever possible, Imager utilizes the image manipulation library [Imagine](http
 - You can transform both images in your asset sources, local and cloud-based ones, and external images on any url.
 - Transformed images are placed in their own folder, outside of the asset source folder.
 - You can even upload and serve the transformed images from AWS.
-- Optimize your created images automatically with jpegoptim, jpegtran, optipng or TinyPNG.
+- Optimize your transformed images automatically with jpegoptim, jpegtran, mozjpeg, optipng, pngquant, gifsicle or TinyPNG and make Google happy!
 - You can create interlaced/progressive images.
 - You can even transform animated gifs.
 - In addition to jpeg, gif and png, you can save images in webp format (if you have the necessary server requirements).
@@ -290,6 +290,18 @@ Sets the path to your pngquant executable.
 ### pngquantOptionString [string]
 *Default: `'--strip --skip-if-larger'`*  
 Sets the options to use when running pngquant. Output file (`-o`) and force overwrite (`-f`) is added by Imager and should not be set in `pngquantOptionString`. 
+
+### gifsicleEnabled [bool]
+*Default: `false`*  
+Enable or disable image optimizations with [gifsicle](https://www.lcdf.org/gifsicle/).
+
+### gifsiclePath [string]
+*Default: `'/usr/bin/gifsicle'`*  
+Sets the path to your gifsicle executable.
+
+### gifsicleOptionString [string]
+*Default: `'--optimize=3 --colors 256'`*  
+Sets the options to use when running gifsicle. Batch mode (`-b`) is added by Imager and should not be set in `gifsicleOptionString`. 
 
 ### tinyPngEnabled [bool]
 *Default: `false`*  
