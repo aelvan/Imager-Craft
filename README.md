@@ -722,6 +722,17 @@ valid color values. Example with rgba colors:
 Please note that the alpha value doesn't actually make the color transparent, it just has the effect of moving the gradient's
 center point towards the color with the least transparency.  
 
+### quantize [array|int]
+Reduces the number of colors in an image, using [Imagick's quantizeImage method](http://php.net/manual/en/imagick.quantizeimage.php). This can help
+to reduce filesize, especially for gif images. Example:
+
+    {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { quantize: 32 } }) %}
+
+The parameter can be an int, indicating the number of colors to reduce to, or an array that corresponds to the functions $numberColors (int), 
+$treedepth (int) and $dither (bool) parameters. Example with default treeDepth, but dithering:
+ 
+    {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { quantize: [32, 0, true] } }) %}
+
 ### vignette [array]
 *The vignette effect is not yet finalized.*
 

@@ -1290,6 +1290,15 @@ class ImagerService extends BaseApplicationComponent
                     $imagickInstance->clutImage($clut);
                 }
 
+                // quantize
+                if ($effect == 'quantize' && (is_array($value) || is_int($value))) {
+                    if (is_array($value) && count($value) === 3) {
+                        $imagickInstance->quantizeImage($value[0], \Imagick::COLORSPACE_RGB, $value[1], $value[2], false);
+                    } else {
+                        $imagickInstance->quantizeImage($value, \Imagick::COLORSPACE_RGB, 0, false, false);
+                    }
+                }
+
                 // vignette
                 // todo : make a better vignette
                 if ($effect == 'vignette' && is_array($value) && count($value) >= 3) {
