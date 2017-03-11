@@ -13,6 +13,7 @@ Whenever possible, Imager utilizes the image manipulation library [Imagine](http
 - You can even upload and serve the transformed images from AWS.
 - Optimize your created images automatically with jpegoptim, jpegtran, optipng or TinyPNG.
 - You can create interlaced/progressive images.
+- You can even transform animated gifs.
 - In addition to jpeg, gif and png, you can save images in webp format (if you have the necessary server requirements).
 - Crop position is relative (in percent) not confined to edges/center (but the built-in keywords still works).  
 `{ width: 600, height: 600, mode: 'crop', position: '20% 65%' }`
@@ -190,7 +191,7 @@ The default focal point to be used when cropping an image. This can either be in
 
 ### letterbox [array]
 *Default: `array('color'=>'#000', 'opacity'=>0)`*  
-Specifies the color and opacity to use for the background when using the letterbox resize method. Opacity is only applicable when saving the transformed file in png format.
+Specifies the color and opacity to use for the background when using the letterbox resize method. Opacity is only applicable when saving the transformed file in png format. Animated gifs will always have transparent backgrounds.
 
 ### hashFilename [bool|string]
 *Default: `'postfix'`*  

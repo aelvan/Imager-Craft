@@ -304,6 +304,9 @@ class ImagerService extends BaseApplicationComponent
         $targetFilePath = $paths->targetPath . $targetFilename;
         $targetFileUrl = $paths->targetUrl . $targetFilename;
 
+        // set save options
+        $saveOptions = $this->_getSaveOptions($targetExtension, $transform);
+
         /**
          * Check if the image already exists, if caching is turned on or if the cache has expired.
          */
@@ -316,65 +319,44 @@ class ImagerService extends BaseApplicationComponent
             if (!$this->getSetting('instanceReuseEnabled', $transform) || $this->imageInstance == null) {
                 $this->imageInstance = $this->imagineInstance->open($paths->sourcePath . $paths->sourceFilename);
             }
-
-            // Apply any pre resize filters
-            if (isset($transform['preEffects'])) {
-                $this->_applyImageEffects($this->imageInstance, $transform['preEffects']);
-            }
-
-            // Do the resize
-            $originalSize = $this->imageInstance->getSize();
-            $cropSize = $this->getCropSize($originalSize, $transform);
-            $resizeSize = $this->getResizeSize($originalSize, $transform);
-            $saveOptions = $this->_getSaveOptions($targetExtension, $transform);
-            $filterMethod = $this->_getFilterMethod($transform);
-
-            if ($this->imageDriver == 'imagick' && $this->getSetting('smartResizeEnabled', $transform) && version_compare(craft()->getVersion(), '2.5', '>=')) {
-                $this->imageInstance->smartResize($resizeSize, (bool)craft()->config->get('preserveImageColorProfiles'), $this->getSetting('jpegQuality', $transform));
-            } else {
-                $this->imageInstance->resize($resizeSize, $filterMethod);
-            }
-
-            // If Image Driver is imagick and removeMetadata is true
-            // remove Metadata to reduce the image size by a significant amount
-            if ($this->imageDriver == 'imagick' && $this->getSetting('removeMetadata', $transform)) {
-                $this->imageInstance->strip();
-            }
-
-            if (!isset($transform['mode']) || mb_strtolower($transform['mode']) == 'crop' || mb_strtolower($transform['mode']) == 'croponly') {
-                $cropPoint = $this->_getCropPoint($resizeSize, $cropSize, $transform);
-                $this->imageInstance->crop($cropPoint, $cropSize);
-            }
-
-            // letterbox, add padding
-            if (isset($transform['mode']) && mb_strtolower($transform['mode']) == 'letterbox') {
-                $this->_applyLetterbox($this->imageInstance, $transform);
-            }
-
-            // Apply post resize filters
-            if (isset($transform['effects'])) {
-                $this->_applyImageEffects($this->imageInstance, $transform['effects']);
-            }
-
-            // Interlace if true
-            if ($this->getSetting('interlace', $transform)) {
-                $interlaceVal = $this->getSetting('interlace', $transform);
-
-                if (is_string($interlaceVal)) {
-                    $this->imageInstance->interlace(ImagerService::$interlaceKeyTranslate[$interlaceVal]);
-                } else {
-                    $this->imageInstance->interlace(ImagerService::$interlaceKeyTranslate['line']);
+            
+            // check if this is an animated gif and we're using Imagick
+            $animated = false;
+            
+            if ($sourceExtension === 'gif')
+            {
+                if ($this->imageDriver!=='gd' && $this->imageInstance->layers())
+                {
+                    $animated = true;
                 }
             }
+            
+            // Run tranforms, either on each layer of an animated gif, or on the whole image.
+            if ($animated) {
+                $this->imageInstance->layers()->coalesce();
+                
+                // we need to create a new image instance with the target size, or letterboxing will be wrong.
+                $originalSize = $this->imageInstance->getSize();
+                $resizeSize = $this->getResizeSize($originalSize, $transform);
+                $gif = $this->imagineInstance->create($resizeSize);
+                $gif->layers()->remove(0);
+                
+                // 
+                foreach ($this->imageInstance->layers() as $layer)
+                {
+                    $this->_transformLayer($layer, $transform, $sourceExtension, $targetExtension);
+    				$gif->layers()->add($layer);
+                }
+                
+    			$this->imageInstance = $gif;
 
-            // apply watermark if enabled
-            if (isset($transform['watermark'])) {
-                $this->_applyWatermark($this->imageInstance, $transform['watermark']);
+            } else {
+                $this->_transformLayer($this->imageInstance, $transform, $sourceExtension, $targetExtension);
             }
-
-            // apply background color if enabled and applicable
-            if (($sourceExtension != $targetExtension) && ($sourceExtension != 'jpg') && ($targetExtension == 'jpg') && ($this->getSetting('bgColor', $transform) != '')) {
-                $this->_applyBackgroundColor($this->imageInstance, $this->getSetting('bgColor', $transform));
+            
+            // If Image Driver is imagick and removeMetadata is true, remove meta data
+            if ($this->imageDriver === 'imagick' && $this->getSetting('removeMetadata', $transform)) {
+                $this->imageInstance->strip();
             }
 
             // save the transform
@@ -438,6 +420,64 @@ class ImagerService extends BaseApplicationComponent
         $imagerImage = new Imager_ImageModel($targetFilePath, $targetFileUrl, $paths, $transform);
 
         return $imagerImage;
+    }
+    
+    private function _transformLayer(&$layer, $transform, $sourceExtension, $targetExtension)
+    {
+            // Apply any pre resize filters
+            if (isset($transform['preEffects'])) {
+                $this->_applyImageEffects($layer, $transform['preEffects']);
+            }
+
+            // Get size and crop information
+            $originalSize = $layer->getSize();
+            $cropSize = $this->getCropSize($originalSize, $transform);
+            $resizeSize = $this->getResizeSize($originalSize, $transform);
+            $filterMethod = $this->_getFilterMethod($transform);
+
+            // Do the resize
+            if ($this->imageDriver === 'imagick' && $this->getSetting('smartResizeEnabled', $transform) && version_compare(craft()->getVersion(), '2.5', '>=')) {
+                $layer->smartResize($resizeSize, (bool)craft()->config->get('preserveImageColorProfiles'), $this->getSetting('jpegQuality', $transform));
+            } else {
+                $layer->resize($resizeSize, $filterMethod);
+            }
+
+            // Do the crop
+            if (!isset($transform['mode']) || mb_strtolower($transform['mode']) === 'crop' || mb_strtolower($transform['mode']) === 'croponly') {
+                $cropPoint = $this->_getCropPoint($resizeSize, $cropSize, $transform);
+                $layer->crop($cropPoint, $cropSize);
+            }
+
+            // letterbox, add padding
+            if (isset($transform['mode']) && mb_strtolower($transform['mode']) === 'letterbox') {
+                $this->_applyLetterbox($layer, $transform);
+            }
+
+            // Apply post resize filters
+            if (isset($transform['effects'])) {
+                $this->_applyImageEffects($layer, $transform['effects']);
+            }
+
+            // Interlace if true
+            if ($this->getSetting('interlace', $transform)) {
+                $interlaceVal = $this->getSetting('interlace', $transform);
+
+                if (is_string($interlaceVal)) {
+                    $layer->interlace(ImagerService::$interlaceKeyTranslate[$interlaceVal]);
+                } else {
+                    $layer->interlace(ImagerService::$interlaceKeyTranslate['line']);
+                }
+            }
+
+            // apply watermark if enabled
+            if (isset($transform['watermark'])) {
+                $this->_applyWatermark($layer, $transform['watermark']);
+            }
+
+            // apply background color if enabled and applicable
+            if (($sourceExtension !== $targetExtension) && ($sourceExtension !== 'jpg') && ($targetExtension === 'jpg') && ($this->getSetting('bgColor', $transform) !== '')) {
+                $this->_applyBackgroundColor($layer, $this->getSetting('bgColor', $transform));
+            }
     }
 
     /**
@@ -1112,44 +1152,69 @@ class ImagerService extends BaseApplicationComponent
 
             $effect = mb_strtolower($effect);
 
-            if ($effect == 'grayscale' || $effect == 'greyscale') { // we do not participate in that quarrel
-                $imageInstance->effects()->grayscale();
-            }
+            /**
+             * For GD we only apply effects that exists in Imagine
+             */
+            if ($this->imageDriver === 'gd') {
+                if ($effect == 'grayscale' || $effect == 'greyscale') { 
+                    $imageInstance->effects()->grayscale();
+                }
 
-            if ($effect == 'negative') {
-                $imageInstance->effects()->negative();
-            }
+                if ($effect == 'negative') {
+                    $imageInstance->effects()->negative();
+                }
 
-            if ($effect == 'blur') {
-                $imageInstance->effects()->blur(is_int($value) || is_float($value) ? $value : 1);
-            }
+                if ($effect == 'blur') {
+                    $imageInstance->effects()->blur(is_int($value) || is_float($value) ? $value : 1);
+                }
 
-            if ($effect == 'sharpen') {
-                $imageInstance->effects()->sharpen();
-            }
+                if ($effect == 'sharpen') {
+                    $imageInstance->effects()->sharpen();
+                }
 
-            if ($effect == 'gamma') {
-                $imageInstance->effects()->gamma(is_int($value) || is_float($value) ? $value : 1);
-            }
+                if ($effect == 'gamma') {
+                    $imageInstance->effects()->gamma(is_int($value) || is_float($value) ? $value : 1);
+                }
 
-            if ($effect == 'colorize') {
-                $color = $imageInstance->palette()->color($value);
-                
-                // Fix for new behavior of colorizeImage in newer versions of imagick. Fixed in upstream version of Imagine, but not merged with Craft yet. Remove when added. 
-                if ($this->imageDriver==='imagick') {
-                    $imagickInstance = $imageInstance->getImagick();
-                    $imagickInstance->colorizeImage((string) $color, new \ImagickPixel(sprintf('rgba(%d, %d, %d, 1)', $color->getRed(), $color->getGreen(), $color->getBlue())));
-                } else {
+                if ($effect == 'colorize') {
+                    $color = $imageInstance->palette()->color($value);
                     $imageInstance->effects()->colorize($color);
                 }
             }
 
             /**
-             * Effects that are imagick only. Will be ignored if GD is used
+             * For Imagick, we apply all effects manually. 
+             * Built-in effects in Imagine is not used since they don't work with animated gif layers.
              */
             if ($this->imageDriver == 'imagick') {
                 $imagickInstance = $imageInstance->getImagick();
+                
+                if ($effect === 'grayscale' || $effect === 'greyscale') {
+                    $imagickInstance->setImageType(\Imagick::IMGTYPE_GRAYSCALE);
+                }
 
+                if ($effect === 'negative') {
+                    $imagickInstance->negateImage(false, \Imagick::CHANNEL_ALL);
+                }
+
+                if ($effect === 'blur') {
+                    $imagickInstance->gaussianBlurImage(0, is_int($value) || is_float($value) ? $value : 1);
+                }
+
+                if ($effect === 'sharpen') {
+                    $imagickInstance->sharpenImage(2, 1);
+                }
+
+                if ($effect === 'gamma') {
+                    $imagickInstance->gammaImage(is_int($value) || is_float($value) ? $value : 1, \Imagick::CHANNEL_ALL);
+                }
+
+                if ($effect === 'colorize') {
+                    $color = $imageInstance->palette()->color($value);
+                    $imagickInstance = $imageInstance->getImagick();
+                    $imagickInstance->colorizeImage((string)$color, new \ImagickPixel(sprintf('rgba(%d, %d, %d, 1)', $color->getRed(), $color->getGreen(), $color->getBlue())));
+                }
+                
                 // colorBlend is almost like colorize, but works with alpha and use blend modes.
                 if ($effect == 'colorblend') {
 
