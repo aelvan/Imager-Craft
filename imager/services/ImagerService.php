@@ -624,7 +624,7 @@ class ImagerService extends BaseApplicationComponent
             }
         }
 
-        return str_replace(array('#', '(', ')'), '', str_replace(array(' ', '.'), '-', $r));
+        return str_replace(array('#', '(', ')'), '', str_replace(array(' ', '.', ','), '-', $r));
     }
 
 
@@ -1216,6 +1216,13 @@ class ImagerService extends BaseApplicationComponent
                 // unsharpMask
                 if ($effect == 'unsharpmask' && is_array($value) && count($value) == 4) {
                     $imagickInstance->unsharpMaskImage($value[0], $value[1], $value[2], $value[3]);
+                }
+                
+                // clut
+                if ($effect == 'clut' && is_string($value)) {
+                    $clut = new \Imagick();
+                    $clut->newPseudoImage(1, 255, $value);
+                    $imagickInstance->clutImage($clut);
                 }
 
                 // vignette

@@ -706,6 +706,21 @@ Applies an unsharp mask with [Imagick's unsharpMaskImage method](http://php.net/
 
     {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { unsharpMask: [0, 0.5, 1, 0.05] } }) %}
 
+### clut [array]
+Applies a [clut (color lookup table) effect](http://stackoverflow.com/questions/36823310/imagick-gradient-map/36825769#36825769) 
+to the image, using [Imagick's clutImage method](http://php.net/manual/en/imagick.clutimage.php). You probably want to use it
+together with modulate to get a real duotone effect. Example:
+
+    {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { modulate: [100, 0, 100], clut: 'gradient:darkblue-aqua' } }) %}
+
+The parameter is the image definition string sent to [Imagick's newPseudoImage method](http://php.net/manual/en/imagick.newpseudoimage.php). You can use any 
+valid color values. Example with rgba colors:
+ 
+    {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { modulate: [100, 0, 100], clut: 'gradient:rgba(255,0,0,0.8)-rgba(255,255,0,1)' } }) %}
+
+Please note that the alpha value doesn't actually make the color transparent, it just has the effect of moving the gradient's
+center point towards the color with the least transparency.  
+
 ### vignette [array]
 *The vignette effect is not yet finalized.*
 
