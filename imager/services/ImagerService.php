@@ -77,7 +77,7 @@ class ImagerService extends BaseApplicationComponent
     public static $compositeKeyTranslate = array();
 
     // translate dictionary for translating crafts built in position constants into relative format (width/height offset) 
-    public static $craftPositonTranslate = array(
+    public static $craftPositionTranslate = array(
       'top-left' => '0% 0%',
       'top-center' => '50% 0%',
       'top-right' => '100% 0%',
@@ -607,8 +607,8 @@ class ImagerService extends BaseApplicationComponent
 
         // if transform is in Craft's named version, convert to percentage
         if (isset($transform['position'])) {
-            if (isset(ImagerService::$craftPositonTranslate[$transform['position']])) {
-                $transform['position'] = ImagerService::$craftPositonTranslate[$transform['position']];
+            if (isset(ImagerService::$craftPositionTranslate[$transform['position']])) {
+                $transform['position'] = ImagerService::$craftPositionTranslate[$transform['position']];
             }
 
             $transform['position'] = str_replace('%', '', $transform['position']);
@@ -850,18 +850,21 @@ class ImagerService extends BaseApplicationComponent
      */
     private function _getCropPoint($resizeSize, $cropSize, $transform)
     {
-        // find the "area of opportunity", the difference between the resized image size and the crop size
-        $wDiff = $resizeSize->getWidth() - $cropSize->getWidth();
-        $hDiff = $resizeSize->getHeight() - $cropSize->getHeight();
-
         // get default crop position from the settings
         $position = $this->getSetting('position', $transform);
 
         // get the offsets, left and top, now as an int, representing the % offset
         list($leftOffset, $topOffset) = explode(' ', $position);
-
-        // calculate and return the point
-        return new \Imagine\Image\Point(floor($wDiff * ($leftOffset / 100)), floor($hDiff * ($topOffset / 100)));
+        
+        // get position that crop should center around
+        $leftPos = floor($resizeSize->getWidth() * ($leftOffset / 100)) - floor($cropSize->getWidth()/2);
+        $topPos = floor($resizeSize->getHeight() * ($topOffset / 100)) - floor($cropSize->getHeight()/2);
+        
+        // make sure the point is within the boundaries and return the point
+        return new \Imagine\Image\Point(
+            min(max($leftPos, 0), ($resizeSize->getWidth() - $cropSize->getWidth())), 
+            min(max($topPos, 0), ($resizeSize->getHeight() - $cropSize->getHeight()))
+        );
     }
 
 
