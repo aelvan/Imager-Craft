@@ -112,7 +112,7 @@ class ImagerService extends BaseApplicationComponent
 
         $this->imagineInstance = $this->_createImagineInstance();
 
-        if ($this->imageDriver == 'imagick') {
+        if ($this->imageDriver === 'imagick') {
             ImagerService::$compositeKeyTranslate['blend'] = \imagick::COMPOSITE_BLEND;
             ImagerService::$compositeKeyTranslate['darken'] = \imagick::COMPOSITE_DARKEN;
             ImagerService::$compositeKeyTranslate['lighten'] = \imagick::COMPOSITE_LIGHTEN;
@@ -135,14 +135,51 @@ class ImagerService extends BaseApplicationComponent
     {
         if ($this->imageDriver === 'gd') {
             return new \Imagine\Gd\Imagine();
-        } else {
-            if ($this->imageDriver === 'imagick') {
-                return new \Imagine\Imagick\Imagine();
+        }
+        
+        if ($this->imageDriver === 'imagick') {
+            return new \Imagine\Imagick\Imagine();
+        }
+        
+        return null;
+    }
+
+
+    /**
+     * Remove transforms for a given asset
+     *
+     * @param AssetFileModel $asset
+     */
+    public function removeTransformsForAsset(AssetFileModel $asset)
+    {
+        $paths = new Imager_ImagePathsModel($asset);
+
+        if (strpos($paths->targetPath, craft()->imager->getSetting('imagerSystemPath')) !== false) {
+            IOHelper::clearFolder($paths->targetPath);
+            craft()->templateCache->deleteCachesByElementId($asset->id);
+
+            if ($paths->isRemote) {
+                IOHelper::deleteFile($paths->sourcePath . $paths->sourceFilename);
             }
         }
     }
 
+    /**
+     * Clear all image transforms caches
+     */
+    public function deleteImageTransformCaches()
+    {
+        IOHelper::clearFolder(craft()->imager->getSetting('imagerSystemPath'));
+    }
 
+    /**
+     * Clear all remote image caches
+     */
+    public function deleteRemoteImageCaches()
+    {
+        IOHelper::clearFolder(craft()->path->getRuntimePath() . 'imager/');
+    }
+    
     /**
      * Do an image transform
      *
@@ -474,98 +511,71 @@ class ImagerService extends BaseApplicationComponent
 
         return $imagerImage;
     }
-    
+
+    /**
+     * Apply transforms to an image or layer.
+     * 
+     * @param $layer
+     * @param array $transform
+     * @param string $sourceExtension
+     * @param string $targetExtension
+     */
     private function _transformLayer(&$layer, $transform, $sourceExtension, $targetExtension)
     {
-            // Apply any pre resize filters
-            if (isset($transform['preEffects'])) {
-                $this->_applyImageEffects($layer, $transform['preEffects']);
-            }
+        // Apply any pre resize filters
+        if (isset($transform['preEffects'])) {
+            $this->_applyImageEffects($layer, $transform['preEffects']);
+        }
 
-            // Get size and crop information
-            $originalSize = $layer->getSize();
-            $cropSize = $this->getCropSize($originalSize, $transform);
-            $resizeSize = $this->getResizeSize($originalSize, $transform);
-            $filterMethod = $this->_getFilterMethod($transform);
+        // Get size and crop information
+        $originalSize = $layer->getSize();
+        $cropSize = $this->getCropSize($originalSize, $transform);
+        $resizeSize = $this->getResizeSize($originalSize, $transform);
+        $filterMethod = $this->_getFilterMethod($transform);
 
-            // Do the resize
-            if ($this->imageDriver === 'imagick' && $this->getSetting('smartResizeEnabled', $transform) && version_compare(craft()->getVersion(), '2.5', '>=')) {
-                $layer->smartResize($resizeSize, (bool)craft()->config->get('preserveImageColorProfiles'), $this->getSetting('jpegQuality', $transform));
+        // Do the resize
+        if ($this->imageDriver === 'imagick' && $this->getSetting('smartResizeEnabled', $transform) && version_compare(craft()->getVersion(), '2.5', '>=')) {
+            $layer->smartResize($resizeSize, (bool)craft()->config->get('preserveImageColorProfiles'), $this->getSetting('jpegQuality', $transform));
+        } else {
+            $layer->resize($resizeSize, $filterMethod);
+        }
+
+        // Do the crop
+        if (!isset($transform['mode']) || mb_strtolower($transform['mode']) === 'crop' || mb_strtolower($transform['mode']) === 'croponly') {
+            $cropPoint = $this->_getCropPoint($resizeSize, $cropSize, $transform);
+            $layer->crop($cropPoint, $cropSize);
+        }
+
+        // letterbox, add padding
+        if (isset($transform['mode']) && mb_strtolower($transform['mode']) === 'letterbox') {
+            $this->_applyLetterbox($layer, $transform);
+        }
+
+        // Apply post resize filters
+        if (isset($transform['effects'])) {
+            $this->_applyImageEffects($layer, $transform['effects']);
+        }
+
+        // Interlace if true
+        if ($this->getSetting('interlace', $transform)) {
+            $interlaceVal = $this->getSetting('interlace', $transform);
+
+            if (is_string($interlaceVal)) {
+                $layer->interlace(ImagerService::$interlaceKeyTranslate[$interlaceVal]);
             } else {
-                $layer->resize($resizeSize, $filterMethod);
-            }
-
-            // Do the crop
-            if (!isset($transform['mode']) || mb_strtolower($transform['mode']) === 'crop' || mb_strtolower($transform['mode']) === 'croponly') {
-                $cropPoint = $this->_getCropPoint($resizeSize, $cropSize, $transform);
-                $layer->crop($cropPoint, $cropSize);
-            }
-
-            // letterbox, add padding
-            if (isset($transform['mode']) && mb_strtolower($transform['mode']) === 'letterbox') {
-                $this->_applyLetterbox($layer, $transform);
-            }
-
-            // Apply post resize filters
-            if (isset($transform['effects'])) {
-                $this->_applyImageEffects($layer, $transform['effects']);
-            }
-
-            // Interlace if true
-            if ($this->getSetting('interlace', $transform)) {
-                $interlaceVal = $this->getSetting('interlace', $transform);
-
-                if (is_string($interlaceVal)) {
-                    $layer->interlace(ImagerService::$interlaceKeyTranslate[$interlaceVal]);
-                } else {
-                    $layer->interlace(ImagerService::$interlaceKeyTranslate['line']);
-                }
-            }
-
-            // apply watermark if enabled
-            if (isset($transform['watermark'])) {
-                $this->_applyWatermark($layer, $transform['watermark']);
-            }
-
-            // apply background color if enabled and applicable
-            if (($sourceExtension !== $targetExtension) && ($sourceExtension !== 'jpg') && ($targetExtension === 'jpg') && ($this->getSetting('bgColor', $transform) !== '')) {
-                $this->_applyBackgroundColor($layer, $this->getSetting('bgColor', $transform));
-            }
-    }
-
-    /**
-     * Remove transforms for a given asset
-     *
-     * @param AssetFileModel $asset
-     */
-    public function removeTransformsForAsset(AssetFileModel $asset)
-    {
-        $paths = new Imager_ImagePathsModel($asset);
-
-        if (strpos($paths->targetPath, craft()->imager->getSetting('imagerSystemPath')) !== false) {
-            IOHelper::clearFolder($paths->targetPath);
-            craft()->templateCache->deleteCachesByElementId($asset->id);
-
-            if ($paths->isRemote) {
-                IOHelper::deleteFile($paths->sourcePath . $paths->sourceFilename);
+                $layer->interlace(ImagerService::$interlaceKeyTranslate['line']);
             }
         }
-    }
 
-    /**
-     * Clear all image transforms caches
-     */
-    public function deleteImageTransformCaches()
-    {
-        IOHelper::clearFolder(craft()->imager->getSetting('imagerSystemPath'));
-    }
+        // apply watermark if enabled
+        if (isset($transform['watermark'])) {
+            $this->_applyWatermark($layer, $transform['watermark']);
+        }
 
-    /**
-     * Clear all remote image caches
-     */
-    public function deleteRemoteImageCaches()
-    {
-        IOHelper::clearFolder(craft()->path->getRuntimePath() . 'imager/');
+        // apply background color if enabled and applicable
+        if (($sourceExtension !== $targetExtension) && ($sourceExtension !== 'jpg') && ($targetExtension === 'jpg') && ($this->getSetting('bgColor', $transform) !== '')) {
+            $this->_applyBackgroundColor($layer, $this->getSetting('bgColor', $transform));
+        }
     }
 
     /**
