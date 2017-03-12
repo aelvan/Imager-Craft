@@ -147,9 +147,9 @@ class ImagerService extends BaseApplicationComponent
      * Do an image transform
      *
      * @param AssetFileModel|string $image
-     * @param Array $transform
-     * @param Array $transformDefaults
-     * @param Array $configOverrides
+     * @param array $transform
+     * @param array $transformDefaults
+     * @param array $configOverrides
      *
      * @throws Exception
      * @return array|Image
@@ -227,7 +227,14 @@ class ImagerService extends BaseApplicationComponent
                 throw new Exception($msg);
             }    
         }
-
+        
+        // Fill missing transforms if fillTransforms is enabled
+        if (craft()->imager->getSetting('fillTransforms')===true)
+        {
+            if (is_array($transform) && count($transform)>1) {
+                $transform = $this->_fillTransforms($transform);
+            }
+        }
 
         /**
          * Transform can be either an array or just an object.
@@ -264,12 +271,52 @@ class ImagerService extends BaseApplicationComponent
         return $r;
     }
 
+    /**
+     * Fills in the missing transform objects
+     * 
+     * @param array $transforms
+     * @return array
+     */
+    private function _fillTransforms($transforms) {
+        $r = array();
+        
+        $attributeName = craft()->imager->getSetting('fillAttribute');
+        $interval = craft()->imager->getSetting('fillInterval');
+        
+        $r[] = $transforms[0];
+        
+        for ($i = 1, $l = count($transforms); $i<$l; $i++) {
+            $prevTransform = $transforms[$i-1];
+            $currentTransform = $transforms[$i];
+            
+            if (isset($prevTransform[$attributeName]) && isset($currentTransform[$attributeName])) {
+                if ($prevTransform[$attributeName] < $currentTransform[$attributeName]) {
+                    for($num = $prevTransform[$attributeName] + $interval, $maxNum = $currentTransform[$attributeName]; $num<$maxNum; $num = $num + $interval) {
+                        $transformCopy = $prevTransform;
+                        $transformCopy[$attributeName] = $num;
+                        $r[] = $transformCopy;
+                    }
+                } else {
+                    for($num = $prevTransform[$attributeName] - $interval, $minNum = $currentTransform[$attributeName]; $num>$minNum; $num = $num - $interval) {
+                        $transformCopy = $prevTransform;
+                        $transformCopy[$attributeName] = $num;
+                        $r[] = $transformCopy;
+                    }
+                }
+            }
+            
+            $r[] = $currentTransform;
+        }
+        
+        return $r;
+    }
+
 
     /**
      * Loads an image from a file system path, do transform, return transformed image as an Imager_ImageModel
      *
      * @param Imager_ImagePathsModel $paths
-     * @param Array $transform
+     * @param array $transform
      *
      * @throws Exception
      * @return Imager_ImageModel

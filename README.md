@@ -231,6 +231,19 @@ some environments.
 By default Imager throws exceptions if file based operations fail, an external image can't be downloaded, etc. If `suppressExceptions` is set 
 to `true`, Imager will instead log errors to the log file, and return `null` to the template.   
 
+### fillTransforms [bool]
+*Default: `false`*  
+Enable this setting to automatically fill a transform array with additional transforms based on `fillAttribute` and `fillInterval`.    
+
+### fillAttribute [string]
+*Default: `'width'`*  
+Attribute to be used when filling in the transforms array. Can be any valid numeric attribute.
+     
+### fillInterval [string]
+*Default: `200`*  
+Interval to be used when filling in the transforms array. This should always be a positive integer, Imager will automatically figure out if
+the transform has been ordered in an ascending or descending order.
+
 ### jpegoptimEnabled [bool]
 *Default: `false`*  
 Enable or disable image optimizations with [jpegoptim](https://github.com/tjko/jpegoptim).
@@ -456,7 +469,17 @@ Here's how the code would look with Imager:
 		{ width: 600, jpegQuality: 65 }, 
 		{ width: 400, jpegQuality: 65 }
 		], { ratio: 16/9, position: 'bottom-right', jpegQuality: 80 }) %}
+		
+Imager 1.5.0 also introduced a convenient `fillTransforms` config setting which makes the above code even simpler:
+		
+	{% set transformedImages = craft.imager.transformImage(image, [
+		{ width: 1200 }, 
+		{ width: 600, jpegQuality: 65 }, 
+		{ width: 400, jpegQuality: 65 }
+		], { ratio: 16/9, position: 'bottom-right', jpegQuality: 80 }, { fillTransforms: true }) %}
 
+See the `fillTransforms`, `fillAttribute` and `fillInterval` settings for more information.
+		
 The plugin also includes some additional methods that helps you streamline the creation of responsive images. With the above transformed images, you can output the appropriate srcset like this, with a base64-encoded placeholder in the src attribute:
 
     <img src="{{ craft.imager.base64Pixel(16, 9) }}" sizes="100vw" srcset="{{ craft.imager.srcset(transformedImages) }}">
