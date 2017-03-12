@@ -1,5 +1,18 @@
 [
     {
+        "version": "1.5.0",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2017-03-12T14:50:00+02:00",
+        "notes": [
+            "[Added] Added support for animated gifs! (imagick only).",
+            "[Added] Added support for optimizing images with gifsicle.",
+            "[Added] Added a new fillTransforms config setting which makes it even simpler to create multiple transforms.",
+            "[Added] Added support for quantize effect, which can help decrease filesize (imagick only).",
+            "[Added] Added support for clut (color lookup table) effect (imagick only).",
+            "[Fixed] Fixed a long-standing bug where crop position would be a little bit off when the crop position was between 0% and 50%, and 50% and 100%."
+        ]
+    },
+    {
         "version": "1.4.0",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2017-02-12T00:50:00+02:00",
