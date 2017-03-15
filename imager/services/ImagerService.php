@@ -1556,7 +1556,7 @@ class ImagerService extends BaseApplicationComponent
             $cmd .= ' ';
             $cmd .= $this->getSetting('jpegoptimOptionString');
             $cmd .= ' ';
-            $cmd .= $file;
+            $cmd .= '"'.$file.'"';
     
             $this->executeOptimize($cmd, $file);
         } else {
@@ -1577,9 +1577,9 @@ class ImagerService extends BaseApplicationComponent
             $cmd .= ' ';
             $cmd .= $this->getSetting('jpegtranOptionString');
             $cmd .= ' -outfile ';
-            $cmd .= $file;
+            $cmd .= '"'.$file.'"';
             $cmd .= ' ';
-            $cmd .= $file;
+            $cmd .= '"'.$file.'"';
     
             $this->executeOptimize($cmd, $file);
         } else {
@@ -1600,9 +1600,9 @@ class ImagerService extends BaseApplicationComponent
             $cmd .= ' ';
             $cmd .= $this->getSetting('mozjpegOptionString');
             $cmd .= ' -outfile ';
-            $cmd .= $file;
+            $cmd .= '"'.$file.'"';
             $cmd .= ' ';
-            $cmd .= $file;
+            $cmd .= '"'.$file.'"';
     
             $this->executeOptimize($cmd, $file);
         } else {
@@ -1623,7 +1623,7 @@ class ImagerService extends BaseApplicationComponent
             $cmd .= ' ';
             $cmd .= $this->getSetting('optipngOptionString');
             $cmd .= ' ';
-            $cmd .= $file;
+            $cmd .= '"'.$file.'"';
     
             $this->executeOptimize($cmd, $file);
         } else {
@@ -1645,9 +1645,9 @@ class ImagerService extends BaseApplicationComponent
             $cmd .= $this->getSetting('pngquantOptionString');
             $cmd .= ' ';
             $cmd .= '-f -o ';
-            $cmd .= $file;
+            $cmd .= '"'.$file.'"';
             $cmd .= ' ';
-            $cmd .= $file;
+            $cmd .= '"'.$file.'"';
     
             $this->executeOptimize($cmd, $file);
         } else {
@@ -1669,7 +1669,7 @@ class ImagerService extends BaseApplicationComponent
             $cmd .= $this->getSetting('gifsicleOptionString');
             $cmd .= ' ';
             $cmd .= '-b ';
-            $cmd .= $file;
+            $cmd .= '"'.$file.'"';
             
             $this->executeOptimize($cmd, $file);
         } else {
@@ -1706,6 +1706,7 @@ class ImagerService extends BaseApplicationComponent
 
         if ($this->getSetting('logOptimizations')) {
             ImagerPlugin::log("Optimized image $file \n\n" . $r, LogLevel::Info, true);
+			ImagerPlugin::log($command, LogLevel::Info, true);
         }
     }
 
