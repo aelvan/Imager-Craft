@@ -128,4 +128,14 @@ class ImagerVariable
     public function clientSupportsWebp() {
         return strpos(craft()->request->getAcceptTypes(), 'image/webp') !== false;
     }
+
+    /**
+     * Checks if asset is animated (only gif support atm)
+     * 
+     * @param $asset
+     * @return bool
+     */
+    public function isAnimated($asset) {
+        return craft()->imager->isAnimated($asset);
+    }
 }
