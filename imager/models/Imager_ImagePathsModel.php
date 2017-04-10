@@ -178,7 +178,7 @@ class Imager_ImagePathsModel extends BaseModel
         $this->sourcePath = ImagerService::fixSlashes($runtimePath . 'imager/' . $parsedDirname . '/');
         $this->sourceUrl = $image;
         $this->targetPath = ImagerService::fixSlashes(craft()->imager->getSetting('imagerSystemPath') . $parsedDirname . '/');
-        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . $parsedDirname . '/';
+        $this->targetUrl = craft()->imager->getSetting('imagerUrl') . ImagerService::fixSlashes($parsedDirname . '/');
         $this->sourceFilename = $this->targetFilename = str_replace(' ', '-', $pathParts['basename']);
         
         // check if the temp path for remote files exists or can be created.
