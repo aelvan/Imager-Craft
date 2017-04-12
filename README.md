@@ -329,6 +329,10 @@ The TinyPNG API key.
 *Allowed values: `'task'`, `'runtime'`*   
 By default all post-transform optimizations are done as a Craft task that is run after the request has ended. This speeds up the initial transform request, but makes non-optimized images available for a short while until the task has been run. If set to `'runtime'`, all optimizations will be run immediately.
 
+### skipExecutableExistCheck [string]
+*Default: `false`*  
+By default Imager will check if the executables for the post-transform optimizations exists. If you have basedir restrictions on, or for some other reason doesn't want to do this check, set this to true.
+
 ### logOptimizations [bool]
 *Default: `false`*  
 Logs information about optimizations.

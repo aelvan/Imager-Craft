@@ -1551,7 +1551,7 @@ class ImagerService extends BaseApplicationComponent
      */
     public function runJpegoptim($file)
     {
-        if (file_exists($this->getSetting('jpegoptimPath'))) {
+        if ($this->getSetting('skipExecutableExistCheck') || file_exists($this->getSetting('jpegoptimPath'))) {
             $cmd = $this->getSetting('jpegoptimPath');
             $cmd .= ' ';
             $cmd .= $this->getSetting('jpegoptimOptionString');
@@ -1572,7 +1572,7 @@ class ImagerService extends BaseApplicationComponent
      */
     public function runJpegtran($file)
     {
-        if (file_exists($this->getSetting('jpegtranPath'))) {
+        if ($this->getSetting('skipExecutableExistCheck') || file_exists($this->getSetting('jpegtranPath'))) {
             $cmd = $this->getSetting('jpegtranPath');
             $cmd .= ' ';
             $cmd .= $this->getSetting('jpegtranOptionString');
@@ -1595,7 +1595,7 @@ class ImagerService extends BaseApplicationComponent
      */
     public function runMozjpeg($file)
     {
-        if (file_exists($this->getSetting('mozjpegPath'))) {
+        if ($this->getSetting('skipExecutableExistCheck') || file_exists($this->getSetting('mozjpegPath'))) {
             $cmd = $this->getSetting('mozjpegPath');
             $cmd .= ' ';
             $cmd .= $this->getSetting('mozjpegOptionString');
@@ -1618,7 +1618,7 @@ class ImagerService extends BaseApplicationComponent
      */
     public function runOptipng($file)
     {
-        if (file_exists($this->getSetting('optipngPath'))) {
+        if ($this->getSetting('skipExecutableExistCheck') || file_exists($this->getSetting('optipngPath'))) {
             $cmd = $this->getSetting('optipngPath');
             $cmd .= ' ';
             $cmd .= $this->getSetting('optipngOptionString');
@@ -1639,7 +1639,7 @@ class ImagerService extends BaseApplicationComponent
      */
     public function runPngquant($file)
     {
-        if (file_exists($this->getSetting('pngquantPath'))) {
+        if ($this->getSetting('skipExecutableExistCheck') || file_exists($this->getSetting('pngquantPath'))) {
             $cmd = $this->getSetting('pngquantPath');
             $cmd .= ' ';
             $cmd .= $this->getSetting('pngquantOptionString');
@@ -1663,7 +1663,7 @@ class ImagerService extends BaseApplicationComponent
      */
     public function runGifsicle($file)
     {
-        if (file_exists($this->getSetting('gifsiclePath'))) {
+        if ($this->getSetting('skipExecutableExistCheck') || file_exists($this->getSetting('gifsiclePath'))) {
             $cmd = $this->getSetting('gifsiclePath');
             $cmd .= ' ';
             $cmd .= $this->getSetting('gifsicleOptionString');

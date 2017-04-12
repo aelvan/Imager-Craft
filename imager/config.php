@@ -71,6 +71,7 @@ return array(
   'tinyPngEnabled' => false,
   'tinyPngApiKey' => '',
   'optimizeType' => 'task',
+  'skipExecutableExistCheck' => false,
   'logOptimizations' => false,
   
   'awsEnabled' => false,

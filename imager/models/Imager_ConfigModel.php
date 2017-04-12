@@ -90,6 +90,7 @@ class Imager_ConfigModel extends BaseModel
           'tinyPngEnabled' => array(AttributeType::Bool),
           'tinyPngApiKey' => array(AttributeType::String),
           'optimizeType' => array(AttributeType::String),
+          'skipExecutableExistCheck' => array(AttributeType::Bool),
           'logOptimizations' => array(AttributeType::Bool),
           'awsEnabled' => array(AttributeType::Bool),
           'awsAccessKey' => array(AttributeType::String),
