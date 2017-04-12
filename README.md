@@ -575,6 +575,10 @@ Converts a hexadecimal color value to rgb. Input value must be a string. Output 
 ### craft.imager.rgb2hex(color)
 Converts a rgb color value to hexadecimal. Input value must be an array with red as index 0, green as index 1 and blue as index 2. Output value is a string.
 
+### craft.imager.isAnimated(image)
+Returns `true` or `false` depending on if the supplied image is animated or not (only gif support at the moment).   
+
+
 ---
 
 Transform parameters
