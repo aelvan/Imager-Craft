@@ -1,5 +1,16 @@
 [
     {
+        "version": "1.5.1",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2017-04-12T18:52:00+02:00",
+        "notes": [
+            "[Added] Added isAnimated template variable for checking if an asset is animated",
+            "[Added] Added skipExecutableExistCheck config setting.",
+            "[Fixed] Fixed missing fixSlashes for external images.",
+            "[Fixed] Fixed ans issue with running post-transform optimizations on system with spaces in path"
+        ]
+    },
+    {
         "version": "1.5.0",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2017-03-12T14:50:00+02:00",
