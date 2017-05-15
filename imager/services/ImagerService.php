@@ -443,6 +443,11 @@ class ImagerService extends BaseApplicationComponent
                 $this->imageInstance->strip();
             }
 
+            // Convert the image to RGB before converting to webp/saving
+            if ($this->getSetting('convertToRGB', $transform)) {
+                $this->imageInstance->usePalette(new \Imagine\Image\Palette\RGB());
+            }
+
             // save the transform
             if ($targetExtension === 'webp') {
                 if ($this->hasSupportForWebP()) {
@@ -452,10 +457,6 @@ class ImagerService extends BaseApplicationComponent
                       array('imageDriver' => $this->imageDriver == 'gd' ? 'GD' : 'Imagick')));
                 }
             } else {
-                if ($this->getSetting('convertToRGB')) {
-                    $this->imageInstance->usePalette(new \Imagine\Image\Palette\RGB());
-                }
-
                 $this->imageInstance->save($targetFilePath, $saveOptions);
             }
 
@@ -1199,9 +1200,6 @@ class ImagerService extends BaseApplicationComponent
           'flatten' => true
         );
 
-        if ($this->getSetting('convertToRGB')) {
-            $imageInstance->usePalette(new \Imagine\Image\Palette\RGB());
-        }
         $imageInstance->save($targetFilePath, $saveOptions);
 
         return $targetFilePath;
