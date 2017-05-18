@@ -66,6 +66,7 @@ class Imager_ConfigModel extends BaseModel
           'instanceReuseEnabled' => array(AttributeType::Bool),
           'noop' => array(AttributeType::Bool),
           'suppressExceptions' => array(AttributeType::Bool),
+          'convertToRGB' => array(AttributeType::Bool),
           'fillTransforms' => array(AttributeType::Bool),
           'fillAttribute' => array(AttributeType::String),
           'fillInterval' => array(AttributeType::Number),

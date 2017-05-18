@@ -443,6 +443,11 @@ class ImagerService extends BaseApplicationComponent
                 $this->imageInstance->strip();
             }
 
+            // Convert the image to RGB before converting to webp/saving
+            if ($this->getSetting('convertToRGB', $transform)) {
+                $this->imageInstance->usePalette(new \Imagine\Image\Palette\RGB());
+            }
+
             // save the transform
             if ($targetExtension === 'webp') {
                 if ($this->hasSupportForWebP()) {
