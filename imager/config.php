@@ -45,7 +45,7 @@ return array(
   'instanceReuseEnabled' => false,
   'noop' => false,
   'suppressExceptions' => false,
-  'convertToRGB' => true, // Should images be converted to RGB?
+  'convertToRGB' => false, // Should images be converted to RGB?
     
   'fillTransforms' => false,
   'fillAttribute' => 'width', // this could be any attribute that is numeric
