@@ -231,6 +231,10 @@ some environments.
 By default Imager throws exceptions if file based operations fail, an external image can't be downloaded, etc. If `suppressExceptions` is set 
 to `true`, Imager will instead log errors to the log file, and return `null` to the template.   
 
+### convertToRGB [bool]
+*Default: `false`*  
+Enable this setting to ensure that transformed images are saved as RGB.    
+
 ### fillTransforms [bool]
 *Default: `false`*  
 Enable this setting to automatically fill a transform array with additional transforms based on `fillAttribute` and `fillInterval`.    
