@@ -31,8 +31,6 @@ class ImagerVariable
      * Takes an array of Imager_ImageModel (or anything else that supports getUrl() and getWidth())
      * and returns a srcset string
      *
-     * todo : Implement support for other descriptors
-     *
      * @param Array $images
      * @param string $descriptor
      * @return string
@@ -40,12 +38,28 @@ class ImagerVariable
     public function srcset($images, $descriptor = 'w')
     {
         $r = '';
-        $widths = array();
+        $generated = array();
 
         foreach ($images as $image) {
-            if (!isset($widths[$image->getWidth()])) {
-                $r .= $image->getUrl() . ' ' . $image->getWidth() . 'w, ';
-                $widths[$image->getWidth()] = true;
+            switch ($descriptor) {
+                case 'w':
+                    if (!isset($generated[$image->getWidth()])) {
+                        $r .= $image->getUrl().' '.$image->getWidth().'w, ';
+                        $generated[$image->getWidth()] = true;
+                    }
+                    break;
+                case 'h':
+                    if (!isset($generated[$image->getHeight()])) {
+                        $r .= $image->getUrl().' '.$image->getHeight().'h, ';
+                        $generated[$image->getHeight()] = true;
+                    }
+                    break;
+                case 'w+h':
+                    if (!isset($generated[$image->getWidth() . 'x' . $image->getHeight()])) {
+                        $r .= $image->getUrl().' '.$image->getWidth().'w ' .$image->getHeight().'h, ';
+                        $generated[$image->getWidth() . 'x' . $image->getHeight()] = true;
+                    }
+                    break;
             }
         }
 
@@ -59,7 +73,7 @@ class ImagerVariable
      */
     public function base64Pixel($width = 1, $height = 1)
     {
-        return "data:image/svg+xml;charset=utf-8," . rawurlencode("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $width $height'/>");
+        return "data:image/svg+xml;charset=utf-8," . rawurlencode("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $width $height' fill='#f00'/>");
     }
 
     /**
