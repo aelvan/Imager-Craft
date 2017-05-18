@@ -1,5 +1,17 @@
 [
     {
+        "version": "1.5.2",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2017-05-18T19:12:00+02:00",
+        "notes": [
+            "[Added] Added convertToRGB config setting (Thanks, @terbolous)",
+            "[Added] Added support for more descriptors (h and w+h) in craft.imager.srcset.",
+            "[Added] Added support for background color in craft.imager.base64Pixel.",
+            "[Fixed] Fixed a bug in craft.imager.base64Pixel where size wasn't being correctly used.",
+            "[Fixed] Fixed an issue where missing trailing slash in imagerSystemPath would make transforming external images fail."
+        ]
+    },
+    {
         "version": "1.5.1",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2017-04-12T18:52:00+02:00",
@@ -7,7 +19,7 @@
             "[Added] Added isAnimated template variable for checking if an asset is animated",
             "[Added] Added skipExecutableExistCheck config setting.",
             "[Fixed] Fixed missing fixSlashes for external images.",
-            "[Fixed] Fixed ans issue with running post-transform optimizations on system with spaces in path"
+            "[Fixed] Fixed an issue with running post-transform optimizations on system with spaces in path"
         ]
     },
     {

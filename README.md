@@ -534,17 +534,18 @@ The main transform method. Returns either an Imager_ImageModel (see documentatio
 **transformDefaults**: An object containing any default transform settings that should be applied to each transform. If transform properties given here are specified in an individual transform, the property value of the individual transform will be used.    
 **configOverrides**: An object containing any overrides to the default config settings that should be used for this transform. See the "Configuration"-section for information on which settings that can be overridden.
 
-### craft.imager.base64Pixel([width=1, height=1])
+### craft.imager.base64Pixel([width=1, height=1, color='transparent'])
 Outputs a base64 encoded SVG image. 
 
 **width**: Width of the placeholder. Defaults to '1'.  
 **height**: Height of the placeholder. Defaults to '1'.
+**color**: Color of the placeholder. Defaults to 'transparent'.
 
 ### craft.imager.srcset(images [, descriptor='w'])
 Outputs a srcset string from an array of transformed images.
 
 **images**: An array of Imager_ImageModel objects, or anything else that support the interface.  
-**descriptior**: A string indicating which size descriptor should be used in the srcset. *Only 'w' is supported at the moment.*
+**descriptior**: A string indicating which size descriptor should be used in the srcset. 'w', 'h' and 'w+h' is supported at the moment. Please note that 'h' isn't standards-compliant, but is useful for instance when using Lazysizes and their bgset plugin.
 
 ### craft.imager.serverSupportsWebp()
 Returns `true` or `false` depending on if the server has support for webp or not. This could either indicate built in support for webp in the current image driver, GD or Imagick, or the presence of the cwebp binary if this has been enabled.  
