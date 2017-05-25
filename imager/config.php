@@ -42,6 +42,7 @@ return array(
   'hashFilename' => 'postfix', // true, false, or 'postfix' (meaning only the generated part of the filename is hashed)
   'hashPath' => false, 
   'hashRemoteUrl' => false, // true, false, or 'host' (meaning only the host part of the url is hashed) 
+  'useRemoteUrlQueryString' => false,
   'instanceReuseEnabled' => false,
   'noop' => false,
   'suppressExceptions' => false,

@@ -155,6 +155,7 @@ class Imager_ImagePathsModel extends BaseModel
         $convertedImageStr = StringHelper::asciiString(urldecode($image));
         $urlParts = parse_url($convertedImageStr);
         $pathParts = pathinfo($urlParts['path']);
+        $queryString = craft()->imager->getSetting('useRemoteUrlQueryString') ? $urlParts['query'] : '';
         $hashRemoteUrl = craft()->imager->getSetting('hashRemoteUrl');
         $hashPath = craft()->imager->getSetting('hashPath');
         
@@ -179,7 +180,7 @@ class Imager_ImagePathsModel extends BaseModel
         $this->sourceUrl = $image;
         $this->targetPath = ImagerService::fixSlashes(craft()->imager->getSetting('imagerSystemPath') . '/' . $parsedDirname . '/');
         $this->targetUrl = craft()->imager->getSetting('imagerUrl') . ImagerService::fixSlashes($parsedDirname . '/');
-        $this->sourceFilename = $this->targetFilename = str_replace(' ', '-', $pathParts['basename']);
+        $this->sourceFilename = $this->targetFilename = str_replace(' ', '-', $pathParts['basename']) . ($queryString!=='' ? '_' . md5($queryString) : '');
         
         // check if the temp path for remote files exists or can be created.
         if (!IOHelper::getRealPath($this->sourcePath)) {

@@ -60,6 +60,7 @@ class Imager_ConfigModel extends BaseModel
           'hashFilename' => array(AttributeType::Bool),
           'hashPath' => array(AttributeType::Bool),
           'hashRemoteUrl' => array(AttributeType::Bool),
+          'useRemoteUrlQueryString' => array(AttributeType::Bool),
           'cacheEnabled' => array(AttributeType::Bool),
           'cacheDuration' => array(AttributeType::Number),
           'cacheDurationRemoteFiles' => array(AttributeType::Number),
