@@ -155,7 +155,7 @@ class Imager_ImagePathsModel extends BaseModel
         $convertedImageStr = StringHelper::asciiString(urldecode($image));
         $urlParts = parse_url($convertedImageStr);
         $pathParts = pathinfo($urlParts['path']);
-        $queryString = craft()->imager->getSetting('useRemoteUrlQueryString') ? $urlParts['query'] : '';
+        $queryString = craft()->imager->getSetting('useRemoteUrlQueryString') ? (isset($urlParts['query']) ? $urlParts['query'] : '') : '';
         $hashRemoteUrl = craft()->imager->getSetting('hashRemoteUrl');
         $hashPath = craft()->imager->getSetting('hashPath');
         
