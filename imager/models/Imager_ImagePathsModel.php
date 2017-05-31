@@ -174,13 +174,13 @@ class Imager_ImagePathsModel extends BaseModel
         } else {
             $parsedDirname = str_replace('.', '_', $urlParts['host']) . $targetFolder;
         }
-
+        
         $runtimePath = IOHelper::getRealPath(craft()->path->getRuntimePath());
         $this->sourcePath = ImagerService::fixSlashes($runtimePath . 'imager/' . $parsedDirname . '/');
         $this->sourceUrl = $image;
         $this->targetPath = ImagerService::fixSlashes(craft()->imager->getSetting('imagerSystemPath') . '/' . $parsedDirname . '/');
         $this->targetUrl = craft()->imager->getSetting('imagerUrl') . ImagerService::fixSlashes($parsedDirname . '/');
-        $this->sourceFilename = $this->targetFilename = str_replace(' ', '-', $pathParts['basename']) . ($queryString!=='' ? '_' . md5($queryString) : '');
+        $this->sourceFilename = $this->targetFilename = str_replace(' ', '-', $pathParts['filename']) . ($queryString!=='' ? '_' . md5($queryString) : '') . (isset($pathParts['extension']) ? '.' . $pathParts['extension'] : '');
         
         // check if the temp path for remote files exists or can be created.
         if (!IOHelper::getRealPath($this->sourcePath)) {
