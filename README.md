@@ -215,6 +215,10 @@ If you set this to `true`, the whole url will be hashed and used as the path.
 
 If set to `'host'`, only the hostname will be hashed, while the remote path will be kept. 
 
+### useRemoteUrlQueryString [bool]
+*Default: `false`*  
+By default, query strings on external urls are not used when creating the filename of the transformed file, to improve caching. When enabled, any query string on the external url will be hashed and added as a part of the filename.  
+
 ### instanceReuseEnabled [bool]
 *Default: `false`*  
 By default, both in Imager and Craft's built in transform functionality, the original image is loaded into memory for every transform. This ensures that the quality of the resulting transform is as good as possible. 
