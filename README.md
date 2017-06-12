@@ -4,7 +4,19 @@ Imager is a plugin for doing image transforms in Craft templates. It does all th
 
 Whenever possible, Imager utilizes the image manipulation library [Imagine](http://imagine.readthedocs.org/) which Craft comes with and uses for it's own transform functionality.
 
-**Features**:
+Support Open Source. Support Imager. Buy beer.
+=====
+*Imager is [licensed under a MIT license](#price-license-and-support), which means that it's completely free open source software, and 
+you can use it for whatever you wish. Unfortunately, Imager doesn't make itself (it ought to, though!). A lot of beer has been consumed 
+since version 1.0.0, and beers are expensive in Norway. Craft 3 is right around the corner, which will result in many late, beer-filled 
+nights to get Imager updated to work with it.* 
+
+*If you're using Imager and want to support the development, you now have the chance! Head over to [Beerpay](https://beerpay.io/aelvan/Imager-Craft), and donate a beer or two!* 
+
+[![Beerpay](https://beerpay.io/aelvan/Imager-Craft/badge.svg?style=beer)](https://beerpay.io/aelvan/Imager-Craft)
+
+Features
+=====
 
 - A convenient syntax for doing a bunch of image transforms in one go.  
 - Transforms are completely file-based, no database queries needed.
