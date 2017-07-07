@@ -1751,7 +1751,7 @@ class ImagerService extends BaseApplicationComponent
     
         fclose($fh);
         
-        return $count > 1; 
+        return $count > 0; 
     }
     
     /**
