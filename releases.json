@@ -1,5 +1,13 @@
 [
     {
+        "version": "1.5.4",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2017-07-10T14:34:00+02:00",
+        "notes": [
+            "[Fixed] Fixed an error that would result in a gif with two frames not being identified as animated."
+        ]
+    },
+    {
         "version": "1.5.3",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2017-06-04T15:15:00+02:00",
