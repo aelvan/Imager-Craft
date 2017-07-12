@@ -94,6 +94,13 @@ class Imager_ConfigModel extends BaseModel
           'optimizeType' => array(AttributeType::String),
           'skipExecutableExistCheck' => array(AttributeType::Bool),
           'logOptimizations' => array(AttributeType::Bool),
+          'imgixEnabled' => array(AttributeType::Bool),
+          'imgixDomains' => array(AttributeType::Mixed),
+          'imgixUseHttps' => array(AttributeType::Bool),
+          'imgixSignKey' => array(AttributeType::String),
+          'imgixSourceIsWebProxy' => array(AttributeType::Bool),
+          'imgixShardStrategy' => array(AttributeType::String),
+          'imgixGetExternalImageDimensions' => array(AttributeType::Bool),
           'awsEnabled' => array(AttributeType::Bool),
           'awsAccessKey' => array(AttributeType::String),
           'awsSecretAccessKey' => array(AttributeType::String),
@@ -138,12 +145,7 @@ class Imager_ConfigModel extends BaseModel
      */
     private function _addToOverrideFilestring($k, $v)
     {
-        $r = (isset(ImagerService::$transformKeyTranslate[$k]) ? ImagerService::$transformKeyTranslate[$k] : $k) . $v;
+        $r = (isset(ImagerService::$transformKeyTranslate[$k]) ? ImagerService::$transformKeyTranslate[$k] : $k) . (is_array($v) ? md5(implode('-',$v)) : $v);
         $this->configOverrideString .= '_' . str_replace('%', '', str_replace(array(' ', '.'), '-', $r));
-    }
-
-    function __toString()
-    {
-        return Craft::t($this->url);
     }
 }

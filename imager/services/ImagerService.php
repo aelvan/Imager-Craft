@@ -196,9 +196,37 @@ class ImagerService extends BaseApplicationComponent
         if (!$image) {
             return null; // there's nothing to see here, move along.
         }
-
+        
+        // create config model
         $this->configModel = new Imager_ConfigModel($configOverrides);
+        
+        // Fill missing transforms if fillTransforms is enabled
+        if (craft()->imager->getSetting('fillTransforms')===true)
+        {
+            if (is_array($transform) && count($transform)>1) {
+                $transform = $this->_fillTransforms($transform);
+            }
+        }
+
+        // if imgix is enabled this is a totally different ballgame
+        if (craft()->imager->getSetting('imgixEnabled')) {
+            $r = null;
+
+            if (isset($transform[0])) {
+                foreach ($transform as $t) {
+                    $r[] = craft()->imager_imgix->getTransformedImage($image, $transformDefaults != null ? array_merge($transformDefaults, $t) : $t);
+                }
+            } else {
+                    $r = craft()->imager_imgix->getTransformedImage($image, $transformDefaults != null ? array_merge($transformDefaults, (array)$transform) : $transform);
+            }
+            
+            return $r;
+        }
+        
+        // get pathsmodel for image
         $pathsModel = new Imager_ImagePathsModel($image);
+
+        // create imagine instance
         $this->imagineInstance = $this->_createImagineInstance();
 
         /**
@@ -265,14 +293,6 @@ class ImagerService extends BaseApplicationComponent
             }    
         }
         
-        // Fill missing transforms if fillTransforms is enabled
-        if (craft()->imager->getSetting('fillTransforms')===true)
-        {
-            if (is_array($transform) && count($transform)>1) {
-                $transform = $this->_fillTransforms($transform);
-            }
-        }
-
         /**
          * Transform can be either an array or just an object.
          * Act accordingly and return the results the same way to the template.
@@ -381,7 +401,7 @@ class ImagerService extends BaseApplicationComponent
         }
 
         // normalize the transform before doing anything more 
-        $transform = $this->_normalizeTransform($transform, $paths);
+        $transform = $this->normalizeTransform($transform, $paths);
 
         // create target filename, path and url
         $targetFilename = $this->_createTargetFilename($filename, $targetExtension, $transform);
@@ -582,7 +602,7 @@ class ImagerService extends BaseApplicationComponent
             $this->_applyBackgroundColor($layer, $this->getSetting('bgColor', $transform));
         }
     }
-
+    
     /**
      * Creates the target filename
      *
@@ -622,7 +642,7 @@ class ImagerService extends BaseApplicationComponent
      * @param $transform
      * @return mixed
      */
-    private function _normalizeTransform($transform, $paths = null)
+    public function normalizeTransform($transform, $paths = null)
     {
         // if resize mode is not crop or croponly, remove position
         if (isset($transform['mode']) && (($transform['mode'] != 'crop') && ($transform['mode'] != 'croponly'))) {
@@ -662,8 +682,8 @@ class ImagerService extends BaseApplicationComponent
             }
         }
 
-        // remove format, this is already in the extension
-        if (isset($transform['format'])) {
+        // remove format, this is already in the extension, if we have
+        if (isset($transform['format']) && $paths !== null) {
             unset($transform['format']);
         }
 

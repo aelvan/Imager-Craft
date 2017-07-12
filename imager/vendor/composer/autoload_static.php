@@ -33,11 +33,22 @@ class ComposerStaticInitd3433048d9f6c319304da7837dbca0c8
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'I' => 
+        array (
+            'Imgix\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/imgix/imgix-php/src',
+            ),
+        ),
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitd3433048d9f6c319304da7837dbca0c8::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitd3433048d9f6c319304da7837dbca0c8::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitd3433048d9f6c319304da7837dbca0c8::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }

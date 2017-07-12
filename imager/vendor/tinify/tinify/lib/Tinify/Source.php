@@ -11,13 +11,13 @@ class Source {
 
     public static function fromBuffer($string) {
         $response = Tinify::getClient()->request("post", "/shrink", $string);
-        return new self($response["headers"]["location"]);
+        return new self($response->headers["location"]);
     }
 
     public static function fromUrl($url) {
         $body = array("source" => array("url" => $url));
         $response = Tinify::getClient()->request("post", "/shrink", $body);
-        return new self($response["headers"]["location"]);
+        return new self($response->headers["location"]);
     }
 
     public function __construct($url, $commands = array()) {
@@ -39,12 +39,12 @@ class Source {
     public function store($options) {
         $response = Tinify::getClient()->request("post", $this->url,
             array_merge($this->commands, array("store" => $options)));
-        return new Result($response["headers"], $response["body"]);
+        return new Result($response->headers, $response->body);
     }
 
     public function result() {
         $response = Tinify::getClient()->request("get", $this->url, $this->commands);
-        return new Result($response["headers"], $response["body"]);
+        return new Result($response->headers, $response->body);
     }
 
     public function toFile($path) {

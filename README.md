@@ -24,6 +24,7 @@ Features
 - Transformed images are placed in their own folder, outside of the asset source folder.
 - You can even upload and serve the transformed images from AWS.
 - Optimize your transformed images automatically with jpegoptim, jpegtran, mozjpeg, optipng, pngquant, gifsicle or TinyPNG and make Google happy!
+– You can use the amazing Imgix to offload handling of images from your server.
 - You can create interlaced/progressive images.
 - You can even transform animated gifs.
 - In addition to jpeg, gif and png, you can save images in webp format (if you have the necessary server requirements).
@@ -57,8 +58,10 @@ Contents
 * [Transform parameters](#transform-parameters)
 * [Effects](#effects)
 * [Imager_ImageModel](#imager_imagemodel)
+* [Imager_ImgixModel](#imager_imgixmodel)
+* [Controller actions](#controller-actions)
+* [Imgix Support](#imgix-support)
 * [Caching and cache breaking](#caching-and-cache-breaking)
-* [Performance](#performance)
 * [Price, license and support](#price-license-and-support)
 * [Changelog](#changelog)
 
@@ -466,6 +469,47 @@ If you for some reason want to disable this behavior, change this setting to `fa
 *Default: `''`*  
 Key to use when clearing the transform or remote images cache with the controller actions. An empty string means clearing is disabled
 
+### imgixEnabled [bool]  
+*Default: `false`*  
+Enables [Imgix](https://www.imgix.com/) support. Read more about [Imgix support below](#imgix-support).    
+
+### imgixDomains [array]  
+*Default: `null`*  
+An array of Imgix source domains.  
+    
+### imgixDomains [array]  
+*Default: `null`*  
+An array of Imgix source domains.  
+  
+### imgixUseHttps [bool]  
+*Default: `true`*  
+Indicates if generated Imgix URLs should be https or not.   
+  
+### imgixSignKey [string]  
+*Default: `''`*  
+If you've protected your source with secure URLs, you must provide the sign key/token. An empty string indicates that the source is not secure.
+  
+### imgixSourceIsWebProxy [bool]  
+*Default: `false`*  
+Indicates if your Imgix source is a web proxy or not.   
+  
+### imgixShardStrategy [string]  
+*Default: `'cycle'`*  
+*Allowed values: `'cycle'`, `'crc'`*   
+Determines the sharding strategy if more than one source is used. 
+
+### imgixGetExternalImageDimensions [bool]  
+*Default: `true`*  
+Imager does its best at determining the dimensions of the transformed images. If the supplied asset is on Craft source,
+it's easy because Craft records the original dimensions of the image in the database. But if the image is external, it's
+not that easy. Imager will try to determine the size based on the transform parameters, and if both width and height, or
+ratio is provided, it'll usually be able to. But if you only transform by one attribute, it may not be possible. In these
+cases Imager will by default download the source image and check the dimensions to calculate the missing bits.
+
+By disabling this setting, you're telling Imager to never download external images, and to just give up on trying to figure
+out the dimensions. If you supplied only width to the transform, height will then be set to 0. If you don't need to use height
+in your code, that's totally fine, and you've managed to squeeze out a bit more performance.
+
 
 ---
 
@@ -500,7 +544,8 @@ Imager 1.5.0 also introduced a convenient `fillTransforms` config setting which 
 		{ width: 1200 }, 
 		{ width: 600, jpegQuality: 65 }, 
 		{ width: 400, jpegQuality: 65 }
-		], { ratio: 16/9, position: 'bottom-right', jpegQuality: 80 }, { fillTransforms: true }) %}
+		], { ratio: 16/9, position: 'bottom-right', jpegQuality: 80 }, 
+		{ fillTransforms: true }) %}
 
 See the `fillTransforms`, `fillAttribute` and `fillInterval` settings for more information.
 		
@@ -598,6 +643,9 @@ Converts a rgb color value to hexadecimal. Input value must be an array with red
 
 ### craft.imager.isAnimated(image)
 Returns `true` or `false` depending on if the supplied image is animated or not (only gif support at the moment).   
+
+### craft.imager.imgixEnabled()
+Returns `true` or `false` depending on if Imgix is enabled.   
 
 
 ---
@@ -698,6 +746,12 @@ As with the `effects`, this adds image adjustments to the transformed image, but
 * letterbox
 * hashFilename
 * hashRemoteUrl
+
+### imgixParams [object]
+*Default: null*   
+Additional parameters that are passed to the [Imgix URL API](https://docs.imgix.com/apis/url) if Imgix is enabled. 
+
+
 
 ---
 
@@ -850,6 +904,51 @@ Returns a string of the base64 encoded image data.
 
 ---
 
+Imager_ImgixModel
+---
+The model returned by the craft.imager.transformImage method if Imgix is enabled. This model has the same signature
+as the Imager_ImageModel for companilities sake, but does return empty strings for some of its attributes that are not
+applicable, or not possible to determine.
+
+### Public attributes
+**url**: URL to the image.   
+**path**: Returns an empty string.   
+**extension**: Returns an empty string.   
+**mimeType**: Returns an empty string.   
+**width**: Width of the image.   
+**height**: Height of the image.    
+**size**: Returns an empty string.    
+
+### Public methods
+**getUrl() [string]**   
+URL to the image.   
+
+**getPath() [string]**   
+Returns an empty string. 
+
+**getExtension() [string]**  
+Returns an empty string.   
+
+**getMimeType() [string]**  
+Returns an empty string.   
+
+**getWidth() [string]**  
+Width of the image.   
+
+**getHeight() [string]**  
+Height of the image.   
+
+**getSize($unit='b', $precision='2') [float]**  
+Returns an empty string.  
+
+**getDataUri() [string]**  
+Returns an empty string.   
+
+**getBase64Encoded() [string]**  
+Returns an empty string.   
+
+---
+
 Controller actions
 ---
 Imager has two controller actions, one for clearing the transformed images cache, and one for clearing remote images.
@@ -867,6 +966,17 @@ Clearing external images cache:
 
 ---
 
+Imgix support
+---
+Imager 1.6.0 added support for using [Imgix](https://www.imgix.com/) with Imager. When enabled, transforms will no longer be done on your server,
+instead Imager will create an URL based on [Imgix' URL API](https://docs.imgix.com/apis/url) and Imgix will do the job of transforming
+your images. This will eliminate all issues with execution timeouts and memory limits that people are running
+into when doing massive amounts of image transforms.  
+
+For more info about how to set up Imgix support and what it can do, please read [the launch article](https://www.vaersaagod.no/en/support-for-imgix-in-imager-for-craftcms). 
+
+---
+
 Caching and cache breaking
 ---
 When caching is enabled (`cacheEnabled` configuration setting set to `true`) transformed images are cached for the duration of the `cacheDuration` configuration setting. If an image file is replaced, the existing transforms will be deleted. If a file is moved, the transforms will also be regenerated, since Imager will not find the transforms in the new location.
@@ -879,7 +989,10 @@ When transforming a remote image, the image will be downloaded and cached for th
 
 Price, license and support
 ---
-The plugin is released under the MIT license, meaning you can do what ever you want with it as long as you don't blame me. **It's free**, which means there is absolutely no support included, but you might get it anyway. Just post an issue here on github if you have one, and I'll see what I can do. :)
+The plugin is released under the MIT license, meaning you can do what ever you want with it as long as you don't 
+blame me. **It's free**, which means there is absolutely no support included, but you might get it anyway. Just 
+post an issue here on github if you have one, and I'll see what I can do. It doesn't hurt to donate a beer at
+[Beerpay](https://beerpay.io/aelvan/Imager-Craft) either. Just saying. :)
 
 ---
 

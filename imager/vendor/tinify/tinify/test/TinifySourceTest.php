@@ -134,6 +134,10 @@ class TinifySourceTest extends TestCase {
             "headers" => array("Location" => "https://api.tinify.com/some/location"),
         ));
 
+        CurlMock::register("https://api.tinify.com/some/location", array(
+            "status" => 200, "body" => "compressed file"
+        ));
+
         $this->assertInstanceOf("Tinify\Result", Tinify\Source::fromBuffer("png file")->result());
     }
 

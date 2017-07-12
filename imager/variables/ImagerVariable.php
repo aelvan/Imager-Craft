@@ -152,4 +152,13 @@ class ImagerVariable
     public function isAnimated($asset) {
         return craft()->imager->isAnimated($asset);
     }
+
+    /**
+     * Checks for webp support in image driver
+     * 
+     * @return bool
+     */
+    public function imgixEnabled() {
+        return craft()->config->get('imgixEnabled', 'imager');
+    }
 }

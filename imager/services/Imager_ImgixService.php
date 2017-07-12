@@ -1,0 +1,232 @@
+<?php
+
+namespace Craft;
+
+use Imgix\UrlBuilder;
+use Imgix\ShardStrategy;
+
+/**
+ * Imager by André Elvan
+ *
+ * @author      André Elvan <http://vaersaagod.no>
+ * @package     Imager
+ * @copyright   Copyright (c) 2016, André Elvan
+ * @license     http://opensource.org/licenses/mit-license.php MIT License
+ * @link        https://github.com/aelvan/Imager-Craft
+ */
+class Imager_ImgixService extends BaseApplicationComponent
+{
+    public static $transformKeyTranslate = [
+        'width' => 'w',
+        'height' => 'h',
+        'format' => 'fm',
+        'bgColor' => 'bg',
+    ];
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+    }
+
+    public function getTransformedImage($image, $transform)
+    {
+        $transform = craft()->imager->normalizeTransform($transform, null);
+        $domains = craft()->imager->getSetting('imgixDomains', $transform);
+
+        $builder = new UrlBuilder($domains);
+        $builder->setUseHttps(craft()->imager->getSetting('imgixUseHttps', $transform));
+
+        if (craft()->imager->getSetting('imgixSignKey', $transform) !== '') {
+            $builder->setSignKey(craft()->imager->getSetting('imgixSignKey', $transform));
+        }
+
+        if (count($domains) > 1) {
+            $builder->setShardStrategy(craft()->imager->getSetting('imgixShardStrategy', $transform) === 'cycle' ? ShardStrategy::CYCLE : ShardStrategy::CRC);
+        }
+
+        $params = $this->createParams($transform, $image);
+
+        if (is_string($image)) { // if $image is a string, just pass it to builder, we have to assume the user knows what he's doing (sry) :)
+            $url = $builder->createURL($image, $params);
+        } else {
+            if (craft()->imager->getSetting('imgixSourceIsWebProxy', $transform) === true) {
+                $url = $builder->createURL($image->url, $params);
+            } else {
+                $url = $builder->createURL($image->path, $params);
+            }
+        }
+
+        return new Imager_ImgixModel($url, $image, $params);
+    }
+
+    private function createParams($transform, $image)
+    {
+        $r = [];
+
+        // Directly translate some keys
+        foreach (Imager_ImgixService::$transformKeyTranslate as $key => $val) {
+            if (isset($transform[$key])) {
+                $r[$val] = $transform[$key];
+                unset($transform[$key]);
+            }
+        }
+
+        // Set quality 
+        if (!isset($transform['q'])) {
+            if (isset($r['fm'])) {
+                $r['q'] = $this->getQualityFromExtension($r['fm'], $transform);
+            } else {
+                $ext = null;
+
+                if ($image instanceof \Craft\AssetFileModel) {
+                    $ext = $image->getExtension();
+                }
+
+                if (is_string($image)) {
+                    $ext = IOHelper::getExtension($image);
+                }
+
+                $r['q'] = $this->getQualityFromExtension($ext, $transform);
+            }
+        }
+
+        unset($transform['jpegQuality'], $transform['pngQuality'], $transform['webpQuality']);
+
+        // Deal with resize mode, called fit in Imgix
+        if (!isset($transform['fit'])) {
+            if (isset($transform['mode'])) {
+                $mode = $transform['mode'];
+
+                switch ($mode) {
+                    case 'crop':
+                        $r['fit'] = 'crop';
+                        break;
+                    case 'fit':
+                        $r['fit'] = 'clip';
+                        break;
+                    case 'stretch':
+                        $r['fit'] = 'scale';
+                        break;
+                    case 'croponly':
+                        // todo : Not really supported, need to figure out if there's a workaround 
+                        break;
+                    case 'letterbox':
+                        $r['fit'] = 'fill';
+                        $letterboxDef = craft()->imager->getSetting('letterbox', $transform);
+                        $r['bg'] = $this->getLetterboxColor($letterboxDef);
+                        unset($transform['letterbox']);
+                        break;
+                    default:
+                        $r['fit'] = 'crop';
+                        break;
+                }
+
+                unset($transform['mode']);
+            } else {
+                if (isset($r['w']) && isset($r['h'])) {
+                    $r['fit'] = 'crop';
+                } else {
+                    $r['fit'] = 'clip';
+                }
+            }
+        } else {
+            $r['fit'] = $transform['fit'];
+            unset($transform['fit']);
+        }
+
+        // If fit is crop, and crop isn't specified, use position as focal point.
+        if ($r['fit'] === 'crop' && !isset($transform['crop'])) {
+            $position = craft()->imager->getSetting('position', $transform);
+            list($left, $top) = explode(' ', $position);
+            $r['crop'] = 'focalpoint';
+            $r['fp-x'] = ((float)$left) / 100;
+            $r['fp-y'] = ((float)$top) / 100;
+
+            if (isset($transform['cropZoom'])) {
+                $r['fp-z'] = $transform['cropZoom'];
+                unset($transform['cropZoom']);
+            }
+
+            unset($transform['position']);
+        }
+
+
+        // Unset stuff that's not supported by Imgix and has not yet been dealt with
+        unset($transform['effects']);
+        unset($transform['preeffects']);
+
+        // Add any explicitly set Imgix params
+        if (isset($transform['imgixParams'])) {
+            foreach ($transform['imgixParams'] as $key => $val) {
+                $r[$key] = $val;
+            }
+
+            unset($transform['imgixParams']);
+        }
+
+        // Assume that the reset of the values left in the transform object is Imgix specific 
+        foreach ($transform as $key => $val) {
+            $r[$key] = $val;
+        }
+
+        // If allowUpscale is disabled, use max-w/-h instead of w/h
+        if (!craft()->imager->getSetting('allowUpscale', $transform) && isset($r['fit'])) {
+            if ($r['fit'] === 'crop') {
+                $r['fit'] = 'min';
+            }
+
+            if ($r['fit'] === 'clip') {
+                $r['fit'] = 'max';
+            }
+        }
+
+        return $r;
+    }
+
+    private function getLetterboxColor($letterboxDef)
+    {
+        $color = $letterboxDef['color'];
+        $opacity = $letterboxDef['opacity'];
+
+        $color = str_replace('#', '', $color);
+
+        if (strlen($color) === 3) {
+            $opacity = dechex($opacity * 15);
+
+            return $opacity.$color;
+        }
+
+        if (strlen($color) === 6) {
+            $opacity = dechex($opacity * 255);
+            $val = $opacity.$color;
+            if (strlen($val) === 7) {
+                $val = '0'.$val;
+            }
+
+            return $val;
+        }
+
+        if (strlen($color) === 4 || strlen($color) === 8) { // assume color already is 4 or 8 digit rgba. 
+            return $color;
+        }
+
+        return '0fff';
+    }
+
+    private function getQualityFromExtension($ext, $transform = null)
+    {
+        if ($ext === 'jpg') {
+            return craft()->imager->getSetting('jpegQuality', $transform);
+        }
+        if ($ext === 'png') {
+            return craft()->imager->getSetting('pngQuality', $transform);
+        }
+        if ($ext === 'webp') {
+            return craft()->imager->getSetting('webpQuality', $transform);
+        }
+
+        return '';
+    }
+}

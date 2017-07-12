@@ -4,8 +4,41 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e9cce47fd0b17ed5ce396c2feadc5257",
+    "content-hash": "efca416562367fa63711d7e2c6b0ece9",
     "packages": [
+        {
+            "name": "imgix/imgix-php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/imgix/imgix-php.git",
+                "reference": "024a9379310e6ef848bc4fe78fcfefddfc49a306"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/imgix/imgix-php/zipball/024a9379310e6ef848bc4fe78fcfefddfc49a306",
+                "reference": "024a9379310e6ef848bc4fe78fcfefddfc49a306",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Imgix\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "A PHP client library for generating URLs with imgix.",
+            "keywords": [
+                "imgix"
+            ],
+            "time": "2016-10-20 23:10:53"
+        },
         {
             "name": "ksubileau/color-thief-php",
             "version": "v1.3.1",
@@ -61,16 +94,16 @@
         },
         {
             "name": "tinify/tinify",
-            "version": "1.4.0",
+            "version": "1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tinify/tinify-php.git",
-                "reference": "644432ba43a4b5e7e30f14969133c499aae8c38a"
+                "reference": "9d9be9513074ff4a87ea26af1b99308227163320"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tinify/tinify-php/zipball/644432ba43a4b5e7e30f14969133c499aae8c38a",
-                "reference": "644432ba43a4b5e7e30f14969133c499aae8c38a",
+                "url": "https://api.github.com/repos/tinify/tinify-php/zipball/9d9be9513074ff4a87ea26af1b99308227163320",
+                "reference": "9d9be9513074ff4a87ea26af1b99308227163320",
                 "shasum": ""
             },
             "require": {
@@ -113,13 +146,15 @@
                 "tinyjpg",
                 "tinypng"
             ],
-            "time": "2017-01-03T15:20:02+00:00"
+            "time": "2017-05-04T10:43:31+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "imgix/imgix-php": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

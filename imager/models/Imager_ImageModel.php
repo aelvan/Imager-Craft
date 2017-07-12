@@ -22,7 +22,7 @@ class Imager_ImageModel extends BaseModel
      */
     public function __construct($imagePath = null, $imageUrl = null, $paths = null, $transform = null)
     {
-        if ($imagePath != 'null') {
+        if ($imagePath !== null) {
             $this['path'] = $imagePath;
 
             $this['extension'] = IOHelper::getExtension($imagePath);
@@ -45,7 +45,7 @@ class Imager_ImageModel extends BaseModel
             }
         }
 
-        if ($imageUrl != 'null') {
+        if ($imageUrl !== null) {
             $this['url'] = $imageUrl;
         }
     }
@@ -63,42 +63,42 @@ class Imager_ImageModel extends BaseModel
         );
     }
 
-    function __toString()
+    public function __toString()
     {
-        return Craft::t($this->url);
+        return (string)$this->url;
     }
 
-    function getPath()
+    public function getPath()
     {
         return $this->path;
     }
 
-    function getUrl()
+    public function getUrl()
     {
         return $this->url;
     }
 
-    function getExtension()
+    public function getExtension()
     {
         return $this->extension;
     }
 
-    function getMimeType()
+    public function getMimeType()
     {
         return $this->mimeType;
     }
 
-    function getWidth()
+    public function getWidth()
     {
         return $this->width;
     }
 
-    function getHeight()
+    public function getHeight()
     {
         return $this->height;
     }
 
-    function getSize($unit = 'b', $precision = 2)
+    public function getSize($unit = 'b', $precision = 2)
     {
         $unit = strtolower($unit);
 
@@ -118,17 +118,15 @@ class Imager_ImageModel extends BaseModel
             default:
                 return $this->size;
         }
-
-        return $this->height;
     }
 
-    function getDataUri()
+    public function getDataUri()
     {
         $imageData = $this->getBase64Encoded();
         return sprintf('data:image/%s;base64,%s', $this->extension, $imageData);
     }
 
-    function getBase64Encoded()
+    public function getBase64Encoded()
     {
         $image = IOHelper::getFileContents($this->path);
         return base64_encode($image);

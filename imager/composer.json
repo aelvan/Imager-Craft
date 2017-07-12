@@ -1,6 +1,7 @@
 {
     "require": {
         "tinify/tinify": "^1.1.1",
-        "ksubileau/color-thief-php": "~1.1"
+        "ksubileau/color-thief-php": "~1.1",
+        "imgix/imgix-php": "dev-master"
     }
 }

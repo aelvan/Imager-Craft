@@ -1,63 +1,5 @@
 [
     {
-        "name": "tinify/tinify",
-        "version": "1.4.0",
-        "version_normalized": "1.4.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/tinify/tinify-php.git",
-            "reference": "644432ba43a4b5e7e30f14969133c499aae8c38a"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/tinify/tinify-php/zipball/644432ba43a4b5e7e30f14969133c499aae8c38a",
-            "reference": "644432ba43a4b5e7e30f14969133c499aae8c38a",
-            "shasum": ""
-        },
-        "require": {
-            "ext-curl": "*",
-            "ext-json": "*",
-            "lib-curl": ">=7.20.0",
-            "php": ">=5.3.0"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "~4.0",
-            "symfony/yaml": "~2.0"
-        },
-        "time": "2017-01-03T15:20:02+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "files": [
-                "lib/Tinify.php",
-                "lib/Tinify/Exception.php"
-            ],
-            "psr-4": {
-                "Tinify\\": "lib/Tinify/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Rolf Timmermans",
-                "email": "rolftimmermans@voormedia.com"
-            }
-        ],
-        "description": "PHP client for the Tinify API. Tinify compresses your images intelligently. Read more at https://tinify.com.",
-        "homepage": "https://tinify.com/developers",
-        "keywords": [
-            "api",
-            "compress",
-            "images",
-            "tinify",
-            "tinyjpg",
-            "tinypng"
-        ]
-    },
-    {
         "name": "ksubileau/color-thief-php",
         "version": "v1.3.1",
         "version_normalized": "1.3.1.0",
@@ -110,6 +52,99 @@
             "palette",
             "php",
             "thief"
+        ]
+    },
+    {
+        "name": "tinify/tinify",
+        "version": "1.5.1",
+        "version_normalized": "1.5.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/tinify/tinify-php.git",
+            "reference": "9d9be9513074ff4a87ea26af1b99308227163320"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/tinify/tinify-php/zipball/9d9be9513074ff4a87ea26af1b99308227163320",
+            "reference": "9d9be9513074ff4a87ea26af1b99308227163320",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "ext-json": "*",
+            "lib-curl": ">=7.20.0",
+            "php": ">=5.3.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~4.0",
+            "symfony/yaml": "~2.0"
+        },
+        "time": "2017-05-04T10:43:31+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "lib/Tinify.php",
+                "lib/Tinify/Exception.php"
+            ],
+            "psr-4": {
+                "Tinify\\": "lib/Tinify/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Rolf Timmermans",
+                "email": "rolftimmermans@voormedia.com"
+            }
+        ],
+        "description": "PHP client for the Tinify API. Tinify compresses your images intelligently. Read more at https://tinify.com.",
+        "homepage": "https://tinify.com/developers",
+        "keywords": [
+            "api",
+            "compress",
+            "images",
+            "tinify",
+            "tinyjpg",
+            "tinypng"
+        ]
+    },
+    {
+        "name": "imgix/imgix-php",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/imgix/imgix-php.git",
+            "reference": "024a9379310e6ef848bc4fe78fcfefddfc49a306"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/imgix/imgix-php/zipball/024a9379310e6ef848bc4fe78fcfefddfc49a306",
+            "reference": "024a9379310e6ef848bc4fe78fcfefddfc49a306",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "*"
+        },
+        "time": "2016-10-20T23:10:53+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-0": {
+                "Imgix\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "description": "A PHP client library for generating URLs with imgix.",
+        "keywords": [
+            "imgix"
         ]
     }
 ]

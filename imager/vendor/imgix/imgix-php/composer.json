@@ -1,0 +1,20 @@
+{
+  "name": "imgix/imgix-php",
+  "description": "A PHP client library for generating URLs with imgix.",
+  "type": "library",
+  "version": "1.1.0",
+  "keywords": [
+    "imgix"
+  ],
+  "require": {
+    "php": ">=5.3"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  },
+  "autoload": {
+    "psr-0": {
+      "Imgix\\": "src/"
+    }
+  }
+}
