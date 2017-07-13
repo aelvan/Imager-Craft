@@ -78,7 +78,8 @@ class Imager_ImgixService extends BaseApplicationComponent
                 } else {
                     $path = $image->path;
                 }
-                $url = $builder->createURL($path, $params);
+                
+                $url = $builder->createURL($this->getUrlEncodedPath($path), $params);
             }
         }
 
@@ -278,5 +279,17 @@ class Imager_ImgixService extends BaseApplicationComponent
         }
 
         return '';
+    }
+
+    /**
+     * URL encode the asset path properly
+     * 
+     * @param $path
+     *
+     * @return string
+     */
+    private function getUrlEncodedPath($path) {
+        $path = str_replace('%2F', '/', urlencode($path));
+        return $path;
     }
 }
