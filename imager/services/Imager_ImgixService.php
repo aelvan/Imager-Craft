@@ -263,7 +263,10 @@ class Imager_ImgixService extends BaseApplicationComponent
             return craft()->imager->getSetting('jpegQuality', $transform);
         }
         if ($ext === 'png') {
-            return craft()->imager->getSetting('pngCompressionLevel', $transform);
+            $pngCompression = craft()->imager->getSetting('pngCompressionLevel', $transform);
+            $pngQuality = max(100 - ($pngCompression * 10), 1);
+
+            return $pngQuality;
         }
         if ($ext === 'webp') {
             return craft()->imager->getSetting('webpQuality', $transform);
