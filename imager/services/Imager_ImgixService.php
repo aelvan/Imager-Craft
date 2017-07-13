@@ -119,7 +119,7 @@ class Imager_ImgixService extends BaseApplicationComponent
             }
         }
 
-        unset($transform['jpegQuality'], $transform['pngQuality'], $transform['webpQuality']);
+        unset($transform['jpegQuality'], $transform['pngCompressionLevel'], $transform['webpQuality']);
 
         // Deal with resize mode, called fit in Imgix
         if (!isset($transform['fit'])) {
@@ -263,7 +263,7 @@ class Imager_ImgixService extends BaseApplicationComponent
             return craft()->imager->getSetting('jpegQuality', $transform);
         }
         if ($ext === 'png') {
-            return craft()->imager->getSetting('pngQuality', $transform);
+            return craft()->imager->getSetting('pngCompressionLevel', $transform);
         }
         if ($ext === 'webp') {
             return craft()->imager->getSetting('webpQuality', $transform);
