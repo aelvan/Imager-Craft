@@ -79,7 +79,7 @@ return array(
   'imgixEnabled' => false,
   'imgixDomains' => null, // array of sources, ie array('your-source.imgix.net')
   'imgixUseHttps' => true,
-  'imgixSignKey' => '',
+  'imgixSignKey' => '', // this is also called `security token`, and you'll find it in your Imgix source details page
   'imgixSourceIsWebProxy' => false,
   'imgixShardStrategy' => 'cycle', // 'cycle' or 'crc'
   'imgixGetExternalImageDimensions' => true, // false disables download of external images, but makes the model less accurate 
