@@ -180,6 +180,41 @@ class ImagerService extends BaseApplicationComponent
         IOHelper::clearFolder(craft()->path->getRuntimePath() . 'imager/');
     }
     
+    public function srcset($images, $descriptor = 'w')
+    {
+        $r = '';
+        $generated = array();
+        
+        if (!is_array($images)) {
+            return '';
+        }
+
+        foreach ($images as $image) {
+            switch ($descriptor) {
+                case 'w':
+                    if (!isset($generated[$image->getWidth()])) {
+                        $r .= $image->getUrl().' '.$image->getWidth().'w, ';
+                        $generated[$image->getWidth()] = true;
+                    }
+                    break;
+                case 'h':
+                    if (!isset($generated[$image->getHeight()])) {
+                        $r .= $image->getUrl().' '.$image->getHeight().'h, ';
+                        $generated[$image->getHeight()] = true;
+                    }
+                    break;
+                case 'w+h':
+                    if (!isset($generated[$image->getWidth() . 'x' . $image->getHeight()])) {
+                        $r .= $image->getUrl().' '.$image->getWidth().'w ' .$image->getHeight().'h, ';
+                        $generated[$image->getWidth() . 'x' . $image->getHeight()] = true;
+                    }
+                    break;
+            }
+        }
+        
+        return substr($r, 0, strlen($r) - 2);
+    }
+    
     /**
      * Do an image transform
      *
