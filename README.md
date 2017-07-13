@@ -23,8 +23,8 @@ Features
 - You can transform both images in your asset sources, local and cloud-based ones, and external images on any url.
 - Transformed images are placed in their own folder, outside of the asset source folder.
 - You can even upload and serve the transformed images from AWS.
-- Optimize your transformed images automatically with jpegoptim, jpegtran, mozjpeg, optipng, pngquant, gifsicle or TinyPNG and make Google happy!
-– You can use the amazing Imgix to offload handling of images from your server.
+- Optimize your transformed images automatically with jpegoptim, jpegtran, mozjpeg, optipng, pngquant, gifsicle or TinyPNG and make Google happy!  
+- You can use the amazing Imgix to offload handling of images from your server.
 - You can create interlaced/progressive images.
 - You can even transform animated gifs.
 - In addition to jpeg, gif and png, you can save images in webp format (if you have the necessary server requirements).
@@ -492,6 +492,11 @@ If you've protected your source with secure URLs, you must provide the sign key/
 ### imgixSourceIsWebProxy [bool]  
 *Default: `false`*  
 Indicates if your Imgix source is a web proxy or not.   
+  
+### imgixUseCloudSourcePath [bool]  
+*Default: `true`*  
+If enabled, Imager will prepend the Craft source path to the asset path, before passing it to the Imgix URL builder. This makes it possible to 
+have one Imgix source pulling images from many Craft sources when they are on the same S3 bucket, but in different subfolder.  
   
 ### imgixShardStrategy [string]  
 *Default: `'cycle'`*  

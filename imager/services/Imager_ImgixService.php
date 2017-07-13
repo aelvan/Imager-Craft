@@ -32,7 +32,7 @@ class Imager_ImgixService extends BaseApplicationComponent
 
     /**
      * Gets transformed Imgix image
-     * 
+     *
      * @param $image
      * @param $transform
      *
@@ -43,17 +43,17 @@ class Imager_ImgixService extends BaseApplicationComponent
     {
         $transform = craft()->imager->normalizeTransform($transform, null);
         $domains = craft()->imager->getSetting('imgixDomains', $transform);
-        
+
         if (!is_array($domains)) {
             $msg = Craft::t('Config setting “imgixDomains” does not appear to be correctly set up. It needs to be an array of strings representing your Imgix source`s domains.');
             throw new Exception($msg);
         }
-        
+
         if ((craft()->imager->getSetting('imgixSourceIsWebProxy', $transform) === true) && (craft()->imager->getSetting('imgixSignKey', $transform) === '')) {
-            $msg = Craft::t('Your Imgix source is a web proxy according to config setting “imgixSourceIsWebProxy”, but no sign key/security token has been given in config setting “imgixSignKey”. You`ll find this in your Imgix source details page.' );
+            $msg = Craft::t('Your Imgix source is a web proxy according to config setting “imgixSourceIsWebProxy”, but no sign key/security token has been given in config setting “imgixSignKey”. You`ll find this in your Imgix source details page.');
             throw new Exception($msg);
         }
-        
+
         $builder = new UrlBuilder($domains);
         $builder->setUseHttps(craft()->imager->getSetting('imgixUseHttps', $transform));
 
@@ -73,7 +73,12 @@ class Imager_ImgixService extends BaseApplicationComponent
             if (craft()->imager->getSetting('imgixSourceIsWebProxy', $transform) === true) {
                 $url = $builder->createURL($image->url, $params);
             } else {
-                $url = $builder->createURL($image->path, $params);
+                if ((craft()->imager->getSetting('imgixUseCloudSourcePath', $transform) === true) && in_array($image->getSource()->type, array("S3", "Rackspace", "GoogleCloud"), true)) {
+                    $path = implode("/", [$image->getSource()->settings['subfolder'], $image->getPath()]);
+                } else {
+                    $path = $image->path;
+                }
+                $url = $builder->createURL($path, $params);
             }
         }
 
@@ -82,7 +87,7 @@ class Imager_ImgixService extends BaseApplicationComponent
 
     /**
      * Create Imgix transform params
-     * 
+     *
      * @param $transform
      * @param $image
      *
@@ -214,7 +219,7 @@ class Imager_ImgixService extends BaseApplicationComponent
 
     /**
      * Gets letterbox params string
-     * 
+     *
      * @param $letterboxDef
      *
      * @return mixed|string
@@ -251,7 +256,7 @@ class Imager_ImgixService extends BaseApplicationComponent
 
     /**
      * Gets the quality setting based on the extension.
-     * 
+     *
      * @param      $ext
      * @param null $transform
      *

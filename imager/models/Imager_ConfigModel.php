@@ -99,6 +99,7 @@ class Imager_ConfigModel extends BaseModel
           'imgixUseHttps' => array(AttributeType::Bool),
           'imgixSignKey' => array(AttributeType::String),
           'imgixSourceIsWebProxy' => array(AttributeType::Bool),
+          'imgixUseCloudSourcePath' => array(AttributeType::Bool),
           'imgixShardStrategy' => array(AttributeType::String),
           'imgixGetExternalImageDimensions' => array(AttributeType::Bool),
           'awsEnabled' => array(AttributeType::Bool),
