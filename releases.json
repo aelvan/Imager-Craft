@@ -1,5 +1,13 @@
 [
     {
+        "version": "1.6.0",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2017-07-12T22:59:00+02:00",
+        "notes": [
+            "[Added] Imgix support (it's huge!)."
+        ]
+    },
+    {
         "version": "1.5.4",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2017-07-10T14:34:00+02:00",
