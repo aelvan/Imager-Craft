@@ -5,7 +5,7 @@
         "date": "2017-07-13T17:38:00+02:00",
         "notes": [
             "[Added] The Craft source path will be prepended to the asset path if the source is a cloud one. Makes it possible to use one Imgix source for multiple Craft sources if they are on the same bucket with different subfolder. New config setting imgixUseCloudSourcePath to turn it off. (Thanks, @leevigraham)",
-            "[Improved] Refactored srcset, it's not available as a service method (craft()->imager->srcset), making it available to other plugins (ie Element API).",
+            "[Improved] Refactored srcset, it's now available as a service method (craft()->imager->srcset), making it available to other plugins (ie Element API).",
             "[Fixed] Fixed a bug where asset paths needs to be url encoded when sent to Imgix which would result in images with foreign characters not loading.",
             "[Fixed] Fixed incorrect conversion of pngCompressionLevel to quality in Imgix.",
             "[Fixed] Fixed a typo related to pngCompressionLevel and quality in Imgix."
