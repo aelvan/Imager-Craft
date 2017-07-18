@@ -84,6 +84,7 @@ return array(
   'imgixUseCloudSourcePath' => true,
   'imgixShardStrategy' => 'cycle', // 'cycle' or 'crc'
   'imgixGetExternalImageDimensions' => true, // false disables download of external images, but makes the model less accurate 
+  'imgixDefaultParams' => null, // an array of default values that will be used for all imgix transforms (ie array('auto'=>'compress,format'))
   
   'awsEnabled' => false,
   'awsAccessKey' => '',

@@ -102,6 +102,7 @@ class Imager_ConfigModel extends BaseModel
           'imgixUseCloudSourcePath' => array(AttributeType::Bool),
           'imgixShardStrategy' => array(AttributeType::String),
           'imgixGetExternalImageDimensions' => array(AttributeType::Bool),
+          'imgixDefaultParams' => array(AttributeType::Mixed),
           'awsEnabled' => array(AttributeType::Bool),
           'awsAccessKey' => array(AttributeType::String),
           'awsSecretAccessKey' => array(AttributeType::String),

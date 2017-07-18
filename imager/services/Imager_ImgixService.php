@@ -98,6 +98,11 @@ class Imager_ImgixService extends BaseApplicationComponent
     {
         $r = [];
 
+        // Merge in default values
+        if (is_array(craft()->imager->getSetting('imgixDefaultParams', $transform))) {
+            $transform = array_merge(craft()->imager->getSetting('imgixDefaultParams', $transform), $transform);
+        }
+        
         // Directly translate some keys
         foreach (Imager_ImgixService::$transformKeyTranslate as $key => $val) {
             if (isset($transform[$key])) {
