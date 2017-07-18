@@ -1,5 +1,15 @@
 [
     {
+        "version": "1.6.2",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2017-07-18T23:12:00+02:00",
+        "notes": [
+            "[Added] Added the imgixDefaultParams config setting which can be used to set default parameters that will be passed to all Imgix transforms.",
+            "[Improved] Improved conversion of Imager quality settings to Imgix. We will now fall back to jpegQuality for unknown file extensions.",
+            "[Fixed] We now explicitly remove all overrideable config settings from the transform string, and purges any keys with empty values. Because Facebook. (Thanks, @benface!)"
+        ]
+    },
+    {
         "version": "1.6.1",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2017-07-13T17:38:00+02:00",

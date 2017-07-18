@@ -515,6 +515,12 @@ By disabling this setting, you're telling Imager to never download external imag
 out the dimensions. If you supplied only width to the transform, height will then be set to 0. If you don't need to use height
 in your code, that's totally fine, and you've managed to squeeze out a bit more performance.
 
+### imgixDefaultParams [array]  
+*Default: `null`*  
+You can use this setting to set default parameters that you want passed to all your Imgix transforms. Example:
+
+    'imgixDefaultParams' => array('auto'=>'compress,format', 'q'=>80)
+
 
 ---
 
