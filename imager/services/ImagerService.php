@@ -1316,7 +1316,14 @@ class ImagerService extends BaseApplicationComponent
                 $imagickInstance = $imageInstance->getImagick();
                 
                 if ($effect === 'grayscale' || $effect === 'greyscale') {
+                    $hasTransparency = $imagickInstance->getImageAlphaChannel();
+
                     $imagickInstance->setImageType(\Imagick::IMGTYPE_GRAYSCALE);
+                    
+                    if($hasTransparency){
+                        $imagickInstance->setImageAlphaChannel(\Imagick::ALPHACHANNEL_ACTIVATE);
+                        $imagickInstance->setBackgroundColor(new \ImagickPixel('transparent'));
+                    }                
                 }
 
                 if ($effect === 'negative') {
