@@ -1186,8 +1186,14 @@ class ImagerService extends BaseApplicationComponent
                 $instance = $imageInstance->getImagick();
 
                 $instance->setImageFormat('webp');
-                $instance->setImageAlphaChannel(\Imagick::ALPHACHANNEL_ACTIVATE);
-                $instance->setBackgroundColor(new \ImagickPixel('transparent'));
+                
+                $hasTransparency = $instance->getImageAlphaChannel();
+
+                if($hasTransparency){
+                    $instance->setImageAlphaChannel(\Imagick::ALPHACHANNEL_ACTIVATE);
+                    $instance->setBackgroundColor(new \ImagickPixel('transparent'));
+                }
+                
                 $instance->setImageCompressionQuality($saveOptions['webp_quality']);
 
                 $imagickOptions = $saveOptions['webp_imagick_options'];
