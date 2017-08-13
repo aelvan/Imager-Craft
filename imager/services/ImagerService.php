@@ -1288,11 +1288,11 @@ class ImagerService extends BaseApplicationComponent
              * For GD we only apply effects that exists in Imagine
              */
             if ($this->imageDriver === 'gd') {
-                if ($effect == 'grayscale' || $effect == 'greyscale') { 
+                if (($effect == 'grayscale' || $effect == 'greyscale') && $value) { 
                     $imageInstance->effects()->grayscale();
                 }
 
-                if ($effect == 'negative') {
+                if ($effect == 'negative' && $value) {
                     $imageInstance->effects()->negative();
                 }
 
@@ -1300,7 +1300,7 @@ class ImagerService extends BaseApplicationComponent
                     $imageInstance->effects()->blur(is_int($value) || is_float($value) ? $value : 1);
                 }
 
-                if ($effect == 'sharpen') {
+                if ($effect == 'sharpen' && $value) {
                     $imageInstance->effects()->sharpen();
                 }
 
@@ -1321,7 +1321,7 @@ class ImagerService extends BaseApplicationComponent
             if ($this->imageDriver == 'imagick') {
                 $imagickInstance = $imageInstance->getImagick();
                 
-                if ($effect === 'grayscale' || $effect === 'greyscale') {
+                if (($effect === 'grayscale' || $effect === 'greyscale') && $value) {
                     $hasTransparency = $imagickInstance->getImageAlphaChannel();
 
                     $imagickInstance->setImageType(\Imagick::IMGTYPE_GRAYSCALE);
@@ -1332,7 +1332,7 @@ class ImagerService extends BaseApplicationComponent
                     }                
                 }
 
-                if ($effect === 'negative') {
+                if ($effect === 'negative' && $value) {
                     $imagickInstance->negateImage(false, \Imagick::CHANNEL_ALL);
                 }
 
@@ -1340,7 +1340,7 @@ class ImagerService extends BaseApplicationComponent
                     $imagickInstance->gaussianBlurImage(0, is_int($value) || is_float($value) ? $value : 1);
                 }
 
-                if ($effect === 'sharpen') {
+                if ($effect === 'sharpen' && $value) {
                     $imagickInstance->sharpenImage(2, 1);
                 }
 
