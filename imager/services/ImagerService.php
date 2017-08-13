@@ -1514,15 +1514,24 @@ class ImagerService extends BaseApplicationComponent
         $temporary->setImageFormat('png32');
         $temporary->drawImage($draw);
 
-        $alphaChannel = clone $imagickInstance;
-        $alphaChannel->setImageAlphaChannel(\Imagick::ALPHACHANNEL_EXTRACT);
-        $alphaChannel->negateImage(false, \Imagick::CHANNEL_ALL);
-        $imagickInstance->setImageClipMask($alphaChannel);
+        if (method_exists($imagickInstance, 'setImageClipMask')) { // ImageMagick < 7
+            $alphaChannel = clone $imagickInstance;
+            $alphaChannel->setImageAlphaChannel(\Imagick::ALPHACHANNEL_EXTRACT);
+            $alphaChannel->negateImage(false, \Imagick::CHANNEL_ALL);
+            $imagickInstance->setImageClipMask($alphaChannel);
+        } else {
+            // need to figure out how to add support for maintaining opacity in ImageMagick 7
+        }
 
         $clone = clone $imagickInstance;
         $clone->compositeImage($temporary, $composite_flag, 0, 0);
-        $clone->setImageOpacity($alpha);
 
+        if (method_exists($clone, 'setImageAlpha')) { // ImageMagick >= 7
+            $clone->setImageAlpha($alpha);
+        } else {
+            $clone->setImageOpacity($alpha);
+        }
+        
         $imagickInstance->compositeImage($clone, \Imagick::COMPOSITE_DEFAULT, 0, 0);
     }
 
