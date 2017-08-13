@@ -1,5 +1,17 @@
 [
     {
+        "version": "1.6.3",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2017-08-13T19:25:00+02:00",
+        "notes": [
+            "[Added] Added awsCacheDurationNonOptimized and gcsCacheDurationNonOptimized config settings which specifies the cache duration of non-optimized files that will be overwritten by an optimization task. (Thanks, @kringkaste)",
+            "[Fixed] Fixed a bug where opacity would be lost for pngs when using the grayscale effect.",
+            "[Fixed] Fixed bug where activated alpha channel when saving non-transparent images to webp would create corrupted images.",
+            "[Fixed] Added check for effects taking a bool, it will now only be applied if the value is true.",
+            "[Fixed] Fixed an error in colorBlend when using ImageMagick 7."
+        ]
+    },
+    {
         "version": "1.6.2",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2017-07-18T23:12:00+02:00",

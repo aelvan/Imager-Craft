@@ -388,6 +388,11 @@ Cache duration of files on AWS.
 
 *Please note; this has nothing to do with how long a transform is cached, it is only used to tell AWS what HTTP expiry headers to set on the file.*
 
+### awsCacheDurationNonOptimized [int]
+*Default: `300`*  
+Cache duration of non-optimized files on AWS. This file will be overwritten with a file with cache duration as specified in `awsCacheDuration`,
+once the optimization task has been run.
+
 ### awsRequestHeaders [array]
 *Default: `array()`*  
 Additional request headers to send to AWS.
@@ -424,6 +429,11 @@ Subfolder inside the Google Cloud Storage bucket where you want to put the trans
 Cache duration of files on Google Cloud Storage.
 
 *Please note; this has nothing to do with how long a transform is cached, it is only used to tell Google what HTTP expiry headers to set on the file.*
+
+### gcsCacheDurationNonOptimized [int]
+*Default: `600`*  
+Cache duration of non-optimized files on Google Cloud Storage. This file will be overwritten with a file with cache duration as specified in `gcsCacheDuration`,
+once the optimization task has been run.
 
 ### cloudfrontInvalidateEnabled [bool]
 *Default: `false`*  
