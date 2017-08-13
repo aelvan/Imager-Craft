@@ -550,7 +550,7 @@ class ImagerService extends BaseApplicationComponent
 
                 // Upload to AWS if enabled
                 if ($this->getSetting('awsEnabled')) {
-                    craft()->imager_aws->uploadToAWS($targetFilePath);
+                    craft()->imager_aws->uploadToAWS($targetFilePath, $this->_checkIsFinalVersion($transform));
 
                     // Invalidate cloudfront distribution if enabled
                     if ($this->getSetting('cloudfrontInvalidateEnabled')) {
@@ -561,7 +561,7 @@ class ImagerService extends BaseApplicationComponent
 
                 // if GCS is enabled, upload file
                 if (craft()->imager->getSetting('gcsEnabled')) {
-                    craft()->imager_gcs->uploadToGCS($targetFilePath);
+                    craft()->imager_gcs->uploadToGCS($targetFilePath, $this->_checkIsFinalVersion($transform));
                 }
             }
         }
@@ -1968,6 +1968,24 @@ class ImagerService extends BaseApplicationComponent
         return $new_arr;
     }
 
+    /**
+     * Check if current file is the final version
+     *
+     * @param $transform
+     * @return bool
+     */
+    private function _checkIsFinalVersion($transform)
+    {
+        if ($this->getSetting('optimizeType', $transform) == 'task')
+        {
+            if ($this->getSetting('jpegoptimEnabled', $transform) || $this->getSetting('jpegtranEnabled', $transform) || $this->getSetting('mozjpegEnabled', $transform) || $this->getSetting('optipngEnabled', $transform) || $this->getSetting('pngquantEnabled', $transform) || $this->getSetting('gifsicleEnabled', $transform) || $this->getSetting('tinyPngEnabled', $transform))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Fixes slashes in path

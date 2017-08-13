@@ -27,15 +27,18 @@ class Imager_GcsService extends BaseApplicationComponent
      * Upload file to Google Cloud Storage
      *
      * @param $filePath
+     * @param bool $finalVersion
      */
-    public function uploadToGCS($filePath)
+    public function uploadToGCS($filePath, $finalVersion = true)
     {
         $gcs = $this->_getGCObject();
         $uri = ImagerService::fixSlashes(craft()->imager->getSetting('gcsFolder') . '/' . str_replace(craft()->imager->getSetting('imagerSystemPath'), '', $filePath), true, true);
 
+        $cacheDuration = $finalVersion ? craft()->imager->getSetting('gcsCacheDuration') : craft()->imager->getSetting('gcsCacheDurationNonOptimized');
+
         $headers = array();
         if (!isset($headers['Cache-Control'])) {
-            $headers['Cache-Control'] = 'max-age=' . craft()->imager->getSetting('gcsCacheDuration') . ', must-revalidate';
+            $headers['Cache-Control'] = 'max-age=' . $cacheDuration . ', must-revalidate';
         }
 
         if (!$gcs::putObject($gcs::inputFile($filePath), $this->_getBucket(), $uri, \GC::ACL_PUBLIC_READ, array(), $headers)) {

@@ -27,16 +27,19 @@ class Imager_AwsService extends BaseApplicationComponent
      * Upload file to AWS
      * 
      * @param $filePath
+     * @param bool $finalVersion
      */
-    public function uploadToAWS($filePath)
+    public function uploadToAWS($filePath, $finalVersion = true)
     {
         $s3 = $this->_getS3Object();
 
         $file = $s3->inputFile($filePath);
         $headers = craft()->imager->getSetting('awsRequestHeaders');
 
+        $cacheDuration = $finalVersion ? craft()->imager->getSetting('awsCacheDuration') : craft()->imager->getSetting('awsCacheDurationNonOptimized');
+
         if (!isset($headers['Cache-Control'])) {
-            $headers['Cache-Control'] = 'max-age=' . craft()->imager->getSetting('awsCacheDuration') . ', must-revalidate';
+            $headers['Cache-Control'] = 'max-age=' . $cacheDuration . ', must-revalidate';
         }
 
         if (!$s3->putObject($file, craft()->imager->getSetting('awsBucket'),

@@ -91,7 +91,8 @@ return array(
   'awsSecretAccessKey' => '',
   'awsBucket' => '',
   'awsFolder' => '',
-  'awsCacheDuration' => 1209600, // 14 days
+  'awsCacheDuration' => 1209600, // 14 days for optimized files or when optimization is disabled
+  'awsCacheDurationNonOptimized' => 300, // 5 minutes for the non-optimized file when any optimization is enabled
   'awsRequestHeaders' => array(),
   'awsStorageType' => 'standard', // 'standard' or 'rrs' (reduced redundancy storage),
 
@@ -100,7 +101,8 @@ return array(
   'gcsSecretAccessKey' => '',
   'gcsBucket' => '',
   'gcsFolder' => '',
-  'gcsCacheDuration' => 1209600, // 14 days
+  'gcsCacheDuration' => 1209600, // 14 days for optimized files or when optimization is disabled
+  'gcsCacheDurationNonOptimized' => 300, // 5 minutes for the non-optimized file when any optimization is enabled
 
   'cloudfrontInvalidateEnabled' => false,
   'cloudfrontDistributionId' => '',
