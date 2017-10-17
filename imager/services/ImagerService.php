@@ -1429,6 +1429,22 @@ class ImagerService extends BaseApplicationComponent
                     $imagickInstance->clutImage($clut);
                 }
 
+                // levels
+                if ($effect == 'levels' && is_array($value)) {
+                    if (is_array($value[0])) {
+                        foreach ($value as $val) {
+                            if (count($val)>=3) {
+                                $this->_applyLevels($imagickInstance, $val);
+                            }
+                        }
+                    } else {
+                        if (count($value)>=3) {
+                            $this->_applyLevels($imagickInstance, $value);
+                        }
+                    }
+                    
+                }
+
                 // quantize
                 if ($effect == 'quantize' && (is_array($value) || is_int($value))) {
                     if (is_array($value) && count($value) === 3) {
@@ -1487,6 +1503,28 @@ class ImagerService extends BaseApplicationComponent
 
     }
 
+    private function _applyLevels($imagickInstance, $value) {
+        $quantum = $imagickInstance->getQuantum();
+        $blackLevel = ($value[0]/255)*$quantum;
+        $whiteLevel = ($value[2]/255)*$quantum;
+        $channel = \Imagick::CHANNEL_ALL;
+        
+        if (count($value)>3) {
+            switch ($value[3]) {
+                case 'red':
+                    $channel = \Imagick::CHANNEL_RED;
+                    break;
+                case 'blue':
+                    $channel = \Imagick::CHANNEL_BLUE;
+                    break;
+                case 'green':
+                    $channel = \Imagick::CHANNEL_GREEN;
+                    break;
+            }
+        }
+        
+        $imagickInstance->levelImage($blackLevel, $value[1], $whiteLevel, $channel);
+    }
 
     /**
      * Color blend filter, more advanced version of colorize.
