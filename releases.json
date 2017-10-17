@@ -1,5 +1,16 @@
 [
     {
+        "version": "1.6.4",
+        "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
+        "date": "2017-10-17T12:30:00+02:00",
+        "notes": [
+            "[Added] Added frames transform parameter that let's you extract certain frames and ranges of frames from animated gifs.",
+            "[Added] Added levels effect.",
+            "[Fixed] Fixed a rounding bug that would occur if original image aspect and transformed image aspect was the same, and letterbox mode was used. (Thanks for tracking that down, @christianruhstaller!)",
+            "[Fixed] Fixed a bug where really tiny transforms (think LQIP) would result in zero pixel transform exceptions."
+        ]
+    },
+    {
         "version": "1.6.3",
         "downloadUrl": "https://github.com/aelvan/Imager-Craft/archive/master.zip",
         "date": "2017-08-13T19:25:00+02:00",
