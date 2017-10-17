@@ -715,6 +715,23 @@ By default when cropping, the image will be resized to the smallest size needed 
 
 Example: If the original image is 1600x900px, and you resize it to 300x300px with mode 'crop' and a cropZoom value of 1.5, the image will; 1) be resized to 800x450px and 2) a crop of 300x300px will be made (the position depending on the position given).
 
+### frames [string]
+Let's you extract only certain frames from an animated gif. The parameter takes a string in the format `'startFrame/endFrame@frameInterval'`.
+End frame and frame interval is optional. Examples:
+
+    // Get only first frame of animated gif
+    {% set transformedImage = craft.imager.transformImage(animatedGif, { width: 300, frames: '0' }) %}
+
+    // Get the first ten frames of animated gif
+    {% set transformedImage = craft.imager.transformImage(animatedGif, { width: 300, frames: '0-9' }) %}
+
+    // Get every fifth frame between frames 0 and 40
+    {% set transformedImage = craft.imager.transformImage(animatedGif, { width: 300, frames: '0-40@5' }) %}
+
+    // Get every fifth frame between the first and the last frame
+    {% set transformedImage = craft.imager.transformImage(animatedGif, { width: 300, frames: '0-*@5' }) %}
+
+
 ### watermark [object]
 *Default: null*    
 Adds a watermark to your transformed image. Imager expects an object with the following properties:
@@ -871,6 +888,19 @@ The parameter can be an int, indicating the number of colors to reduce to, or an
 $treedepth (int) and $dither (bool) parameters. Example with default treeDepth, but dithering:
  
     {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { quantize: [32, 0, true] } }) %}
+
+### levels [array]
+Adjusts an image's levels, using [Imagick's levelImage method](http://php.net/manual/en/imagick.levelimage.php). The effect takes
+an array corresponding to black point, gamma, white point and channel (optional). Example:
+
+    {% set transformedImage = craft.imager.transformImage(img, { width: 500, effects: { levels: [50, 1, 200, 'blue'] }}) %}
+
+You can use negative values for black point and white point to do a level stretch/offset:
+ 
+    {% set transformedImage = craft.imager.transformImage(img, { width: 500, effects: { levels: [-100, 1, 255, 'blue'] }}) %}
+    
+Possible values for channel is `'red'`, `'green'`, and `'blue'`. Omit it all together to adjust levels for all channels.    
+
 
 ### vignette [array]
 *The vignette effect is not yet finalized.*
