@@ -896,8 +896,11 @@ class ImagerService extends BaseApplicationComponent
                     }
 
                 } else {
-
-                    if ($transformAspect > $aspect) { // use height as guide
+                    
+                    if ($transformAspect === $aspect) {
+                        $height = (int)$transform['height'];
+                        $width = (int)$transform['width'];
+                    } elseif ($transformAspect > $aspect) { // use height as guide
                         $height = (int)$transform['height'];
                         $width = ceil($originalSize->getWidth() * ($height / $originalSize->getHeight()));
                     } else { // use width
