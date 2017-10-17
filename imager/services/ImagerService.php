@@ -760,7 +760,18 @@ class ImagerService extends BaseApplicationComponent
             if ($k == 'effects' || $k == 'preEffects') {
                 $effectString = '';
                 foreach ($v as $eff => $param) {
-                    $effectString .= '_' . $eff . '-' . (is_array($param) ? implode("-", $param) : $param);
+                    if (is_array($param)) {
+                        if (is_array($param[0])) {
+                            $effectString .= '_' . $eff;
+                            foreach ($param as $paramArr) {
+                                $effectString .= '-' . implode('-', $paramArr);
+                            }
+                        } else {
+                            $effectString .= '_' . $eff . '-' . implode('-', $param);
+                        }
+                    } else {
+                        $effectString .= '_' . $eff . '-' . $param;
+                    }
                 }
 
                 $r .= '_' . (isset(ImagerService::$transformKeyTranslate[$k]) ? ImagerService::$transformKeyTranslate[$k] : $k) . $effectString;
