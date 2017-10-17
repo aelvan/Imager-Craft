@@ -41,6 +41,7 @@ class ImagerService extends BaseApplicationComponent
       'instanceReuseEnabled' => 'REUSE',
       'watermark' => 'WM',
       'letterbox' => 'LB',
+      'frames' => 'FR',
     );
 
     // translate dictionary for resize method 
@@ -477,12 +478,35 @@ class ImagerService extends BaseApplicationComponent
                 // we need to create a new image instance with the target size, or letterboxing will be wrong.
                 $originalSize = $this->imageInstance->getSize();
                 $resizeSize = $this->getResizeSize($originalSize, $transform);
+                $layers = $this->imageInstance->layers();
                 $gif = $this->imagineInstance->create($resizeSize);
                 $gif->layers()->remove(0);
                 
-                // 
-                foreach ($this->imageInstance->layers() as $layer)
+                $startFrame = 0;
+                $endFrame = count($layers)-1; 
+                $interval = 1; 
+
+                if (isset($transform['frames'])) {
+                    $framesIntArr = explode('@', $transform['frames']);
+                    
+                    if (count($framesIntArr)>1) {
+                        $interval = $framesIntArr[1];
+                    }
+                    
+                    $framesArr = explode('-', $framesIntArr[0]);
+                    
+                    if (count($framesArr)>1) {
+                        $startFrame = $framesArr[0];
+                        $endFrame = $framesArr[1];
+                    } else {
+                        $startFrame = $framesArr[0];
+                        $endFrame = $framesArr[0];
+                    }
+                } 
+                
+                for ($i=$startFrame; $i<=$endFrame; $i+=$interval)
                 {
+                    $layer = $layers[$i];
                     $this->_transformLayer($layer, $transform, $sourceExtension, $targetExtension);
     				$gif->layers()->add($layer);
                 }
