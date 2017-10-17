@@ -858,7 +858,11 @@ class ImagerService extends BaseApplicationComponent
         if (!$this->getSetting('allowUpscale', $transform)) {
             list($width, $height) = $this->_enforceMaxSize($width, $height, $originalSize, true);
         }
-
+        
+        // ensure that size is larger than 0
+        if ($width<=0) { $width = 1; }
+        if ($height<=0) { $height = 1; }
+        
         return new \Imagine\Image\Box($width, $height);
     }
 
