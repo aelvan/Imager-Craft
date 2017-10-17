@@ -497,10 +497,16 @@ class ImagerService extends BaseApplicationComponent
                     
                     if (count($framesArr)>1) {
                         $startFrame = $framesArr[0];
-                        $endFrame = $framesArr[1];
+                        if ($framesArr[1]!=='*') {
+                            $endFrame = $framesArr[1];
+                        }
                     } else {
                         $startFrame = $framesArr[0];
                         $endFrame = $framesArr[0];
+                    }
+                    
+                    if ($endFrame>count($layers)-1) {
+                        $endFrame = count($layers)-1;
                     }
                 } 
                 
