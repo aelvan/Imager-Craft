@@ -1,0 +1,54 @@
+{
+    "name": "aelvan/imager",
+    "description": "Image transforms gone wild",
+    "type": "craft-plugin",
+    "version": "2.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "image",
+        "responsive",
+        "transform",
+        "srcset",
+        "picture"
+    ],
+    "support": {
+        "docs": "https://github.com/aelvan/imager/blob/craft3/README.md",
+        "issues": "https://github.com/aelvan/imager/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "André Elvan",
+            "homepage": "https://www.vaersaagod.no"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC2",
+        "mikehaertl/php-shellcommand": "^1.2",
+        "tinify/tinify": "^1.5.2",
+        "ksubileau/color-thief-php": "^1.3.1",
+        "imgix/imgix-php": "^1.1.0",
+        "kraken-io/kraken-php": "^1.2",
+        "imageoptim/imageoptim": "^1.3",
+        "aws/aws-sdk-php": "^3.0.0",
+        "google/cloud": "~0.20"
+    },
+    "autoload": {
+        "psr-4": {
+          "aelvan\\imager\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Imager",
+        "handle": "imager",
+        "schemaVersion": "2.0.0",
+        "hasCpSettings": false,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/aelvan/imager/craft3/CHANGELOG.md",
+        "components": {},
+        "class": "aelvan\\imager\\Imager"
+    }
+}
