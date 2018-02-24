@@ -573,6 +573,11 @@ class ImagerService extends Component
 
         // if transform is in Craft's named version, convert to percentage
         if (isset($transform['position'])) {
+            
+            if (\is_array($transform['position']) && isset($transform['position']['x'])  && isset($transform['position']['y'])) {
+                $transform['position'] = ($transform['position']['x']*100) . ' ' . ($transform['position']['y']*100);
+            }
+            
             if (isset(self::$craftPositionTranslate[(string)$transform['position']])) {
                 $transform['position'] = self::$craftPositionTranslate[(string)$transform['position']];
             }
