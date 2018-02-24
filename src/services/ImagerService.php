@@ -225,8 +225,10 @@ class ImagerService extends Component
         if (self::$imageDriver === 'imagick' && (\count(\Imagick::queryFormats('WEBP')) > 0)) {
             return true;
         }
+        
+        $config = self::getConfig();
 
-        if (self::$transformConfig->useCwebp && self::$transformConfig->cwebpPath !== '' && file_exists(self::$transformConfig->cwebpPath)) {
+        if ($config->useCwebp && $config->cwebpPath !== '' && file_exists($config->cwebpPath)) {
             return true;
         }
 
@@ -404,15 +406,17 @@ class ImagerService extends Component
 
         return $count > 0;
     }
-    
+
     /**
      * Remove transforms for a given asset
      *
      * @param Asset $asset
+     *
+     * @throws \yii\base\ErrorException
      */
     public function removeTransformsForAsset(Asset $asset)
     {
-        $config = ImagerService::getConfig();
+        $config = self::getConfig();
 
         $sourceModel = new LocalSourceImageModel($asset);
         $targetModel = new LocalTargetImageModel($sourceModel, []);
