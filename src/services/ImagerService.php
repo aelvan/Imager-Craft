@@ -10,14 +10,18 @@
 
 namespace aelvan\imager\services;
 
+use aelvan\imager\exceptions\ImagerException;
 use Craft;
 
 use craft\base\Component;
 use craft\elements\Asset;
 use craft\helpers\FileHelper;
 use Imagine\Image\ImageInterface;
+
 use yii\base\BaseObject;
+use yii\base\ErrorException;
 use yii\base\Exception;
+use yii\base\InvalidParamException;
 
 use aelvan\imager\Imager as Plugin;
 use aelvan\imager\helpers\ImagerHelpers;
@@ -225,7 +229,7 @@ class ImagerService extends Component
         if (self::$imageDriver === 'imagick' && (\count(\Imagick::queryFormats('WEBP')) > 0)) {
             return true;
         }
-        
+
         $config = self::getConfig();
 
         if ($config->useCwebp && $config->cwebpPath !== '' && file_exists($config->cwebpPath)) {
@@ -267,13 +271,13 @@ class ImagerService extends Component
     // =========================================================================
 
     /**
-     * @param       $image
-     * @param array $transforms
-     * @param array $transformDefaults
-     * @param array $configOverrides
+     * @param Asset|string $image
+     * @param array        $transforms
+     * @param array        $transformDefaults
+     * @param array        $configOverrides
      *
      * @return array|null
-     * @throws Exception
+     * @throws ImagerException
      */
     public function transformImage($image, $transforms, $transformDefaults, $configOverrides)
     {
@@ -292,10 +296,8 @@ class ImagerService extends Component
         self::$transformConfig = new ConfigModel(Plugin::$plugin->getSettings(), $configOverrides);
 
         // Fill missing transforms if fillTransforms is enabled
-        if (self::$transformConfig->fillTransforms === true) {
-            if (\count($transforms) > 1) {
-                $transforms = $this->fillTransforms($transforms);
-            }
+        if (self::$transformConfig->fillTransforms === true && \count($transforms) > 1) {
+            $transforms = $this->fillTransforms($transforms);
         }
 
         // Merge in default transform parameters
@@ -304,15 +306,25 @@ class ImagerService extends Component
         // Normalize transform parameters
         $transforms = $this->normalizeTransforms($transforms);
 
-        // Create transformer and do the boogie
-        if (!isset(self::$transformers[self::$transformConfig->transformer])) {
-            throw new Exception('Invalid transformer');
+        // Create transformer
+        try {
+            if (!isset(self::$transformers[self::$transformConfig->transformer])) {
+                Craft::error('Invalid transformer "' . self::$transformConfig->transformer . '"', __METHOD__);
+                throw new ImagerException('Invalid transformer "' . self::$transformConfig->transformer . '"');
+            }
+
+            /** @var TransformerInterface $transformer */
+            $transformer = new self::$transformers[self::$transformConfig->transformer]();
+            $transformedImages = $transformer->transform($image, $transforms);
+        
+        } catch (ImagerException $e) {
+            if (self::$transformConfig->suppressExceptions) {
+                return null;
+            }
+                
+            throw $e;
         }
-
-        /** @var TransformerInterface $transformer */
-        $transformer = new self::$transformers[self::$transformConfig->transformer]();
-        $transformedImages = $transformer->transform($image, $transforms);
-
+        
         // Reset config model
         self::$transformConfig = null;
 
@@ -325,7 +337,7 @@ class ImagerService extends Component
 
     /**
      * Creates srcset string
-     * 
+     *
      * @param array  $images
      * @param string $descriptor
      *
@@ -380,7 +392,7 @@ class ImagerService extends Component
      * @param $asset
      *
      * @return bool
-     * @throws \yii\base\Exception
+     * @throws ImagerException
      */
     public function isAnimated($asset): bool
     {
@@ -411,47 +423,69 @@ class ImagerService extends Component
      * Remove transforms for a given asset
      *
      * @param Asset $asset
-     *
-     * @throws \yii\base\ErrorException
      */
     public function removeTransformsForAsset(Asset $asset)
     {
         $config = self::getConfig();
 
-        $sourceModel = new LocalSourceImageModel($asset);
-        $targetModel = new LocalTargetImageModel($sourceModel, []);
+        try {
+            $sourceModel = new LocalSourceImageModel($asset);
+            $targetModel = new LocalTargetImageModel($sourceModel, []);
 
-        if (strpos($targetModel->path, $config->imagerSystemPath) !== false) {
-            FileHelper::clearDirectory(FileHelper::normalizePath($targetModel->path));
-            
-            Craft::$app->templateCaches->deleteCachesByElementId($asset->id);
-            
-            if ($sourceModel->type !== 'local') {
-                if (file_exists($sourceModel->getFilePath())) {
-                    FileHelper::removeFile($sourceModel->getFilePath());
+            if (strpos($targetModel->path, $config->imagerSystemPath) !== false) {
+                try {
+                    FileHelper::clearDirectory(FileHelper::normalizePath($targetModel->path));
+                } catch (ErrorException $e) {
+                    Craft::error('Could not clear directory "'.$targetModel->path.'" ('.$e->getMessage().')', __METHOD__);
+                } catch (InvalidParamException $e) {
+                    Craft::error('Could not clear directory "'.$targetModel->path.'" ('.$e->getMessage().')', __METHOD__);
+                }
+
+                Craft::$app->templateCaches->deleteCachesByElementId($asset->id);
+
+                if ($sourceModel->type !== 'local' && file_exists($sourceModel->getFilePath())) {
+                    try {
+                        FileHelper::removeFile($sourceModel->getFilePath());
+                    } catch (ErrorException $e) {
+                        Craft::error('Could not remove file "'.$sourceModel->getFilePath().'" ('.$e->getMessage().')', __METHOD__);
+                    }
                 }
             }
+        } catch (ImagerException $e) {
+            Craft::error($e->getMessage(), __METHOD__);
         }
     }
 
     /**
      * Clear all image transforms caches
-     *
-     * @throws \yii\base\ErrorException
      */
     public function deleteImageTransformCaches()
     {
-        FileHelper::clearDirectory(FileHelper::normalizePath(Plugin::$plugin->getSettings()->imagerSystemPath));
+        $path = Plugin::$plugin->getSettings()->imagerSystemPath;
+
+        try {
+            FileHelper::clearDirectory(FileHelper::normalizePath($path));
+        } catch (ErrorException $e) {
+            Craft::error('Could not clear directory "'.$path.'" ('.$e->getMessage().')', __METHOD__);
+        } catch (InvalidParamException $e) {
+            Craft::error('Could not clear directory "'.$path.'" ('.$e->getMessage().')', __METHOD__);
+        }
     }
 
     /**
      * Clear all remote image caches
-     *
-     * @throws \yii\base\ErrorException
      */
     public function deleteRemoteImageCaches()
     {
-        FileHelper::clearDirectory(FileHelper::normalizePath(Craft::$app->getPath()->getRuntimePath().'/imager/'));
+        $path = Craft::$app->getPath()->getRuntimePath().'/imager/';
+
+        try {
+            FileHelper::clearDirectory(FileHelper::normalizePath($path));
+        } catch (ErrorException $e) {
+            Craft::error('Could not clear directory "'.$path.'" ('.$e->getMessage().')', __METHOD__);
+        } catch (InvalidParamException $e) {
+            Craft::error('Could not clear directory "'.$path.'" ('.$e->getMessage().')', __METHOD__);
+        }
     }
 
     // Private Methods
@@ -540,12 +574,11 @@ class ImagerService extends Component
     /**
      * Normalize transform object and values
      *
-     * @param $transform
-     * @param $paths
+     * @param array $transform
      *
-     * @return mixed
+     * @return array
      */
-    private function normalizeTransform($transform)
+    private function normalizeTransform($transform): array
     {
         // if resize mode is not crop or croponly, remove position
         if (isset($transform['mode'], $transform['position']) && (($transform['mode'] !== 'crop') && ($transform['mode'] !== 'croponly'))) {
@@ -571,17 +604,17 @@ class ImagerService extends Component
                 if (isset($transform['height']) && !isset($transform['width'])) {
                     $transform['width'] = round($transform['height'] * $transform['ratio']);
                     unset($transform['ratio']);
-                } 
+                }
             }
         }
 
         // if transform is in Craft's named version, convert to percentage
         if (isset($transform['position'])) {
-            
-            if (\is_array($transform['position']) && isset($transform['position']['x'])  && isset($transform['position']['y'])) {
-                $transform['position'] = ($transform['position']['x']*100) . ' ' . ($transform['position']['y']*100);
+
+            if (\is_array($transform['position']) && isset($transform['position']['x']) && isset($transform['position']['y'])) {
+                $transform['position'] = ($transform['position']['x'] * 100).' '.($transform['position']['y'] * 100);
             }
-            
+
             if (isset(self::$craftPositionTranslate[(string)$transform['position']])) {
                 $transform['position'] = self::$craftPositionTranslate[(string)$transform['position']];
             }

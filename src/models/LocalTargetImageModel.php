@@ -13,11 +13,6 @@ namespace aelvan\imager\models;
 use Craft;
 
 use craft\helpers\FileHelper;
-use craft\elements\Asset;
-
-use yii\base\Exception;
-
-use aelvan\imager\Imager as Plugin;
 use aelvan\imager\helpers\ImagerHelpers;
 use aelvan\imager\services\ImagerService;
 
@@ -39,6 +34,8 @@ class LocalTargetImageModel
     public $isNew = false;
 
     /**
+     * LocalTargetImageModel constructor
+     * 
      * @param LocalSourceImageModel $source
      * @param array                 $transform
      */
@@ -53,6 +50,8 @@ class LocalTargetImageModel
     }
 
     /**
+     * Get file path
+     * 
      * @return string
      */
     public function getFilePath(): string
@@ -61,6 +60,8 @@ class LocalTargetImageModel
     }
 
     /**
+     * Creates target filename base on source and transform
+     * 
      * @param LocalSourceImageModel $source
      * @param array                 $transform
      *

@@ -10,13 +10,11 @@
 
 namespace aelvan\imager\services;
 
-use Craft;
-
 use craft\base\Component;
 use craft\elements\Asset;
 
-use aelvan\imager\Imager;
 use aelvan\imager\models\LocalSourceImageModel;
+use aelvan\imager\exceptions\ImagerException;
 
 use ColorThief\ColorThief;
 
@@ -34,17 +32,20 @@ class ImagerColorService extends Component
     /**
      * Get dominant color of image
      *
-     * @param AssetFileModel|string $image
-     * @param                       $quality
-     * @param                       $colorValue
+     * @param Asset|string $image
+     * @param int          $quality
+     * @param string       $colorValue
      *
-     * @return bool|string
-     * @throws Exception
+     * @return string|null
      */
     public function getDominantColor($image, $quality, $colorValue)
     {
-        $source = new LocalSourceImageModel($image);
-        $source->getLocalCopy();
+        try {
+            $source = new LocalSourceImageModel($image);
+            $source->getLocalCopy();
+        } catch (ImagerException $e) {
+            return null;
+        }
 
         $dominantColor = ColorThief::getColor($source->getFilePath(), $quality);
 
@@ -55,17 +56,20 @@ class ImagerColorService extends Component
      * Gets color palette for image
      *
      * @param Asset|string $image
-     * @param integer      $colorCount
-     * @param integer      $quality
+     * @param int      $colorCount
+     * @param int      $quality
      * @param string       $colorValue
      *
-     * @return array
-     * @throws Exception
+     * @return array|null
      */
     public function getColorPalette($image, $colorCount, $quality, $colorValue)
     {
-        $source = new LocalSourceImageModel($image);
-        $source->getLocalCopy();
+        try {
+            $source = new LocalSourceImageModel($image);
+            $source->getLocalCopy();
+        } catch (ImagerException $e) {
+            return null;
+        }
 
         $palette = ColorThief::getPalette($source->getFilePath(), $colorCount, $quality);
 

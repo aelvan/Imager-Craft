@@ -9,6 +9,7 @@ use Imagine\Image\Box;
 
 use aelvan\imager\helpers\ImagerHelpers;
 use aelvan\imager\services\ImagerService;
+use aelvan\imager\exceptions\ImagerException;
 
 class ImgixTransformedImageModel implements TransformedImageInterface
 {
@@ -20,13 +21,23 @@ class ImgixTransformedImageModel implements TransformedImageInterface
     public $width;
     public $height;
     public $size;
-    
+
     private $profileConfig;
 
+    /**
+     * ImgixTransformedImageModel constructor.
+     *
+     * @param string|null        $imageUrl
+     * @param Asset|string|null  $source
+     * @param array|null         $params
+     * @param ImgixSettings|null $config
+     *
+     * @throws ImagerException
+     */
     public function __construct($imageUrl = null, $source = null, $params = null, $config = null)
     {
         $this->profileConfig = $config;
-        
+
         $this->path = '';
         $this->extension = '';
         $this->mimeType = '';
@@ -39,7 +50,7 @@ class ImgixTransformedImageModel implements TransformedImageInterface
         $this->width = 0;
         $this->height = 0;
 
-        
+
         if (isset($params['w'], $params['h'])) {
             if (($source !== null) && ($params['fit'] === 'min' || $params['fit'] === 'max')) {
                 list($sourceWidth, $sourceHeight) = $this->getSourceImageDimensions($source);
@@ -65,7 +76,7 @@ class ImgixTransformedImageModel implements TransformedImageInterface
 
                 if ($source !== null && $params !== null) {
                     list($sourceWidth, $sourceHeight) = $this->getSourceImageDimensions($source);
-                    
+
                     if ((int)$sourceWidth === 0 || (int)$sourceHeight === 0) {
                         if (isset($params['w'])) {
                             $this->width = (int)$params['w'];
@@ -90,17 +101,18 @@ class ImgixTransformedImageModel implements TransformedImageInterface
      * @param $source
      *
      * @return array
+     * @throws ImagerException
      */
-    protected function getSourceImageDimensions($source)
+    protected function getSourceImageDimensions($source): array
     {
         if ($source instanceof Asset) {
             return [$source->getWidth(), $source->getHeight()];
         }
 
-        if ($this->profileConfig !== null && $this->profileConfig->imgixGetExternalImageDimensions) {
+        if ($this->profileConfig !== null && $this->profileConfig->getExternalImageDimensions) {
             $sourceModel = new LocalSourceImageModel($source);
             $sourceModel->getLocalCopy();
-            
+
             $sourceImageInfo = @getimagesize($sourceModel->getFilePath());
 
             return [$sourceImageInfo[0], $sourceImageInfo[1]];
@@ -123,7 +135,7 @@ class ImgixTransformedImageModel implements TransformedImageInterface
 
         $w = $params['w'] ?? null;
         $h = $params['h'] ?? null;
-        
+
         switch ($fit) {
             case 'clip':
             case 'fill':
@@ -222,16 +234,25 @@ class ImgixTransformedImageModel implements TransformedImageInterface
         return $this->size;
     }
 
-    public function getDataUri()
+    /**
+     * @return string
+     */
+    public function getDataUri(): string
     {
         return '';
     }
 
-    public function getBase64Encoded()
+    /**
+     * @return string
+     */
+    public function getBase64Encoded(): string
     {
         return '';
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return (string)$this->url;

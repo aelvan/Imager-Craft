@@ -6,12 +6,16 @@ use craft\base\Volume;
 use craft\elements\Asset;
 use craft\helpers\FileHelper;
 
+use Imagine\Exception\InvalidArgumentException;
 use Imagine\Image\Box;
 use Imagine\Image\BoxInterface;
 use Imagine\Image\Point;
 
 use aelvan\imager\models\ConfigModel;
 use aelvan\imager\services\ImagerService;
+use aelvan\imager\exceptions\ImagerException;
+
+use yii\base\InvalidConfigException;
 
 class ImagerHelpers
 {
@@ -70,7 +74,7 @@ class ImagerHelpers
      * @param bool               $allowUpscale
      *
      * @return Box
-     * @throws \Imagine\Exception\InvalidArgumentException
+     * @throws ImagerException
      */
     public static function getResizeSize($originalSize, $transform, $allowUpscale): Box
     {
@@ -130,8 +134,15 @@ class ImagerHelpers
         if (!$allowUpscale) {
             list($width, $height) = self::enforceMaxSize($width, $height, $originalSize, false, self::getCropZoomFactor($transform));
         }
+        
+        try {
+            $box = new Box($width, $height);
+        } catch (InvalidArgumentException $e) {
+            \Craft::error($e->getMessage(), __METHOD__);
+            throw new ImagerException($e->getMessage(), $e->getCode(), $e);
+        }
 
-        return new Box($width, $height);
+        return $box;
     }
 
     /**
@@ -193,7 +204,7 @@ class ImagerHelpers
      * @param string             $position
      *
      * @return \Imagine\Image\Point
-     * @throws \Imagine\Exception\InvalidArgumentException
+     * @throws ImagerException
      */
     public static function getCropPoint($resizeSize, $cropSize, $position): Point
     {
@@ -205,10 +216,17 @@ class ImagerHelpers
         $topPos = floor($resizeSize->getHeight() * ($topOffset / 100)) - floor($cropSize->getHeight() / 2);
 
         // Make sure the point is within the boundaries and return the point
-        return new Point(
-            min(max($leftPos, 0), $resizeSize->getWidth() - $cropSize->getWidth()),
-            min(max($topPos, 0), $resizeSize->getHeight() - $cropSize->getHeight())
-        );
+        try {
+            $point = new Point(
+                min(max($leftPos, 0), $resizeSize->getWidth() - $cropSize->getWidth()),
+                min(max($topPos, 0), $resizeSize->getHeight() - $cropSize->getHeight())
+            );
+        } catch (InvalidArgumentException $e) {
+            \Craft::error($e->getMessage(), __METHOD__);
+            throw new ImagerException($e->getMessage(), $e->getCode(), $e);
+        }
+        
+        return $point;
     }
 
     /**
@@ -217,12 +235,17 @@ class ImagerHelpers
      * @param Asset $asset
      *
      * @return string
-     * @throws \yii\base\InvalidConfigException
+     * @throws ImagerException
      */
     public static function getTransformPathForAsset($asset): string
     {
         /** @var Volume $volume */
-        $volume = $asset->getVolume();
+        try {
+            $volume = $asset->getVolume();
+        } catch (InvalidConfigException $e) {
+            \Craft::error($e->getMessage(), __METHOD__);
+            throw new ImagerException($e->getMessage(), $e->getCode(), $e);
+        }
 
         /** @var ConfigModel $settings */
         $config = ImagerService::getConfig();
@@ -419,7 +442,14 @@ class ImagerHelpers
         return $r;
     }
 
-    public static function stripTrailingSlash($str)
+    /**
+     * Strip trailing slash
+     * 
+     * @param $str
+     *
+     * @return string
+     */
+    public static function stripTrailingSlash($str): string
     {
         return rtrim($str, '/');
     }

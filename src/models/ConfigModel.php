@@ -48,6 +48,7 @@ class ConfigModel extends Settings
         if (isset(ImagerService::$craftPositionTranslate[(string)$this->position])) {
             $this->position = ImagerService::$craftPositionTranslate[(string)$this->position];
         }
+        
         $this->position = str_replace('%', '', $this->position);
     }
 
@@ -83,8 +84,6 @@ class ConfigModel extends Settings
      *
      * @param string $key
      * @param mixed  $value
-     *
-     * @return string
      */
     private function addToOverrideFilestring($key, $value)
     {

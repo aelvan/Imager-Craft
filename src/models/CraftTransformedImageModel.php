@@ -4,10 +4,14 @@ namespace aelvan\imager\models;
 
 use craft\helpers\FileHelper;
 
-use Imagine\Image\Box;
-
 use aelvan\imager\helpers\ImagerHelpers;
 use aelvan\imager\services\ImagerService;
+use aelvan\imager\exceptions\ImagerException;
+
+use Imagine\Exception\InvalidArgumentException;
+use Imagine\Image\Box;
+
+use yii\base\InvalidConfigException;
 
 class CraftTransformedImageModel implements TransformedImageInterface
 {
@@ -28,8 +32,7 @@ class CraftTransformedImageModel implements TransformedImageInterface
      * @param LocalSourceImageModel $sourceModel
      * @param array                 $transform
      *
-     * @throws \yii\base\InvalidConfigException
-     * @throws \Imagine\Exception\InvalidArgumentException
+     * @throws ImagerException
      */
     public function __construct($targetModel, $sourceModel, $transform)
     {
@@ -39,8 +42,11 @@ class CraftTransformedImageModel implements TransformedImageInterface
         $this->isNew = $targetModel->isNew;
 
         $this->extension = $targetModel->extension;
-        $this->mimeType = FileHelper::getMimeType($targetModel->getFilePath());
         $this->size = @filesize($targetModel->getFilePath());
+        try {
+            $this->mimeType = FileHelper::getMimeType($targetModel->getFilePath());
+        } catch (InvalidConfigException $e) {
+        }
 
         $imageInfo = @getimagesize($targetModel->getFilePath());
 
@@ -52,11 +58,15 @@ class CraftTransformedImageModel implements TransformedImageInterface
             $config = ImagerService::getConfig();
     
             $sourceImageInfo = @getimagesize($sourceModel->getFilePath());
-            $sourceSize = new Box($sourceImageInfo[0], $sourceImageInfo[1]);
-            $targetCrop = ImagerHelpers::getCropSize($sourceSize, $transform, $config->getSetting('allowUpscale', $transform));
             
-            $this['width'] = $targetCrop->getWidth();
-            $this['height'] = $targetCrop->getHeight();
+            try {
+                $sourceSize = new Box($sourceImageInfo[0], $sourceImageInfo[1]);
+                $targetCrop = ImagerHelpers::getCropSize($sourceSize, $transform, $config->getSetting('allowUpscale', $transform));
+                $this->width = $targetCrop->getWidth();
+                $this->height = $targetCrop->getHeight();
+            } catch (InvalidArgumentException $e) {
+                throw new ImagerException($e->getMessage(), $e->getCode(), $e);
+            }
         }
     }
 

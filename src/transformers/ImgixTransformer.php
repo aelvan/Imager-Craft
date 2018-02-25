@@ -11,23 +11,24 @@
 namespace aelvan\imager\transformers;
 
 use Craft;
+
 use craft\base\Component;
 use craft\base\LocalVolumeInterface;
 use craft\base\Volume;
 use craft\elements\Asset;
 use craft\volumes\Local;
 
-use aelvan\imager\Imager as Plugin;
 use aelvan\imager\models\ConfigModel;
 use aelvan\imager\models\ImgixSettings;
 use aelvan\imager\models\ImgixTransformedImageModel;
 use aelvan\imager\services\ImagerService;
+use aelvan\imager\exceptions\ImagerException;
 
 use Imgix\ShardStrategy;
 use Imgix\UrlBuilder;
 
 use yii\base\BaseObject;
-use yii\base\Exception;
+use yii\base\InvalidConfigException;
 
 /**
  * ImgixTransformer
@@ -45,17 +46,24 @@ class ImgixTransformer extends Component implements TransformerInterface
         'bgColor' => 'bg',
     ];
 
+    /**
+     * ImgixTransformer constructor.
+     *
+     * @param array $config
+     */
     public function __construct($config = [])
     {
         BaseObject::__construct($config);
     }
 
     /**
+     * Main transform method
+     *
      * @param Asset|string $image
      * @param array        $transforms
      *
      * @return array|null
-     * @throws \yii\base\Exception
+     * @throws ImagerException
      */
     public function transform($image, $transforms)
     {
@@ -69,13 +77,16 @@ class ImgixTransformer extends Component implements TransformerInterface
     }
 
     /**
-     * @param $image
-     * @param $transform
+     * Transform one image
+     *
+     * @param Asset|string $image
+     * @param array        $transform
      *
      * @return ImgixTransformedImageModel
-     * @throws Exception
+     *
+     * @throws ImagerException
      */
-    public function getTransformedImage($image, $transform)
+    private function getTransformedImage($image, $transform): ImgixTransformedImageModel
     {
         /** @var ConfigModel $settings */
         $config = ImagerService::getConfig();
@@ -84,7 +95,9 @@ class ImgixTransformer extends Component implements TransformerInterface
         $imgixConfigArr = $config->getSetting('imgixConfig', $transform);
 
         if (!isset($imgixConfigArr[$profile])) {
-            throw new Exception('Imgix profile “'.$profile.'” does not exist.');
+            $msg = 'Imgix profile “'.$profile.'” does not exist.';
+            Craft::error($msg, __METHOD__);
+            throw new ImagerException($msg);
         }
 
         $imgixConfig = new ImgixSettings($imgixConfigArr[$profile]);
@@ -93,20 +106,27 @@ class ImgixTransformer extends Component implements TransformerInterface
 
         if (!\is_array($domains)) {
             $msg = Craft::t('imager', 'Imgix config setting “domains” does not appear to be correctly set up. It needs to be an array of strings representing your Imgix source`s domains.');
-            throw new Exception($msg);
+            Craft::error($msg, __METHOD__);
+            throw new ImagerException($msg);
         }
 
         if (($imgixConfig->sourceIsWebProxy === true) && ($imgixConfig->signKey === '')) {
             $msg = Craft::t('imager', 'Your Imgix source is a web proxy according to config setting “sourceIsWebProxy”, but no sign key/security token has been given in imgix config setting “signKey”. You`ll find this in your Imgix source details page.');
-            throw new Exception($msg);
+            Craft::error($msg, __METHOD__);
+            throw new ImagerException($msg);
         }
 
-        $builder = new UrlBuilder($domains, 
-            $imgixConfig->useHttps, 
-            $imgixConfig->signKey,
-            ($imgixConfig->shardStrategy === 'cycle' ? ShardStrategy::CYCLE : ShardStrategy::CRC),
-        false);
-        
+        try {
+            $builder = new UrlBuilder($domains,
+                $imgixConfig->useHttps,
+                $imgixConfig->signKey,
+                ($imgixConfig->shardStrategy === 'cycle' ? ShardStrategy::CYCLE : ShardStrategy::CRC),
+                false);
+        } catch (\InvalidArgumentException $e) {
+            Craft::error($e->getMessage(), __METHOD__);
+            throw new ImagerException($e->getMessage(), $e->getCode(), $e);
+        }
+
         $params = $this->createParams($transform, $image, $imgixConfig);
 
         if (\is_string($image)) { // if $image is a string, just pass it to builder, we have to assume the user knows what he's doing (sry) :)
@@ -115,8 +135,13 @@ class ImgixTransformer extends Component implements TransformerInterface
             if ($imgixConfig->sourceIsWebProxy === true) {
                 $url = $builder->createURL($image->url, $params);
             } else {
-                /** @var LocalVolumeInterface|Volume|Local $volume */
-                $volume = $image->getVolume();
+                try {
+                    /** @var LocalVolumeInterface|Volume|Local $volume */
+                    $volume = $image->getVolume();
+                } catch (InvalidConfigException $e) {
+                    Craft::error($e->getMessage(), __METHOD__);
+                    throw new ImagerException($e->getMessage(), $e->getCode(), $e);
+                }
 
                 if (($imgixConfig->useCloudSourcePath === true) && isset($volume->subfolder) && \get_class($volume) !== 'craft\volumes\Local') {
                     $path = implode('/', [$volume->subfolder, $image->getUri()]);
@@ -128,14 +153,14 @@ class ImgixTransformer extends Component implements TransformerInterface
             }
         }
 
-        return new ImgixTransformedImageModel($url, $image, $params, $imgixConfigArr);
+        return new ImgixTransformedImageModel($url, $image, $params, $imgixConfig);
     }
 
     /**
      * Create Imgix transform params
      *
-     * @param               $transform
-     * @param               $image
+     * @param array         $transform
+     * @param Asset|string  $image
      * @param ImgixSettings $imgixConfig
      *
      * @return array
@@ -296,9 +321,9 @@ class ImgixTransformer extends Component implements TransformerInterface
      *
      * @param $letterboxDef
      *
-     * @return mixed|string
+     * @return string
      */
-    private function getLetterboxColor($letterboxDef)
+    private function getLetterboxColor($letterboxDef): string
     {
         $color = $letterboxDef['color'];
         $opacity = $letterboxDef['opacity'];
@@ -331,8 +356,8 @@ class ImgixTransformer extends Component implements TransformerInterface
     /**
      * Gets the quality setting based on the extension.
      *
-     * @param      $ext
-     * @param null $transform
+     * @param string $ext
+     * @param null   $transform
      *
      * @return string
      */
@@ -357,7 +382,7 @@ class ImgixTransformer extends Component implements TransformerInterface
     /**
      * URL encode the asset path properly
      *
-     * @param $path
+     * @param string $path
      *
      * @return string
      */

@@ -10,6 +10,7 @@
 
 namespace aelvan\imager\transformers;
 
+use aelvan\imager\exceptions\ImagerException;
 use craft\elements\Asset;
 
 interface TransformerInterface
@@ -19,6 +20,8 @@ interface TransformerInterface
      * @param array        $transforms
      *
      * @return array|null
+     *
+     * @throws ImagerException
      */
     public function transform($image, $transforms);
 

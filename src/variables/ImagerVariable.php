@@ -15,18 +15,22 @@ use Craft;
 use aelvan\imager\Imager as Plugin;
 use aelvan\imager\services\ImagerColorService;
 use aelvan\imager\services\ImagerService;
+use \aelvan\imager\exceptions\ImagerException;
+use craft\elements\Asset;
 
 class ImagerVariable
 {
     /**
      * Transforms an image
      *
-     * @param $file
-     * @param $transform
-     * @param $transformDefaults
-     * @param $configOverrides
+     * @param Asset|string $file
+     * @param array        $transform
+     * @param array        $transformDefaults
+     * @param array        $configOverrides
      *
      * @return mixed
+     *
+     * @throws ImagerException
      */
     public function transformImage($file, $transform, $transformDefaults = null, $configOverrides = null)
     {
@@ -51,7 +55,7 @@ class ImagerVariable
 
     /**
      * Returns a base64 encoded transparent pixel.
-     * 
+     *
      * @param int    $width
      * @param int    $height
      * @param string $color
@@ -66,9 +70,9 @@ class ImagerVariable
     /**
      * Gets the dominant color of an image
      *
-     * @param        $image
-     * @param string $colorValue
-     * @param int    $quality
+     * @param Asset|string $image
+     * @param string       $colorValue
+     * @param int          $quality
      *
      * @return mixed
      */
@@ -80,10 +84,10 @@ class ImagerVariable
     /**
      * Gets a palette of colors from an image
      *
-     * @param        $image
-     * @param string $colorValue
-     * @param int    $colorCount
-     * @param int    $quality
+     * @param Asset|string $image
+     * @param string       $colorValue
+     * @param int          $colorCount
+     * @param int          $quality
      *
      * @return mixed
      */
@@ -141,9 +145,11 @@ class ImagerVariable
     /**
      * Checks if asset is animated (only gif support atm)
      *
-     * @param $asset
+     * @param Asset|string $asset
      *
      * @return bool
+     *
+     * @throws ImagerException
      */
     public function isAnimated($asset): bool
     {
@@ -151,12 +157,12 @@ class ImagerVariable
     }
 
     /**
-     * Checks for webp support in image driver
+     * Checks if Imgix is enabled
      *
      * @return bool
      */
     public function imgixEnabled(): bool
     {
-        return Plugin::$plugin->getSettings()->imgixEnabled;
+        return Plugin::$plugin->getSettings()->transformer === 'imgix';
     }
 }
