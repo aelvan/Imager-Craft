@@ -14,11 +14,6 @@ class ConfigModel extends Settings
     private $configOverrideString = '';
 
     /**
-     * @var array
-     */
-    private $excludedConfigOverrideProperties = ['fillTransforms', 'fillInterval', 'fillAttribute', 'filenamePattern', 'transformer'];
-
-    /**
      * TransformSettings constructor.
      *
      * @param Settings|Model $settings
@@ -35,10 +30,12 @@ class ConfigModel extends Settings
         }
 
         // Apply transform overrides
+        $excludedConfigOverrideProperties = ['fillTransforms', 'fillInterval', 'fillAttribute', 'filenamePattern', 'transformer'];
+        
         if ($overrides !== null) {
             foreach ($overrides as $key => $value) {
                 $this->$key = $value;
-                if (!\in_array($key, $this->excludedConfigOverrideProperties, true)) {
+                if (!\in_array($key, $excludedConfigOverrideProperties, true)) {
                     $this->addToOverrideFilestring($key, $value);
                 }
             }
@@ -50,6 +47,13 @@ class ConfigModel extends Settings
         }
         
         $this->position = str_replace('%', '', $this->position);
+        
+        // Replace aliases
+        $aliasables = ['imagerSystemPath', 'imagerUrl'];
+        
+        foreach ($aliasables as $aliasable) {
+            $this->{$aliasable} = \Yii::getAlias($settings->{$aliasable});
+        }
     }
 
     /**
