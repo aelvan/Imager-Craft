@@ -139,7 +139,12 @@ class Settings extends Model
         ],
         */
     ];
-    
+
+    /**
+     * Settings constructor.
+     *
+     * @param array $config
+     */
     public function __construct($config = [])
     {
         if (!empty($config)) {
@@ -152,5 +157,6 @@ class Settings extends Model
     {
         // Have to set this here cause $_SERVER['DOCUMENT_ROOT'] can't be used in default value
         $this->imagerSystemPath = $_SERVER['DOCUMENT_ROOT'].'/imager/';
+        $this->suppressExceptions = !\Craft::$app->getConfig()->general->devMode;
     }
 }
