@@ -48,6 +48,8 @@ class ImagerColorService extends Component
         }
 
         $dominantColor = ColorThief::getColor($source->getFilePath(), $quality);
+        
+        ImagerService::cleanSession();
 
         return $colorValue === 'hex' ? self::rgb2hex($dominantColor) : $dominantColor;
     }
@@ -73,6 +75,8 @@ class ImagerColorService extends Component
 
         $palette = ColorThief::getPalette($source->getFilePath(), $colorCount, $quality);
 
+        ImagerService::cleanSession();
+        
         return $colorValue === 'hex' ? $this->paletteToHex($palette) : $palette;
     }
 

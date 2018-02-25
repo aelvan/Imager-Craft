@@ -75,6 +75,11 @@ class ImagerService extends Component
     public static $storage = [];
 
     /**
+     * @var array
+     */
+    public static $remoteImageSessionCache = [];
+
+    /**
      * Translate dictionary for translating transform keys into filename markers
      *
      * @var array
@@ -266,6 +271,14 @@ class ImagerService extends Component
         self::$storage[mb_strtolower($handle)] = $class;
     }
 
+    /**
+     * @param string $path
+     */
+    public static function registerCachedRemoteFile($path)
+    {
+        self::$remoteImageSessionCache[] = $path;
+    }
+
 
     // Public Methods
     // =========================================================================
@@ -325,9 +338,9 @@ class ImagerService extends Component
             throw $e;
         }
         
-        // Reset config model
+        self::cleanSession();
         self::$transformConfig = null;
-
+        
         if ($transformedImages === null) {
             return null;
         }
@@ -415,6 +428,8 @@ class ImagerService extends Component
         }
 
         fclose($fh);
+        
+        self::cleanSession();
 
         return $count > 0;
     }
@@ -488,9 +503,24 @@ class ImagerService extends Component
         }
     }
 
+    /**
+     * 
+     */
+    public static function cleanSession()
+    {
+        $config = self::getConfig();
+        
+        if (!$config->cacheRemoteFiles && \count(self::$remoteImageSessionCache)>0) {
+            foreach (self::$remoteImageSessionCache as $file) {
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+        }
+    }    
+
     // Private Methods
     // =========================================================================
-
 
     /**
      * Fills in the missing transform objects

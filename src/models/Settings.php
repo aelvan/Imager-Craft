@@ -10,6 +10,7 @@ class Settings extends Model
     public $imagerSystemPath = '/imager/';
     public $imagerUrl = '/imager/';
     public $cacheEnabled = true;
+    public $cacheRemoteFiles = true;
     public $cacheDuration = 1209600;
     public $cacheDurationRemoteFiles = 1209600;
     public $cacheDurationExternalStorage = 1209600;

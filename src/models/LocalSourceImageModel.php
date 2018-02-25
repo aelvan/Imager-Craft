@@ -155,6 +155,10 @@ class LocalSourceImageModel
                 if ($this->type === 'remoteurl') {
                     $this->downloadFile();
                 }
+
+                if (file_exists($this->getFilePath())) {
+                    ImagerService::registerCachedRemoteFile($this->getFilePath());
+                }
             }
 
             if (!file_exists($this->getFilePath())) {
