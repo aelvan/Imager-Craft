@@ -292,7 +292,7 @@ class ImagerService extends Component
      * @return array|null
      * @throws ImagerException
      */
-    public function transformImage($image, $transforms, $transformDefaults, $configOverrides)
+    public function transformImage($image, $transforms, $transformDefaults = null, $configOverrides = null)
     {
         if (!$image) {
             return null;
@@ -322,25 +322,24 @@ class ImagerService extends Component
         // Create transformer
         try {
             if (!isset(self::$transformers[self::$transformConfig->transformer])) {
-                Craft::error('Invalid transformer "' . self::$transformConfig->transformer . '"', __METHOD__);
-                throw new ImagerException('Invalid transformer "' . self::$transformConfig->transformer . '"');
+                Craft::error('Invalid transformer "'.self::$transformConfig->transformer.'"', __METHOD__);
+                throw new ImagerException('Invalid transformer "'.self::$transformConfig->transformer.'"');
             }
 
             /** @var TransformerInterface $transformer */
             $transformer = new self::$transformers[self::$transformConfig->transformer]();
             $transformedImages = $transformer->transform($image, $transforms);
-        
         } catch (ImagerException $e) {
             if (self::$transformConfig->suppressExceptions) {
                 return null;
             }
-                
+
             throw $e;
         }
-        
+
         self::cleanSession();
         self::$transformConfig = null;
-        
+
         if ($transformedImages === null) {
             return null;
         }
@@ -428,7 +427,7 @@ class ImagerService extends Component
         }
 
         fclose($fh);
-        
+
         self::cleanSession();
 
         return $count > 0;
@@ -504,20 +503,20 @@ class ImagerService extends Component
     }
 
     /**
-     * 
+     *
      */
     public static function cleanSession()
     {
         $config = self::getConfig();
-        
-        if (!$config->cacheRemoteFiles && \count(self::$remoteImageSessionCache)>0) {
+
+        if (!$config->cacheRemoteFiles && \count(self::$remoteImageSessionCache) > 0) {
             foreach (self::$remoteImageSessionCache as $file) {
                 if (file_exists($file)) {
                     unlink($file);
                 }
             }
         }
-    }    
+    }
 
     // Private Methods
     // =========================================================================
@@ -652,6 +651,7 @@ class ImagerService extends Component
             $transform['position'] = str_replace('%', '', (string)$transform['position']);
         }
 
+        
         // sort keys to get them in the same order 
         ksort($transform);
 

@@ -49,6 +49,9 @@ class Settings extends Model
     public $fillAttribute = 'width';
     public $fillInterval = '200';
     public $clearKey = '';
+    
+    public $useForNativeTransforms = false;
+    public $useForCpThumbs = false;
 
     public $imgixProfile = 'default';
     public $imgixConfig = [

@@ -14,15 +14,16 @@ use Craft;
 use craft\base\Element;
 use craft\base\Plugin;
 use craft\elements\Asset;
+use craft\events\GetAssetThumbUrlEvent;
+use craft\events\GetAssetUrlEvent;
 use craft\events\RegisterCacheOptionsEvent;
 use craft\events\RegisterElementActionsEvent;
 use craft\events\ReplaceAssetEvent;
 use craft\helpers\FileHelper;
+use craft\helpers\Image;
 use craft\services\Assets;
 use craft\utilities\ClearCaches;
-use craft\web\UrlManager;
 use craft\web\twig\variables\CraftVariable;
-use craft\events\RegisterUrlRulesEvent;
 
 use yii\base\Event;
 
@@ -32,6 +33,9 @@ use aelvan\imager\services\ImagerColorService;
 use aelvan\imager\variables\ImagerVariable;
 use aelvan\imager\twigextensions\ImagerTwigExtension;
 use aelvan\imager\elementactions\ClearTransformsElementAction;
+use aelvan\imager\exceptions\ImagerException;
+use aelvan\imager\models\CraftTransformedImageModel;
+use aelvan\imager\models\ImgixTransformedImageModel;
 
 use aelvan\imager\effects\BlurEffect;
 use aelvan\imager\effects\ClutEffect;
@@ -95,7 +99,7 @@ class Imager extends Plugin
     public function init()
     {
         parent::init();
-        
+
         self::$plugin = $this;
 
         // Register services
@@ -108,9 +112,7 @@ class Imager extends Plugin
         Craft::$app->view->registerTwigExtension(new ImagerTwigExtension());
 
         // Register our variables
-        Event::on(
-            CraftVariable::class,
-            CraftVariable::EVENT_INIT,
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT,
             function(Event $event) {
                 /** @var CraftVariable $variable */
                 $variable = $event->sender;
@@ -119,9 +121,7 @@ class Imager extends Plugin
         );
 
         // Adds Imager paths to the list of things the Clear Caches tool can delete
-        Event::on(
-            ClearCaches::class,
-            ClearCaches::EVENT_REGISTER_CACHE_OPTIONS,
+        Event::on(ClearCaches::class, ClearCaches::EVENT_REGISTER_CACHE_OPTIONS,
             function(RegisterCacheOptionsEvent $event) {
                 $event->options[] = [
                     'key' => 'imager-transform-cache',
@@ -135,25 +135,59 @@ class Imager extends Plugin
                 ];
             }
         );
-        
+
         // Register element action to assets for clearing transforms
-        Event::on(
-            Asset::class,
-            Element::EVENT_REGISTER_ACTIONS,
+        Event::on(Asset::class, Element::EVENT_REGISTER_ACTIONS,
             function(RegisterElementActionsEvent $event) {
                 $event->actions[] = ClearTransformsElementAction::class;
             }
         );
 
         // Event listener for clearing caches when an asset is replaced
-        Event::on(
-            Assets::class,
-            Assets::EVENT_AFTER_REPLACE_ASSET,
+        Event::on(Assets::class, Assets::EVENT_AFTER_REPLACE_ASSET,
             function(ReplaceAssetEvent $event) {
                 self::$plugin->imager->removeTransformsForAsset($event->asset);
             }
         );
 
+        // Event listener for overriding Craft's internal transform functionality
+        Event::on(Assets::class, Assets::EVENT_GET_ASSET_URL,
+            function(GetAssetUrlEvent $event) {
+                $config = ImagerService::getConfig();
+                
+                if ($config->useForNativeTransforms && $event->asset !== null && $event->transform !== null) {
+                    try {
+                        $transformedImage = self::$plugin->imager->transformImage($event->asset, $event->transform);
+                        if ($transformedImage !== null) {
+                            $event->url = $transformedImage->url;
+                        }
+                    } catch (ImagerException $e) {
+                        return null;
+                    }
+                }
+            }
+        );
+
+        // Event listener for overriding Craft's internal thumb url
+        Event::on(Assets::class, Assets::EVENT_GET_ASSET_THUMB_URL,
+            function(GetAssetThumbUrlEvent $event) {
+                $config = ImagerService::getConfig();
+                
+                if ($config->useForCpThumbs && $event->asset !== null && \in_array($event->asset->getExtension(), Image::webSafeFormats(), true)) {
+                    try {
+                        /** @var CraftTransformedImageModel|ImgixTransformedImageModel $transformedImage */
+                        $transformedImage = self::$plugin->imager->transformImage($event->asset, ['width' => $event->width, 'height' => $event->height, 'mode' => 'fit']);
+                        
+                        if ($transformedImage !== null) {
+                            $event->url = $transformedImage->url;
+                        }
+                    } catch (ImagerException $e) {
+
+                    }
+                }
+            }
+        );
+        
         // Register built-in effects
         $this->registerEffects();
 
