@@ -1,5 +1,19 @@
 # Imager Changelog
 
-## 2.0.0-beta.1 - 2018-02-10
+## 2.0.0-beta2 - 2018-02-26
+### Added
+- Support for using Imager for native transforms (`useForNativeTransforms` config setting) and control panel thumbs (`useForCpThumbs` config setting). Very beta atm.
+- Added support for native focal point in `position`.
+- Added support for aliases in `imagerSystemPath` and `imagerUrl`.
+- Added config setting `cacheRemoteFiles` to enable and disable caching of remote images (enabled by default).
+
+### Changed
+- The `suppressExceptions` config setting now uses `devMode` by default to determine initial value. Still possible to override though.
+- Improved error handling. More annotations and code documentation.
+
+### Fixed
+- Fixed a bug where `serverSupportsWebp` would throw an error if config was not initialized.
+
+## 2.0.0-beta1 - 2018-02-10
 ### Added
 - Initial Craft 3 beta release
