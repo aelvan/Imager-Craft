@@ -144,9 +144,9 @@ class ImgixTransformer extends Component implements TransformerInterface
                 }
 
                 if (($imgixConfig->useCloudSourcePath === true) && isset($volume->subfolder) && \get_class($volume) !== 'craft\volumes\Local') {
-                    $path = implode('/', [$volume->subfolder, $image->getUri()]);
+                    $path = implode('/', [$volume->subfolder, $image->getPath()]);
                 } else {
-                    $path = $image->getUri();
+                    $path = $image->getPath();
                 }
 
                 $url = $builder->createURL($this->getUrlEncodedPath($path), $params);

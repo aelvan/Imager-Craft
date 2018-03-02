@@ -1,5 +1,9 @@
 # Imager Changelog
 
+## 2.0.0-beta3 - 2018-03-01
+### Fixed
+- Fixed use of `Asset::getUri()` which was deprecated in RC13.
+
 ## 2.0.0-beta2 - 2018-02-26
 ### Added
 - Support for using Imager for native transforms (`useForNativeTransforms` config setting) and control panel thumbs (`useForCpThumbs` config setting). Very beta atm.

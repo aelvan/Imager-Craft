@@ -149,7 +149,7 @@ class LocalSourceImageModel
                         throw new ImagerException($e->getMessage(), $e->getCode(), $e);
                     }
 
-                    $volume->saveFileLocally($this->asset->getUri(), $this->getFilePath());
+                    $volume->saveFileLocally($this->asset->getPath(), $this->getFilePath());
                 }
 
                 if ($this->type === 'remoteurl') {
