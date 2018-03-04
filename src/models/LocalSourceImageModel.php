@@ -23,6 +23,7 @@ use aelvan\imager\helpers\ImagerHelpers;
 use aelvan\imager\services\ImagerService;
 use aelvan\imager\exceptions\ImagerException;
 
+use Yii;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;
 
@@ -259,7 +260,7 @@ class LocalSourceImageModel
         $this->transformPath = ImagerHelpers::getTransformPathForPath($image);
         $pathParts = pathinfo($image);
 
-        $this->path = FileHelper::normalizePath($_SERVER['DOCUMENT_ROOT'].'/'.$pathParts['dirname']);
+        $this->path = FileHelper::normalizePath(Yii::getAlias('@webroot').'/'.$pathParts['dirname']);
         $this->url = $image;
         $this->filename = $pathParts['basename'];
         $this->basename = $pathParts['filename'];
