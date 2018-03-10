@@ -181,7 +181,7 @@ class LocalSourceImageModel
     {
         /** @var LocalVolumeInterface $volume */
         try {
-            $volume = $this->asset->getVolume();
+            $volume = $image->getVolume();
             $this->transformPath = ImagerHelpers::getTransformPathForAsset($image);
         } catch (InvalidConfigException $e) {
             Craft::error($e->getMessage(), __METHOD__);
@@ -322,12 +322,6 @@ class LocalSourceImageModel
         if (\function_exists('curl_init')) {
             $ch = curl_init($imageUrl);
             $fp = fopen($this->getFilePath(), 'wb');
-            
-            if (!$fp) {
-                $msg = Craft::t('imager', 'Could not open “{filePath}” for writing.', ['filePath' => $this->getFilePath()]);
-                Craft::error($msg, __METHOD__);
-                throw new ImagerException($msg);
-            }
             
             $defaultOptions = [
                 CURLOPT_FILE => $fp,

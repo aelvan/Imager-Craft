@@ -617,10 +617,12 @@ class CraftTransformer extends Component implements TransformerInterface
                 $letterboxDef['color'] ?? '#000',
                 isset($letterboxDef['opacity']) ? (int)($letterboxDef['opacity'] * 100) : 0
             );
-
-            $backgroundImage = $this->imagineInstance->create($size, $color);
-            $backgroundImage->paste($imageInstance, $position);
-            $imageInstance = $backgroundImage;
+            
+            if ($this->imagineInstance !== null) {
+                $backgroundImage = $this->imagineInstance->create($size, $color);
+                $backgroundImage->paste($imageInstance, $position);
+                $imageInstance = $backgroundImage;
+            }
         }
     }
 
@@ -733,6 +735,7 @@ class CraftTransformer extends Component implements TransformerInterface
                 $blendMode = \Imagick::COMPOSITE_ATOP;
             }
 
+            /** @var ImagickImage $imageInstance */
             $imageInstance->getImagick()->compositeImage($watermarkImagick, $blendMode, $positionPoint->getX(), $positionPoint->getY());
         } else { // it's GD :(
             try {
