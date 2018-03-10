@@ -24,7 +24,7 @@ class KrakenOptimizer implements ImagerOptimizeInterface
         $data = $kraken->upload($params);
 
         if ($data['success'] === true) {
-            $result = self::storeOptimizedFile($file, $data);
+            self::storeOptimizedFile($file, $data);
         } else {
             Craft::error('Could not validate connection to TinyPNG, image was not optimized.', __METHOD__);
         }

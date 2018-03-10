@@ -69,12 +69,12 @@ class CraftTransformer extends Component implements TransformerInterface
 
     /**
      * Main transform method
-     * 
+     *
      * @param Asset|string $image
      * @param array        $transforms
      *
      * @return array|null
-     * 
+     *
      * @throws ImagerException
      */
     public function transform($image, $transforms)
@@ -118,7 +118,7 @@ class CraftTransformer extends Component implements TransformerInterface
      *
      * @param CraftTransformedImageModel $image
      * @param bool                       $isFinalVersion
-     * 
+     *
      * @throws ImagerException
      */
     public function store(CraftTransformedImageModel $image, bool $isFinalVersion)
@@ -163,7 +163,7 @@ class CraftTransformer extends Component implements TransformerInterface
 
     /**
      * Gets one transformed image based on source image and transform
-     * 
+     *
      * @param LocalSourceImageModel $sourceModel
      * @param array                 $transform
      *
@@ -178,6 +178,12 @@ class CraftTransformer extends Component implements TransformerInterface
 
         if ($config->getSetting('noop', $transform)) {
             // todo : just return source image unmodified
+        }
+
+        if ($this->imagineInstance === null) {
+            $msg = Craft::t('imager', 'Imagine instance was not created for driver “{driver}”.', ['driver' => ImagerService::$imageDriver]);
+            Craft::error($msg, __METHOD__);
+            throw new ImagerException($msg);
         }
 
         // Create target model
@@ -205,6 +211,7 @@ class CraftTransformer extends Component implements TransformerInterface
                 try {
                     FileHelper::createDirectory($targetModel->path);
                 } catch (Exception $e) {
+                    // ignore for now, trying to create
                 }
 
                 if (!realpath($targetModel->path)) {
@@ -221,7 +228,7 @@ class CraftTransformer extends Component implements TransformerInterface
             } catch (ErrorException $e) {
                 $targetPathIsWriteable = false;
             }
-            
+
             if ($targetModel->path && !$targetPathIsWriteable) {
                 $msg = Craft::t('imager', 'Target folder “{targetPath}” is not writeable', ['targetPath' => $targetModel->path]);
                 Craft::error($msg, __METHOD__);
@@ -341,14 +348,15 @@ class CraftTransformer extends Component implements TransformerInterface
             $cropSize = ImagerHelpers::getCropSize($originalSize, $transform, $config->getSetting('allowUpscale', $transform));
             $resizeSize = ImagerHelpers::getResizeSize($originalSize, $transform, $config->getSetting('allowUpscale', $transform));
             $filterMethod = $this->getFilterMethod($transform);
-    
+
             // Do the resize
             if (ImagerService::$imageDriver === 'imagick' && $config->getSetting('smartResizeEnabled', $transform)) {
+                /** @var ImagickImage $layer */
                 $layer->smartResize($resizeSize, (bool)Craft::$app->config->general->preserveImageColorProfiles, $config->getSetting('jpegQuality', $transform));
             } else {
                 $layer->resize($resizeSize, $filterMethod);
             }
-    
+
             // Do the crop
             if (!isset($transform['mode']) || mb_strtolower($transform['mode']) === 'crop' || mb_strtolower($transform['mode']) === 'croponly') {
                 $cropPoint = ImagerHelpers::getCropPoint($resizeSize, $cropSize, $config->getSetting('position', $transform));
@@ -403,12 +411,12 @@ class CraftTransformer extends Component implements TransformerInterface
             if (ImagerService::$imageDriver === 'gd') {
                 return new \Imagine\Gd\Imagine();
             }
-    
+
             if (ImagerService::$imageDriver === 'imagick') {
                 return new \Imagine\Imagick\Imagine();
             }
         } catch (RuntimeException $e) {
-            
+            // just ignore for now
         }
 
         return null;
@@ -434,9 +442,9 @@ class CraftTransformer extends Component implements TransformerInterface
      * Saves image as webp
      *
      * @param GdImage|ImagickImage $imageInstance
-     * @param string         $path
-     * @param string         $sourceExtension
-     * @param array          $saveOptions
+     * @param string               $path
+     * @param string               $sourceExtension
+     * @param array                $saveOptions
      *
      * @throws ImagerException
      */
@@ -464,9 +472,10 @@ class CraftTransformer extends Component implements TransformerInterface
             unlink($tempFile);
         } else {
             if (ImagerService::$imageDriver === 'gd') {
+                /** @var GdImage $imageInstance */
                 $instance = $imageInstance->getGdResource();
 
-                if (false === \imagewebp($instance, $path, $saveOptions['webp_quality'])) {
+                if (false === /** @scrutinizer ignore-call */ \imagewebp($instance, $path, $saveOptions['webp_quality'])) {
                     $msg = Craft::t('imager', 'GD webp save operation failed');
                     Craft::error($msg, __METHOD__);
                     throw new ImagerException($msg);
@@ -479,6 +488,7 @@ class CraftTransformer extends Component implements TransformerInterface
             }
 
             if (ImagerService::$imageDriver === 'imagick') {
+                 /** @var ImagickImage $imageInstance */
                 $instance = $imageInstance->getImagick();
 
                 $instance->setImageFormat('webp');
@@ -507,8 +517,8 @@ class CraftTransformer extends Component implements TransformerInterface
     /**
      * Save temporary file and return filename
      *
-     * @param GdImage|ImagickImage      $imageInstance
-     * @param string $sourceExtension
+     * @param GdImage|ImagickImage $imageInstance
+     * @param string               $sourceExtension
      *
      * @return string
      *
@@ -523,6 +533,7 @@ class CraftTransformer extends Component implements TransformerInterface
             try {
                 FileHelper::createDirectory($tempPath);
             } catch (Exception $e) {
+                // just ignore for now, trying to create
             }
 
             if (!realpath($tempPath)) {
@@ -562,16 +573,12 @@ class CraftTransformer extends Component implements TransformerInterface
             case 'jpg':
             case 'jpeg':
                 return ['jpeg_quality' => $config->getSetting('jpegQuality', $transform)];
-                break;
             case 'gif':
                 return ['flatten' => false];
-                break;
             case 'png':
                 return ['png_compression_level' => $config->getSetting('pngCompressionLevel', $transform)];
-                break;
             case 'webp':
                 return ['webp_quality' => $config->getSetting('webpQuality', $transform), 'webp_imagick_options' => $config->getSetting('webpImagickOptions', $transform)];
-                break;
         }
 
         return [];
@@ -581,7 +588,7 @@ class CraftTransformer extends Component implements TransformerInterface
      * Apply letterbox to image
      *
      * @param GdImage|ImagickImage|ImageInterface $imageInstance
-     * @param array          $transform
+     * @param array                               $transform
      *
      * @throws ImagerException
      */
@@ -597,8 +604,8 @@ class CraftTransformer extends Component implements TransformerInterface
                 $size = new Box($transform['width'], $transform['height']);
 
                 $position = new Point(
-                    floor(((int)$transform['width'] - $imageInstance->getSize()->getWidth()) / 2),
-                    floor(((int)$transform['height'] - $imageInstance->getSize()->getHeight()) / 2)
+                    (int)floor(((int)$transform['width'] - $imageInstance->getSize()->getWidth()) / 2),
+                    (int)floor(((int)$transform['height'] - $imageInstance->getSize()->getHeight()) / 2)
                 );
             } catch (InvalidArgumentException $e) {
                 Craft::error($e->getMessage(), __METHOD__);
@@ -621,7 +628,7 @@ class CraftTransformer extends Component implements TransformerInterface
      * Apply background color to image when converting from transparent to non-transparent
      *
      * @param GdImage|ImagickImage|ImageInterface $imageInstance
-     * @param string         $bgColor
+     * @param string                              $bgColor
      *
      * @throws ImagerException
      */
@@ -636,7 +643,7 @@ class CraftTransformer extends Component implements TransformerInterface
             Craft::error($e->getMessage(), __METHOD__);
             throw new ImagerException($e->getMessage(), $e->getCode(), $e);
         }
-        
+
         $backgroundImage = $this->imagineInstance->create($imageInstance->getSize(), $color);
         $backgroundImage->paste($imageInstance, $topLeft);
         $imageInstance = $backgroundImage;
@@ -646,7 +653,7 @@ class CraftTransformer extends Component implements TransformerInterface
      * Apply watermark to image
      *
      * @param GdImage|ImagickImage|ImageInterface $imageInstance
-     * @param array          $watermark
+     * @param array                               $watermark
      *
      * @throws ImagerException
      */
@@ -667,14 +674,14 @@ class CraftTransformer extends Component implements TransformerInterface
         $sourceModel = new LocalSourceImageModel($watermark['image']);
         $sourceModel->getLocalCopy();
         $watermarkInstance = $this->imagineInstance->open($sourceModel->getFilePath());
-        
+
         try {
             $watermarkBox = new Box($watermark['width'], $watermark['height']);
         } catch (InvalidArgumentException $e) {
             Craft::error($e->getMessage(), __METHOD__);
             throw new ImagerException($e->getMessage(), $e->getCode(), $e);
         }
-        
+
         $watermarkInstance->resize($watermarkBox, ImageInterface::FILTER_UNDEFINED);
 
         if (isset($watermark['position'])) {
@@ -712,6 +719,7 @@ class CraftTransformer extends Component implements TransformerInterface
         }
 
         if (ImagerService::$imageDriver === 'imagick') {
+            /** @var ImagickImage $watermarkInstance */
             $watermarkImagick = $watermarkInstance->getImagick();
 
             if (isset($watermark['opacity'])) {
@@ -729,13 +737,13 @@ class CraftTransformer extends Component implements TransformerInterface
         } else { // it's GD :(
             try {
                 $imageInstance->paste($watermarkInstance, $positionPoint);
-            } catch(InvalidArgumentException $e) {
+            } catch (InvalidArgumentException $e) {
                 Craft::error($e->getMessage(), __METHOD__);
                 throw new ImagerException($e->getMessage(), $e->getCode(), $e);
-            } catch(OutOfBoundsException $e) {
+            } catch (OutOfBoundsException $e) {
                 Craft::error($e->getMessage(), __METHOD__);
                 throw new ImagerException($e->getMessage(), $e->getCode(), $e);
-            } catch(RuntimeException $e) {
+            } catch (RuntimeException $e) {
                 Craft::error($e->getMessage(), __METHOD__);
                 throw new ImagerException($e->getMessage(), $e->getCode(), $e);
             }
@@ -764,8 +772,8 @@ class CraftTransformer extends Component implements TransformerInterface
     /**
      * Get vars for animated gif frames setup
      *
-     * @param LayersInterface $layers
-     * @param array           $transform
+     * @param LayersInterface|array $layers
+     * @param array                 $transform
      *
      * @return array
      */

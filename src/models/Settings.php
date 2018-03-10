@@ -151,8 +151,10 @@ class Settings extends Model
      */
     public function __construct($config = [])
     {
+        parent::__construct($config);
+        
         if (!empty($config)) {
-            Yii::configure($this, $config);
+            \Yii::configure($this, $config);
         }
         $this->init();
     }

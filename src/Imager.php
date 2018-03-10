@@ -184,7 +184,7 @@ class Imager extends Plugin
                             $event->url = $transformedImage->url;
                         }
                     } catch (ImagerException $e) {
-
+                        // just ignore
                     }
                 }
             }

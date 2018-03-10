@@ -348,7 +348,7 @@ class ImagerService extends Component
     /**
      * Creates srcset string
      *
-     * @param array  $images
+     * @param array|mixed  $images
      * @param string $descriptor
      *
      * @return string

@@ -94,10 +94,10 @@ class ImagerHelpers
 
                     if ($transformAspect < $aspect) { // use height as guide
                         $height = (int)$transform['height'] * $cropZoomFactor;
-                        $width = (int)ceil($originalSize->getWidth() * ($height / $originalSize->getHeight()));
+                        $width = ceil($originalSize->getWidth() * ($height / $originalSize->getHeight()));
                     } else { // use width
                         $width = (int)$transform['width'] * $cropZoomFactor;
-                        $height = (int)ceil($originalSize->getHeight() * ($width / $originalSize->getWidth()));
+                        $height = ceil($originalSize->getHeight() * ($width / $originalSize->getWidth()));
                     }
                 } else {
                     if ($transformAspect === $aspect) { // exactly the same, use original just to make sure no rounding errors happen
@@ -105,19 +105,19 @@ class ImagerHelpers
                         $width = (int)$transform['width'];
                     } else if ($transformAspect > $aspect) { // use height as guide
                         $height = (int)$transform['height'];
-                        $width = (int)ceil($originalSize->getWidth() * ($height / $originalSize->getHeight()));
+                        $width = ceil($originalSize->getWidth() * ($height / $originalSize->getHeight()));
                     } else { // use width
                         $width = (int)$transform['width'];
-                        $height = (int)ceil($originalSize->getHeight() * ($width / $originalSize->getWidth()));
+                        $height = ceil($originalSize->getHeight() * ($width / $originalSize->getWidth()));
                     }
                 }
             } else {
                 if (isset($transform['width'])) {
                     $width = (int)$transform['width'];
-                    $height = (int)ceil($width / $aspect);
+                    $height = ceil($width / $aspect);
                 } else if (isset($transform['height'])) {
                     $height = (int)$transform['height'];
-                    $width = (int)ceil($height * $aspect);
+                    $width = ceil($height * $aspect);
                 }
             }
         } else {
@@ -132,11 +132,11 @@ class ImagerHelpers
 
         // check if we want to upscale. If not, adjust the transform here 
         if (!$allowUpscale) {
-            list($width, $height) = self::enforceMaxSize($width, $height, $originalSize, false, self::getCropZoomFactor($transform));
+            list($width, $height) = self::enforceMaxSize((int)$width, (int)$height, $originalSize, false, self::getCropZoomFactor($transform));
         }
         
         try {
-            $box = new Box($width, $height);
+            $box = new Box((int)$width, (int)$height);
         } catch (InvalidArgumentException $e) {
             \Craft::error($e->getMessage(), __METHOD__);
             throw new ImagerException($e->getMessage(), $e->getCode(), $e);

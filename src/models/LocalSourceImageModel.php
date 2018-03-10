@@ -140,7 +140,7 @@ class LocalSourceImageModel
 
         if ($this->type !== 'local') {
             if (!file_exists($this->getFilePath()) || (($config->cacheDurationRemoteFiles !== false) && ((FileHelper::lastModifiedTime($this->getFilePath()) + $config->cacheDurationRemoteFiles) < time()))) {
-                if ($this->type === 'volume') {
+                if ($this->asset && $this->type === 'volume') {
                     /** @var Volume $volume */
                     try {
                         $volume = $this->asset->getVolume();
@@ -179,7 +179,7 @@ class LocalSourceImageModel
      */
     private function getPathsForLocalAsset(Asset $image)
     {
-        /** @var LocalVolumeInterface|Volume $volume */
+        /** @var LocalVolumeInterface $volume */
         try {
             $volume = $this->asset->getVolume();
             $this->transformPath = ImagerHelpers::getTransformPathForAsset($image);
@@ -322,7 +322,13 @@ class LocalSourceImageModel
         if (\function_exists('curl_init')) {
             $ch = curl_init($imageUrl);
             $fp = fopen($this->getFilePath(), 'wb');
-
+            
+            if (!$fp) {
+                $msg = Craft::t('imager', 'Could not open “{filePath}” for writing.', ['filePath' => $this->getFilePath()]);
+                Craft::error($msg, __METHOD__);
+                throw new ImagerException($msg);
+            }
+            
             $defaultOptions = [
                 CURLOPT_FILE => $fp,
                 CURLOPT_HEADER => 0,

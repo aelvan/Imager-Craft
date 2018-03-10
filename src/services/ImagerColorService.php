@@ -51,6 +51,10 @@ class ImagerColorService extends Component
         
         ImagerService::cleanSession();
 
+        if (!\is_array($dominantColor)) {
+            return null;
+        }
+        
         return $colorValue === 'hex' ? self::rgb2hex($dominantColor) : $dominantColor;
     }
 

@@ -21,7 +21,7 @@ class PosterizeEffect implements ImagerEffectsInterface
             $imagickInstance = $imageInstance->getImagick();
             
             if (\is_array($params) && \count($params) === 2) {
-                $imagickInstance->posterizeImage($params[0], ImagerService::$ditherKeyTranslate[$params[1]] ?? \Imagick::DITHERMETHOD_NO);
+                $imagickInstance->posterizeImage($params[0], /** @scrutinizer ignore-type */ ImagerService::$ditherKeyTranslate[$params[1]] ?? \Imagick::DITHERMETHOD_NO);
             }
         }
     }
