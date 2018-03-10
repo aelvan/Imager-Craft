@@ -40,7 +40,6 @@ use Imagine\Image\LayersInterface;
 use Imagine\Image\Palette\RGB;
 use Imagine\Image\Point;
 
-use yii\base\BaseObject;
 use yii\base\ErrorException;
 use yii\base\Exception;
 
@@ -63,7 +62,7 @@ class CraftTransformer extends Component implements TransformerInterface
      */
     public function __construct($config = [])
     {
-        BaseObject::__construct($config);
+        parent::__construct($config);
 
         $this->imagineInstance = $this->createImagineInstance();
     }
@@ -127,7 +126,7 @@ class CraftTransformer extends Component implements TransformerInterface
         /** @var ConfigModel $settings */
         $config = ImagerService::getConfig();
 
-        if (!$config->storages || empty($config->storages)) {
+        if (empty($config->storages)) {
             return;
         }
 
@@ -815,7 +814,7 @@ class CraftTransformer extends Component implements TransformerInterface
         $config = ImagerService::getConfig();
 
         // If there are no enabled optimizers, exit now
-        if (!$config->optimizers || empty($config->optimizers)) {
+        if (empty($config->optimizers)) {
             return true;
         }
 

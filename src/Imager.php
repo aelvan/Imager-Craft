@@ -146,7 +146,9 @@ class Imager extends Plugin
         // Event listener for clearing caches when an asset is replaced
         Event::on(Assets::class, Assets::EVENT_AFTER_REPLACE_ASSET,
             function(ReplaceAssetEvent $event) {
-                self::$plugin->imager->removeTransformsForAsset($event->asset);
+                if ($event->asset) {
+                    self::$plugin->imager->removeTransformsForAsset($event->asset);
+                }
             }
         );
 

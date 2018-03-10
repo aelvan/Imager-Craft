@@ -41,10 +41,10 @@ class ImagerHelpers
         } else {
             if (isset($transform['width'])) {
                 $width = (int)$transform['width'];
-                $height = floor((int)$transform['width'] / $aspect);
+                $height = (int)floor((int)$transform['width'] / $aspect);
             } else {
                 if (isset($transform['height'])) {
-                    $width = floor((int)$transform['height'] * $aspect);
+                    $width = (int)floor((int)$transform['height'] * $aspect);
                     $height = (int)$transform['height'];
                 }
             }
@@ -94,10 +94,10 @@ class ImagerHelpers
 
                     if ($transformAspect < $aspect) { // use height as guide
                         $height = (int)$transform['height'] * $cropZoomFactor;
-                        $width = ceil($originalSize->getWidth() * ($height / $originalSize->getHeight()));
+                        $width = (int)ceil($originalSize->getWidth() * ($height / $originalSize->getHeight()));
                     } else { // use width
                         $width = (int)$transform['width'] * $cropZoomFactor;
-                        $height = ceil($originalSize->getHeight() * ($width / $originalSize->getWidth()));
+                        $height = (int)ceil($originalSize->getHeight() * ($width / $originalSize->getWidth()));
                     }
                 } else {
                     if ($transformAspect === $aspect) { // exactly the same, use original just to make sure no rounding errors happen
@@ -105,19 +105,19 @@ class ImagerHelpers
                         $width = (int)$transform['width'];
                     } else if ($transformAspect > $aspect) { // use height as guide
                         $height = (int)$transform['height'];
-                        $width = ceil($originalSize->getWidth() * ($height / $originalSize->getHeight()));
+                        $width = (int)ceil($originalSize->getWidth() * ($height / $originalSize->getHeight()));
                     } else { // use width
                         $width = (int)$transform['width'];
-                        $height = ceil($originalSize->getHeight() * ($width / $originalSize->getWidth()));
+                        $height = (int)ceil($originalSize->getHeight() * ($width / $originalSize->getWidth()));
                     }
                 }
             } else {
                 if (isset($transform['width'])) {
                     $width = (int)$transform['width'];
-                    $height = ceil($width / $aspect);
+                    $height = (int)ceil($width / $aspect);
                 } else if (isset($transform['height'])) {
                     $height = (int)$transform['height'];
-                    $width = ceil($height * $aspect);
+                    $width = (int)ceil($height * $aspect);
                 }
             }
         } else {

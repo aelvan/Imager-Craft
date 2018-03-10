@@ -46,6 +46,7 @@ class CraftTransformedImageModel implements TransformedImageInterface
         try {
             $this->mimeType = FileHelper::getMimeType($targetModel->getFilePath());
         } catch (InvalidConfigException $e) {
+            // just ignore
         }
 
         $imageInfo = @getimagesize($targetModel->getFilePath());
@@ -140,15 +141,12 @@ class CraftTransformedImageModel implements TransformedImageInterface
             case 'g':
             case 'gb':
                 return round(((int)$this->size) / 1024 / 1024 / 1024, $precision);
-                break;
             case 'm':
             case 'mb':
                 return round(((int)$this->size) / 1024 / 1024, $precision);
-                break;
             case 'k':
             case 'kb':
                 return round(((int)$this->size) / 1024, $precision);
-                break;
         }
         
         return $this->size;

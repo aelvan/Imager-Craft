@@ -27,7 +27,6 @@ use aelvan\imager\exceptions\ImagerException;
 use Imgix\ShardStrategy;
 use Imgix\UrlBuilder;
 
-use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
 
 /**
@@ -53,7 +52,7 @@ class ImgixTransformer extends Component implements TransformerInterface
      */
     public function __construct($config = [])
     {
-        BaseObject::__construct($config);
+        parent::__construct($config);
     }
 
     /**
@@ -357,7 +356,7 @@ class ImgixTransformer extends Component implements TransformerInterface
      * Gets the quality setting based on the extension.
      *
      * @param string $ext
-     * @param null   $transform
+     * @param array|null   $transform
      *
      * @return string
      */

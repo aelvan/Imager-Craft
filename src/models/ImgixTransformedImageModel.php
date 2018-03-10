@@ -41,7 +41,7 @@ class ImgixTransformedImageModel implements TransformedImageInterface
         $this->path = '';
         $this->extension = '';
         $this->mimeType = '';
-        $this->size = '';
+        $this->size = 0;
 
         if ($imageUrl !== null) {
             $this->url = $imageUrl;
@@ -212,7 +212,7 @@ class ImgixTransformedImageModel implements TransformedImageInterface
      */
     public function getWidth(): int
     {
-        return $this->width;
+        return (int)$this->width;
     }
 
     /**
@@ -220,7 +220,7 @@ class ImgixTransformedImageModel implements TransformedImageInterface
      */
     public function getHeight(): int
     {
-        return $this->height;
+        return (int)$this->height;
     }
 
     /**

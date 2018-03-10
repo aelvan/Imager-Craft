@@ -20,6 +20,7 @@ class SharpenEffect implements ImagerEffectsInterface
         }
         
         if (ImagerService::$imageDriver === 'imagick') {
+            /** @var ImagickImage $imageInstance */
             $imagickInstance = $imageInstance->getImagick();
             $imagickInstance->sharpenImage(2, 1);
         }

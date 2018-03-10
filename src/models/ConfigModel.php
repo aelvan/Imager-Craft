@@ -22,7 +22,8 @@ class ConfigModel extends Settings
      */
     public function __construct($settings, $overrides = null, $config = [])
     {
-        Settings::__construct($config);
+        parent::__construct($config);
+
 
         // Reset model to get overrides from config file 
         foreach ($settings as $key => $value) {
@@ -31,7 +32,7 @@ class ConfigModel extends Settings
 
         // Apply transform overrides
         $excludedConfigOverrideProperties = ['fillTransforms', 'fillInterval', 'fillAttribute', 'filenamePattern', 'transformer'];
-        
+
         if ($overrides !== null) {
             foreach ($overrides as $key => $value) {
                 $this->$key = $value;
@@ -45,12 +46,12 @@ class ConfigModel extends Settings
         if (isset(ImagerService::$craftPositionTranslate[(string)$this->position])) {
             $this->position = ImagerService::$craftPositionTranslate[(string)$this->position];
         }
-        
+
         $this->position = str_replace('%', '', $this->position);
-        
+
         // Replace aliases
         $aliasables = ['imagerSystemPath', 'imagerUrl'];
-        
+
         foreach ($aliasables as $aliasable) {
             $this->{$aliasable} = \Yii::getAlias($settings->{$aliasable});
         }

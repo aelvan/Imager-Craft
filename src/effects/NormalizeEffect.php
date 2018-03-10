@@ -17,6 +17,7 @@ class NormalizeEffect implements ImagerEffectsInterface
     public static function apply($imageInstance, $params)
     {
         if (ImagerService::$imageDriver === 'imagick') {
+            /** @var ImagickImage $imageInstance */
             $imagickInstance = $imageInstance->getImagick();
             if ($params) {
                 $imagickInstance->normalizeImage();

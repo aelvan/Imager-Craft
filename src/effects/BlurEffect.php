@@ -20,6 +20,7 @@ class BlurEffect implements ImagerEffectsInterface
         }
 
         if (ImagerService::$imageDriver === 'imagick') {
+            /** @var ImagickImage $imageInstance */
             $imagickInstance = $imageInstance->getImagick();
             $imagickInstance->gaussianBlurImage(0, \is_int($params) || \is_float($params) ? $params : 1);
         }

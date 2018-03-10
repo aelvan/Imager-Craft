@@ -47,7 +47,7 @@ class OptimizeJob extends BaseJob
             /** @var ConfigModel $settings */
             $config = ImagerService::getConfig();
     
-            if (!$config->storages || empty($config->storages)) {
+            if (empty($config->storages)) {
                 return;
             }
     
@@ -58,7 +58,7 @@ class OptimizeJob extends BaseJob
                     $storageSettings = $config->storageConfig[$storage] ?? null;
     
                     if ($storageSettings) {
-                        $result = ImagerService::$storage[$storage]::upload($this->filePath, $uri, $isFinalVersion, $storageSettings);
+                        $result = ImagerService::$storage[$storage]::upload($this->filePath, $uri, true, $storageSettings);
                     
                         if (!$result) {
                             // todo : delete transformed file. Assume that we'd want to try again.

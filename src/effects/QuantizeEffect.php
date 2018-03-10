@@ -17,6 +17,7 @@ class QuantizeEffect implements ImagerEffectsInterface
     public static function apply($imageInstance, $params)
     {
         if (ImagerService::$imageDriver === 'imagick') {
+            /** @var ImagickImage $imageInstance */
             $imagickInstance = $imageInstance->getImagick();
             
             if (\is_array($params) && \count($params) === 3) {

@@ -36,7 +36,7 @@ class ImagerColorService extends Component
      * @param int          $quality
      * @param string       $colorValue
      *
-     * @return string|null
+     * @return string|array|boolean|null
      */
     public function getDominantColor($image, $quality, $colorValue)
     {

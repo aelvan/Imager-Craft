@@ -17,6 +17,7 @@ class ContrastStretchEffect implements ImagerEffectsInterface
     public static function apply($imageInstance, $params)
     {
         if (ImagerService::$imageDriver === 'imagick') {
+            /** @var ImagickImage $imageInstance */
             $imagickInstance = $imageInstance->getImagick();
             if (\is_array($params) && \count($params) >= 2) {
                 $imagickInstance->contrastStretchImage($params[0], $params[1]);

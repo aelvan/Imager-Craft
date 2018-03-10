@@ -18,9 +18,7 @@ use craft\elements\Asset;
 use craft\helpers\FileHelper;
 use Imagine\Image\ImageInterface;
 
-use yii\base\BaseObject;
 use yii\base\ErrorException;
-use yii\base\Exception;
 use yii\base\InvalidParamException;
 
 use aelvan\imager\Imager as Plugin;
@@ -179,7 +177,7 @@ class ImagerService extends Component
 
     public function __construct($config = [])
     {
-        BaseObject::__construct($config);
+        parent::__construct($config);
 
         // Get image driver
         $extension = mb_strtolower(Craft::$app->getConfig()->getGeneral()->imageDriver);
@@ -459,7 +457,7 @@ class ImagerService extends Component
 
                 if ($sourceModel->type !== 'local' && file_exists($sourceModel->getFilePath())) {
                     try {
-                        FileHelper::removeFile($sourceModel->getFilePath());
+                        FileHelper::unlink($sourceModel->getFilePath());
                     } catch (ErrorException $e) {
                         Craft::error('Could not remove file "'.$sourceModel->getFilePath().'" ('.$e->getMessage().')', __METHOD__);
                     }

@@ -20,6 +20,7 @@ class GammaEffect implements ImagerEffectsInterface
         }
         
         if (ImagerService::$imageDriver === 'imagick') {
+            /** @var ImagickImage $imageInstance */
             $imagickInstance = $imageInstance->getImagick();
             $imagickInstance->gammaImage(\is_int($params) || \is_float($params) ? $params : 1, \Imagick::CHANNEL_ALL);
         }

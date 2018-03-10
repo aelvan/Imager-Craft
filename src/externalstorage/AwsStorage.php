@@ -38,8 +38,13 @@ class AwsStorage implements ImagerStorageInterface
             ],
         ];
 
-        $s3 = new S3Client($clientConfig);
-
+        try {
+            $s3 = new S3Client($clientConfig);
+        } catch (\InvalidArgumentException $e) {
+            Craft::error('Invalid configuration of S3 Client: '.$e->getMessage(), __METHOD__);
+            return false;
+        }
+        
         if (isset($settings['folder']) && $settings['folder'] !== '') {
             $uri = ltrim(FileHelper::normalizePath($settings['folder'].'/'.$uri), '/');
         }
@@ -47,7 +52,7 @@ class AwsStorage implements ImagerStorageInterface
         $opts = $settings['requestHeaders'];
         $cacheDuration = $isFinal ? $config->cacheDurationExternalStorage : $config->cacheDurationNonOptimized;
 
-        if (!isset($headers['Cache-Control'])) {
+        if (!isset($opts['Cache-Control'])) {
             $opts['CacheControl'] = 'max-age='.$cacheDuration.', must-revalidate';
         }
 
@@ -69,10 +74,16 @@ class AwsStorage implements ImagerStorageInterface
 
         // Cloudfront invalidation
         if (isset($settings['cloudfrontInvalidateEnabled'], $settings['cloudfrontDistributionId']) && $settings['cloudfrontInvalidateEnabled'] === true) {
-            $cloudfront = new CloudFrontClient($clientConfig);
-
+            
             try {
-                $result = $cloudfront->createInvalidation([
+                $cloudfront = new CloudFrontClient($clientConfig);
+            } catch (\InvalidArgumentException $e) {
+                Craft::error('Invalid configuration of CloudFront Client: '.$e->getMessage(), __METHOD__);
+                return false;
+            }
+            
+            try {
+                $cloudfront->createInvalidation([
                     'DistributionId' => $settings['cloudfrontDistributionId'],
                     'InvalidationBatch' => [
                         'Paths' => [

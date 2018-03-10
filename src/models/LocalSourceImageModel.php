@@ -359,8 +359,8 @@ class LocalSourceImageModel
         } elseif (ini_get('allow_url_fopen')) {
             if (!@copy($imageUrl, $this->getFilePath())) {
                 unlink($this->getFilePath());
-                $httpStatus = $http_response_header[0];
-                $msg = Craft::t('imager', '“{httpStatus}” encountered while attempting to download “{imageUrl}”', ['imageUrl' => $imageUrl, 'httpStatus' => $httpStatus]);
+                $errors = error_get_last();
+                $msg = Craft::t('imager', 'Error “{errorType}” encountered while attempting to download “{imageUrl}”: {errorMessage}', ['imageUrl' => $imageUrl, 'errorType' => $errors['type'], 'errorMessage' => $errors['message']]);
                 Craft::error($msg, __METHOD__);
                 throw new ImagerException($msg);
             }
