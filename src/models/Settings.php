@@ -3,11 +3,12 @@
 namespace aelvan\imager\models;
 
 use craft\base\Model;
+use Yii;
 
 class Settings extends Model
 {
     public $transformer = 'craft';
-    public $imagerSystemPath = '/imager/';
+    public $imagerSystemPath = '@webroot/imager/';
     public $imagerUrl = '/imager/';
     public $cacheEnabled = true;
     public $cacheRemoteFiles = true;
@@ -161,8 +162,8 @@ class Settings extends Model
 
     public function init()
     {
-        // Have to set this here cause $_SERVER['DOCUMENT_ROOT'] can't be used in default value
-        $this->imagerSystemPath = $_SERVER['DOCUMENT_ROOT'].'/imager/';
+        // Have to set this here cause Yii::getAlias can't be used in default value
+        $this->imagerSystemPath = Yii::getAlias($this->imagerSystemPath);
         $this->suppressExceptions = !\Craft::$app->getConfig()->general->devMode;
     }
 }
