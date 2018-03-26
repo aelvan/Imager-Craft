@@ -31,10 +31,10 @@ class Settings extends Model
     public $bgColor = '';
     public $position = '50% 50%';
     public $letterbox = ['color' => '#000', 'opacity' => 0];
-    public $hashFilename = 'postfix'; // deprecated
     public $useFilenamePattern = true;
     public $filenamePattern = '{basename}_{transformString|hash}.{extension}';
     public $shortHashLength = 10;
+    public $hashFilename = 'postfix'; // deprecated
     public $hashPath = false;
     public $addVolumeToPath = true;
     public $hashRemoteUrl = false;
@@ -69,10 +69,8 @@ class Settings extends Model
     ];
     
     public $optimizeType = 'job';
-    public $logOptimizations = false;
     public $optimizers = [];
     public $optimizerConfig = [
-        /*
         'jpegoptim' => [
             'extensions' => ['jpg'],
             'path' => '/usr/bin/jpegoptim',
@@ -120,12 +118,10 @@ class Settings extends Model
             'apiUsername' => '',
             'quality' => 'medium'
         ],
-        */
     ];
     
     public $storages = [];
     public $storageConfig = [
-        /*
         'aws' => [
             'accessKey' => '',
             'secretAccessKey' => '',
@@ -142,7 +138,6 @@ class Settings extends Model
             'bucket' => '',
             'folder' => '',
         ],
-        */
     ];
 
     /**
