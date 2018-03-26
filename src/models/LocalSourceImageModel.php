@@ -340,7 +340,7 @@ class LocalSourceImageModel
             $curlError = curl_error($ch);
             $httpStatus = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
-            fclose($fp);
+            fclose(/** @scrutinizer ignore-type */ $fp);
 
             if ($curlErrorNo !== 0) {
                 unlink($this->getFilePath());

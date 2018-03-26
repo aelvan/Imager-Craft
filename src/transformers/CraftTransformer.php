@@ -646,9 +646,11 @@ class CraftTransformer extends Component implements TransformerInterface
             throw new ImagerException($e->getMessage(), $e->getCode(), $e);
         }
 
-        $backgroundImage = $this->imagineInstance->create($imageInstance->getSize(), $color);
-        $backgroundImage->paste($imageInstance, $topLeft);
-        $imageInstance = $backgroundImage;
+        if ($this->imagineInstance !== null) {
+            $backgroundImage = $this->imagineInstance->create($imageInstance->getSize(), $color);
+            $backgroundImage->paste($imageInstance, $topLeft);
+            $imageInstance = $backgroundImage;
+        }
     }
 
     /**
