@@ -1,5 +1,10 @@
 # Imager Changelog
 
+## 2.0.0-beta4 - 2018-03-27
+### Fixed
+- Added new placeholder template variable that replaces base64Pixel. Placeholders can now be SVG, GIF or SVG silhouettes.
+- Added Yii alias support to imagerSystemPath setting, and replaces DOCUMENT_ROOT with Craft @webroot alias (Thanks, @mmikkel!).
+
 ## 2.0.0-beta3 - 2018-03-01
 ### Fixed
 - Fixed use of `Asset::getUri()` which was deprecated in RC13.
