@@ -590,18 +590,31 @@ The main transform method. Returns either a transformed image model (see documen
 **transformDefaults**: An object containing any default transform settings that should be applied to each transform. If transform properties given here are specified in an individual transform, the property value of the individual transform will be used.    
 **configOverrides**: An object containing any overrides to the default config settings that should be used for this transform. See the "Configuration"-section for information on which settings that can be overridden.
 
-### craft.imager.base64Pixel([width=1, height=1, color='transparent'])
-Outputs a base64 encoded SVG image. 
-
-**width**: Width of the placeholder. Defaults to '1'.  
-**height**: Height of the placeholder. Defaults to '1'.
-**color**: Color of the placeholder. Defaults to 'transparent'.
-
 ### craft.imager.srcset(images [, descriptor='w'])
 Outputs a srcset string from an array of transformed images.
 
 **images**: An array of Imager_ImageModel objects, or anything else that support the interface.  
 **descriptior**: A string indicating which size descriptor should be used in the srcset. 'w', 'h' and 'w+h' is supported at the moment. Please note that 'h' isn't standards-compliant, but is useful for instance when using Lazysizes and their bgset plugin.
+
+### craft.imager.placeholder([config = null])
+Outputs an image placeholder. The config object takes the following parameters:
+
+**type**: Type of placeholder. Defaults to 'svg'. Available types are 'svg', 'gif' and 'silhouette'.
+**width**: Width of the placeholder. Defaults to '1'.  
+**height**: Height of the placeholder. Defaults to '1'.
+**color**: Color of the placeholder. Defaults to 'transparent'.
+**source**: Source image that should be used to create silhouette style svgs.
+**fgColor**: Foreground color for silhouette style svgs. Color is used as background.
+**size**: Size multiplicator for silhouette style svgs.
+**silhouetteType**: Type of silhouette, available values are '' and 'curve'.
+
+### craft.imager.base64Pixel([width=1, height=1, color='transparent'])
+_This method has been deprecated, please use `craft.imager.placeholder` instead._
+Outputs a base64 encoded SVG image. 
+
+**width**: Width of the placeholder. Defaults to '1'.  
+**height**: Height of the placeholder. Defaults to '1'.
+**color**: Color of the placeholder. Defaults to 'transparent'.
 
 ### craft.imager.serverSupportsWebp()
 Returns `true` or `false` depending on if the server has support for webp or not. This could either indicate built in support for webp in the current image driver, GD or Imagick, or the presence of the cwebp binary if this has been enabled.  

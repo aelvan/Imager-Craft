@@ -10,6 +10,7 @@
 
 namespace aelvan\imager;
 
+use aelvan\imager\services\PlaceholderService;
 use Craft;
 use craft\base\Element;
 use craft\base\Plugin;
@@ -78,7 +79,8 @@ use aelvan\imager\externalstorage\GcsStorage;
  * @since     2.0.0
  *
  * @property  ImagerService      $imager
- * @property  ImagerColorService $imagerColor
+ * @property  ImagerColorService $color
+ * @property  PlaceholderService $placeholder
  */
 class Imager extends Plugin
 {
@@ -105,7 +107,8 @@ class Imager extends Plugin
         // Register services
         $this->setComponents([
             'imager' => ImagerService::class,
-            'imagerColor' => ImagerColorService::class,
+            'placeholder' => PlaceholderService::class,
+            'color' => ImagerColorService::class,
         ]);
 
         // Add our Twig extensions

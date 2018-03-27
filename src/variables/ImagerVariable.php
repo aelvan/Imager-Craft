@@ -68,6 +68,19 @@ class ImagerVariable
     }
 
     /**
+     * Returns an image placeholder.
+     *
+     * @param array|null $config
+     *
+     * @return string
+     * @throws ImagerException
+     */
+    public function placeholder($config = null): string
+    {
+        return Plugin::$plugin->placeholder->placeholder($config);
+    }
+
+    /**
      * Gets the dominant color of an image
      *
      * @param Asset|string $image
@@ -78,7 +91,7 @@ class ImagerVariable
      */
     public function getDominantColor($image, $quality = 10, $colorValue = 'hex')
     {
-        return Plugin::$plugin->imagerColor->getDominantColor($image, $quality, $colorValue);
+        return Plugin::$plugin->color->getDominantColor($image, $quality, $colorValue);
     }
 
     /**
@@ -93,7 +106,7 @@ class ImagerVariable
      */
     public function getColorPalette($image, $colorCount = 8, $quality = 10, $colorValue = 'hex')
     {
-        return Plugin::$plugin->imagerColor->getColorPalette($image, $colorCount, $quality, $colorValue);
+        return Plugin::$plugin->color->getColorPalette($image, $colorCount, $quality, $colorValue);
     }
 
     /**
