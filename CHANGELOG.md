@@ -1,7 +1,11 @@
 # Imager Changelog
 
+## 2.0.0 - 2018-03-30
+### Added
+- Documentation done, bumbed to 2.0.0. 
+
 ## 2.0.0-beta4 - 2018-03-27
-### Fixed
+### Added
 - Added new placeholder template variable that replaces base64Pixel. Placeholders can now be SVG, GIF or SVG silhouettes.
 - Added Yii alias support to imagerSystemPath setting, and replaces DOCUMENT_ROOT with Craft @webroot alias (Thanks, @mmikkel!).
 

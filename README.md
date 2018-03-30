@@ -43,6 +43,15 @@ Features
 
 ---
 
+Relevant articles
+---
+[What's new in Imager 2.0?](https://github.com/aelvan/Imager-Craft/wiki/What's-new-in-Imager-2.0%3F)  
+[Support for Imgix in Imager](https://www.vaersaagod.no/en/support-for-imgix-in-imager-for-craftcms) (Imager 1.x/Craft 2)      
+[9 tips for speeding up your Imager transforms](https://www.vaersaagod.no/en/9-tips-for-speeding-up-your-imager-transforms-in-craftcms) (Imager 1.x/Craft 2)          
+[Using WebP images in Craft with Imager](https://www.vaersaagod.no/en/using-webp-images-in-craft-with-imager) (Imager 1.x/Craft 2)      
+
+---
+
 Installation
 ---
 To install Imager, follow these steps:
@@ -216,10 +225,10 @@ When enabled, the path of the transformed asset will be created using the `filen
 *Default: `'{basename}_{transformString|hash}.{extension}'`*  
 Pattern that defines how the filename of the transformed file should look. The following variables are available:
 
-**{basename}:** The base name of the original file that was transformed (everything before the extension).
-**{extension}:** The extension of the transformed file.
-**{fullname}:** The full name of the transformed file, basename plus the transform string.
-**{transformString}:** The generated transform string.
+**{basename}:** The base name of the original file that was transformed (everything before the extension).  
+**{extension}:** The extension of the transformed file.  
+**{fullname}:** The full name of the transformed file, basename plus the transform string.  
+**{transformString}:** The generated transform string.  
 
 `{basename}`, `{fullname}`, and `{transformString}` can be hashed, either with a long md5 hash, or a shorter, truncated one based the `shortHashLength` config setting.
 
@@ -362,11 +371,11 @@ Imgix config settings profile to be used. Must correspond to a key in `imgixConf
 An array of configuration objects for Imgix, where the key is the profile handle. The configuration object takes the following settings:
 
 **domains (array):** An array of Imgix source domains.  
-**useHttps (bool):** Indicates if generated Imgix URLs should be https or not. 
-**signKey (string):** If you've protected your source with secure URLs, you must provide the sign key/token. An empty string indicates that the source is not secure.
-**sourceIsWebProxy (bool):** Indicates if your Imgix source is a web proxy or not.  
-**useCloudSourcePath (bool):** If enabled, Imager will prepend the Craft source path to the asset path, before passing it to the Imgix URL builder. This makes it possible to have one Imgix source pulling images from many Craft volumes when they are on the same S3 bucket, but in different subfolder. This only works on volumes that implements a path setting (AWS S3 and GCS does, local volumes does not).
-**shardStrategy (string):** etermines the sharding strategy if more than one source is used. Allowed values are `cycle` and `crc`.
+**useHttps (bool):** Indicates if generated Imgix URLs should be https or not.  
+**signKey (string):** If you've protected your source with secure URLs, you must provide the sign key/token. An empty string indicates that the source is not secure.  
+**sourceIsWebProxy (bool):** Indicates if your Imgix source is a web proxy or not.   
+**useCloudSourcePath (bool):** If enabled, Imager will prepend the Craft source path to the asset path, before passing it to the Imgix URL builder. This makes it possible to have one Imgix source pulling images from many Craft volumes when they are on the same S3 bucket, but in different subfolder. This only works on volumes that implements a path setting (AWS S3 and GCS does, local volumes does not).  
+**shardStrategy (string):** etermines the sharding strategy if more than one source is used. Allowed values are `cycle` and `crc`.  
 **getExternalImageDimensions (bool):** Imager does its best at determining the dimensions of the transformed images. If the supplied asset is on Craft source, it's easy because Craft records the original dimensions of the image in the database. But if the image is external, it's not that easy. Imager will try to determine the size based on the transform parameters, and if both width and height, or ratio is provided, it'll usually be able to. But if you only transform by one attribute, it may not be possible. In these cases Imager will by default download the source image and check the dimensions to calculate the missing bits.
 
 By disabling this setting, you're telling Imager to never download external images, and to just give up on trying to figure out the dimensions. If you supplied only width to the transform, height will then be set to 0. If you don't need to use height in your code, that's totally fine, and you've managed to squeeze out a bit more performance.
@@ -474,7 +483,7 @@ The Settings model provides the following default `optimizerConfig`:
         ],
     ]
 
-You probably need to optimize this to reflect your environment. Configuration for additional, custom optimizers can also be added. 
+You probably need to change this to reflect your environment. Configuration for additional, custom optimizers can also be added. 
 
 ### storages [array]
 *Default: `[]`*  
@@ -599,22 +608,22 @@ Outputs a srcset string from an array of transformed images.
 ### craft.imager.placeholder([config = null])
 Outputs an image placeholder. The config object takes the following parameters:
 
-**type**: Type of placeholder. Defaults to 'svg'. Available types are 'svg', 'gif' and 'silhouette'.
-**width**: Width of the placeholder. Defaults to '1'.  
-**height**: Height of the placeholder. Defaults to '1'.
-**color**: Color of the placeholder. Defaults to 'transparent'.
-**source**: Source image that should be used to create silhouette style svgs.
-**fgColor**: Foreground color for silhouette style svgs. Color is used as background.
-**size**: Size multiplicator for silhouette style svgs.
-**silhouetteType**: Type of silhouette, available values are '' and 'curve'.
+**type**: Type of placeholder. Defaults to 'svg'. Available types are 'svg', 'gif' and 'silhouette'.  
+**width**: Width of the placeholder. Defaults to '1'.   
+**height**: Height of the placeholder. Defaults to '1'.  
+**color**: Color of the placeholder. Defaults to 'transparent'.  
+**source**: Source image that should be used to create silhouette style svgs.  
+**fgColor**: Foreground color for silhouette style svgs. Color is used as background.  
+**size**: Size multiplicator for silhouette style svgs.  
+**silhouetteType**: Type of silhouette, available values are '' and 'curve'.  
 
 ### craft.imager.base64Pixel([width=1, height=1, color='transparent'])
-_This method has been deprecated, please use `craft.imager.placeholder` instead._
+_This method has been deprecated, please use `craft.imager.placeholder` instead._  
 Outputs a base64 encoded SVG image. 
 
 **width**: Width of the placeholder. Defaults to '1'.  
-**height**: Height of the placeholder. Defaults to '1'.
-**color**: Color of the placeholder. Defaults to 'transparent'.
+**height**: Height of the placeholder. Defaults to '1'.  
+**color**: Color of the placeholder. Defaults to 'transparent'.  
 
 ### craft.imager.serverSupportsWebp()
 Returns `true` or `false` depending on if the server has support for webp or not. This could either indicate built in support for webp in the current image driver, GD or Imagick, or the presence of the cwebp binary if this has been enabled.  
@@ -674,16 +683,20 @@ The following parameters are available in the transform object.
 
 ### format [string]
 *Default: `null`*  
+*Transformers: Craft, Imgix*  
 *Allowed values: `null`, `'jpg'`, `'png'`, `'gif'`, `'webp'`*   
 Format of the created image. If unset (default) it will be the same format as the source image.
 
 ### width [int]
+*Transformers: Craft, Imgix*  
 Width of the image, in pixels.
 
 ### height [int]
+*Transformers: Craft, Imgix*  
 Height of the image, in pixels.
 
 ### ratio [int|float]
+*Transformers: Craft, Imgix*  
 An aspect ratio (width/height) that is used to calculate the missing size, if width or height is not provided.
 
 **Example:**
@@ -693,13 +706,14 @@ An aspect ratio (width/height) that is used to calculate the missing size, if wi
 
 ### mode [string]
 *Default: `'crop'`*  
+*Transformers: Craft, Imgix (all except `'croponly' mode`)*  
 *Allowed values: `'crop'`, `'fit'`, `'stretch'`, `'croponly'`, `'letterbox'`*   
 The mode that should be used when resizing images.
 
 **'crop'**: Crops the image to the given size, scaling the image to fill as much as possible of the size. 
 **'fit'**: Scales the image to fit within the given size while maintaining the aspect ratio of the original image.  
 **'stretch'**: Scales the image to the given size, stretching it if the aspect ratio is different from the original.   
-**'croponly'**: Crops the image to the given size without any resizing. *Only available when using the Imgix transformer*.  
+**'croponly'**: Crops the image to the given size without any resizing. *Only available when using the Craft transformer*.  
 **'letterbox'**: Scales the image to fit within the given size, the same way as `'fit'`. It then expands the image to the given size, adding a specified color to either the top/bottom or left/right of the image. The color (and opacity if the image format supports it) can be controlled with the `letterbox` parameter. 
 
 **Example:**
@@ -708,11 +722,13 @@ The mode that should be used when resizing images.
 
 ### cropZoom [float]
 *Default: 1*    
+*Transformers: Craft, Imgix*  
 By default when cropping, the image will be resized to the smallest size needed to make the image fit the given crop size. By increasing the `cropZoom` value, the image will be resized to a bigger size before cropping. 
 
 Example: If the original image is 1600x900px, and you resize it to 300x300px with mode 'crop' and a cropZoom value of 1.5, the image will; 1) be resized to 800x450px and 2) a crop of 300x300px will be made (the position depending on the position given).
 
 ### frames [string]
+*Transformers: Craft*  
 Let's you extract only certain frames from an animated gif. The parameter takes a string in the format `'startFrame/endFrame@frameInterval'`.
 End frame and frame interval is optional. Examples:
 
@@ -731,6 +747,7 @@ End frame and frame interval is optional. Examples:
 
 ### watermark [object]
 *Default: null*    
+*Transformers: Craft (use `imgixParams` for Imgix watermarks)*  
 Adds a watermark to your transformed image. Imager expects an object with the following properties:
 
 **image**: The image that is to be used as watermark. Just as the image parameter in the craft.imager.transformImage method, this can be an AssetFileModel, a string to a previously transformed Imager image, or a string to an external image.   
@@ -751,7 +768,8 @@ Adds a watermark to your transformed image. Imager expects an object with the fo
 [See this demo](http://imager.vaersaagod.no/?img=6&demo=watermarks) for examples on how the watermark feature works.
 
 ### effects [object]
-*Default: null*
+*Default: null*  
+*Transformers: Craft (use `imgixParams` for Imgix effects)*  
 Adds image adjustments to the transformed image. If multiple adjustments are added, they will be applied in the order they appear in the object. All effects are documented in the Effects section below.
 
 **Example:**
@@ -763,10 +781,12 @@ Adds image adjustments to the transformed image. If multiple adjustments are add
 
 ### preEffects [object]
 *Default: null*   
+*Transformers: Craft (use `imgixParams` for Imgix effects)*  
 As with the `effects`, this adds image adjustments to the transformed image, but do so *before* the image has been resized or otherwise modified. For some adjustments, this will yield a better end result, but usually the trade-off is performance.
 
 ### imgixParams [object]
 *Default: null*   
+*Transformers: Imgix*  
 Additional parameters that are passed to the [Imgix URL API](https://docs.imgix.com/apis/url) if Imgix is enabled. 
 
 **In addition, most configuration settings can be overridden for each transform.**
