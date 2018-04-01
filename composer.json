@@ -14,8 +14,8 @@
         "picture"
     ],
     "support": {
-        "docs": "https://github.com/aelvan/imager/blob/craft3/README.md",
-        "issues": "https://github.com/aelvan/imager/issues"
+        "docs": "https://github.com/aelvan/Imager-Craft/blob/craft3/README.md",
+        "issues": "https://github.com/aelvan/Imager-Craft/issues"
     },
     "license": "MIT",
     "authors": [
@@ -46,7 +46,7 @@
         "schemaVersion": "2.0.0",
         "hasCpSettings": false,
         "hasCpSection": false,
-        "changelogUrl": "https://raw.githubusercontent.com/aelvan/imager/craft3/CHANGELOG.md",
+        "changelogUrl": "https://raw.githubusercontent.com/aelvan/Imager-Craft/craft3/CHANGELOG.md",
         "components": {},
         "class": "aelvan\\imager\\Imager"
     }
