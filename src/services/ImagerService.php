@@ -592,7 +592,7 @@ class ImagerService extends Component
         $r = [];
 
         foreach ($transforms as $t) {
-            $r[] = $this->normalizeTransform($t);
+            $r[] = $this->normalizeTransform((array)$t);
         }
 
         return $r;
