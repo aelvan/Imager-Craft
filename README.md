@@ -70,7 +70,7 @@ All configuration settings can be overridden by creating an `imager.php` file in
 
 ### transformer [string]
 *Default: `'craft'`*  
-*Allowed values: `'craft'`, `'ìmgix'`*
+*Allowed values: `'craft'`, `'ìmgix'`*  
 Transformers is a new concept in Imager 2.0, which provides an overall interface for doing image transforms. There are two built-in transformers at the moment, the default `'craft'` which transforms images on your webserver using the Imagine library that Craft ships with and GD or Imagick, and `'imgix'` which offloads your image transforms to [Imgix](https://www.imgix.com/).
 
 If you want to use Imgix, please refer to the `imgixProfile` and `imgixConfig` config settings, which are required.

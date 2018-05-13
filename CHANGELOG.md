@@ -1,5 +1,10 @@
 # Imager Changelog
 
+## 2.0.1 - 2018-05-13
+### Fixed
+- Fixed an issue that could occur if an object was passed as a transform object instead of an array (Thanks, @Rias500!).
+– Improved the check for when to create thumbnails to make sure we're dealing only with images (Thanks, @Rias500!).   
+
 ## 2.0.0 - 2018-03-30
 ### Added
 - Documentation done, bumbed to 2.0.0. 
