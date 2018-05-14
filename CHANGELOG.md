@@ -1,5 +1,9 @@
 # Imager Changelog
 
+## 2.0.1.1 - 2018-05-14
+### Fixed
+– Also improved check for native transforms useing Imager to make sure we're dealing only with images.   
+
 ## 2.0.1 - 2018-05-13
 ### Fixed
 - Fixed an issue that could occur if an object was passed as a transform object instead of an array (Thanks, @Rias500!).
