@@ -160,7 +160,7 @@ class Imager extends Plugin
             function(GetAssetUrlEvent $event) {
                 $config = ImagerService::getConfig();
                 
-                if ($config->useForNativeTransforms && $event->asset !== null && $event->transform !== null) {
+                if ($config->useForNativeTransforms && $event->asset !== null && $event->transform !== null && $event->asset->kind === 'image' && \in_array($event->asset->getExtension(), Image::webSafeFormats(), true)) {
                     try {
                         $transformedImage = self::$plugin->imager->transformImage($event->asset, $event->transform);
                         if ($transformedImage !== null) {
