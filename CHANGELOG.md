@@ -1,5 +1,15 @@
 # Imager Changelog
 
+## 2.0.2 - 2018-07-13
+### Fixed
+– Fixes incorrect slashes in generated transform URLs on windows (#179).   
+- Fixes bug where it was not possible to create transparent gif placeholders (#178).
+– Docs now mentions how to use Craft's built in asset focal point with position. Plus other minor updates.   
+
+## 2.0.1.2 - 2018-06-12
+### Fixed
+– Changed composer dependency for tinify/tinify to allow older versions without dependecy for libcurl >=7.20.0.   
+
 ## 2.0.1.1 - 2018-05-14
 ### Fixed
 – Also improved check for native transforms using Imager to make sure we're dealing only with images.   
