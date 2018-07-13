@@ -28,6 +28,8 @@ Features
 `{ width: 600, height: 600, mode: 'crop', position: '20% 65%', cropZoom: 1.5 }`
 - New croponly mode. To crop, not resize.  
 `{ width: 600, height: 600, mode: 'croponly', position: '20% 65%' }`
+- Easily use Craft's built in focal point when cropping.  
+`{ width: 600, height: 600, position: asset.getFocalPoint() }`
 - New letterbox resize mode.    
 `{ width: 600, height: 600, mode: 'letterbox', letterbox: { color: '#000', opacity: 0 } }`
 - If you know the aspect ration you want, you don't have to calculate the extra height/width.    
@@ -552,10 +554,18 @@ Imager 1.5.0 also introduced a convenient `fillTransforms` config setting which 
 		{ fillTransforms: true }) %}
 
 See the `fillTransforms`, `fillAttribute` and `fillInterval` settings for more information.
+
+To use Craft's built in focal point feature when cropping, you can easily pass in the focal point object directly to position:
+
+	{% set transformedImages = craft.imager.transformImage(image, [
+		{ width: 1200 }, 
+		{ width: 400 }
+		], { ratio: 16/9, position: image.getFocalPoint() }, 
+		{ fillTransforms: true }) %}
 		
 The plugin also includes some additional methods that helps you streamline the creation of responsive images. With the above transformed images, you can output the appropriate srcset like this, with a base64-encoded placeholder in the src attribute:
 
-    <img src="{{ craft.imager.base64Pixel(16, 9) }}" sizes="100vw" srcset="{{ craft.imager.srcset(transformedImages) }}">
+    <img src="{{ craft.imager.placeholder({ width: 160, height: 90 }) }}" sizes="100vw" srcset="{{ craft.imager.srcset(transformedImages) }}">
     
 Additional information about the template variables can be found in the "Template variables"-section below.    
 
@@ -612,10 +622,10 @@ Outputs an image placeholder. The config object takes the following parameters:
 **width**: Width of the placeholder. Defaults to '1'.   
 **height**: Height of the placeholder. Defaults to '1'.  
 **color**: Color of the placeholder. Defaults to 'transparent'.  
-**source**: Source image that should be used to create silhouette style svgs.  
-**fgColor**: Foreground color for silhouette style svgs. Color is used as background.  
-**size**: Size multiplicator for silhouette style svgs.  
-**silhouetteType**: Type of silhouette, available values are '' and 'curve'.  
+**source**: Source image that should be used to create silhouette style svgs. _Only relevant for silhouette placeholders_.  
+**fgColor**: Foreground color for silhouette style svgs. Color is used as background. _Only relevant for silhouette placeholders_.  
+**size**: Size multiplicator for silhouette style svgs. _Only relevant for silhouette placeholders_.   
+**silhouetteType**: Type of silhouette, available values are '' and 'curve'. _Only relevant for silhouette placeholders_.  
 
 ### craft.imager.base64Pixel([width=1, height=1, color='transparent'])
 _This method has been deprecated, please use `craft.imager.placeholder` instead._  
@@ -669,11 +679,11 @@ Returns `true` or `false` depending on if Imgix is enabled.
 Twig filters
 ---
 ### srcset([descriptor='w'])
-Outputs a srcset string from an array of transformed images.
+Outputs a srcset string from an array of transformed images.  
 
 	{% set transformedImages = craft.imager.transformImage(image, [{ width: 400 },{ width: 1200 }], { ratio: 16/9 }, { fillTransforms: true }) %}
 
-    <img src="{{ craft.imager.base64Pixel(16, 9) }}" sizes="100vw" srcset="{{ transformedImages | srcset }}">
+    <img src="{{ craft.imager.placeholder({ width: 16, height: 9 }) }}" sizes="100vw" srcset="{{ transformedImages | srcset }}">
 
 ---
 
