@@ -46,7 +46,7 @@ class LocalTargetImageModel
 
         $this->filename = $this->createTargetFilename($source, $transform);
         $this->path = FileHelper::normalizePath($config->imagerSystemPath.'/'.$source->transformPath);
-        $this->url = ImagerHelpers::stripTrailingSlash($config->imagerUrl).FileHelper::normalizePath($source->transformPath.'/'.$this->filename);
+        $this->url = ImagerHelpers::stripTrailingSlash($config->imagerUrl).FileHelper::normalizePath($source->transformPath.'/'.$this->filename, '/');
     }
 
     /**
