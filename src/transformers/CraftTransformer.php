@@ -395,7 +395,7 @@ class CraftTransformer extends Component implements TransformerInterface
         }
 
         // Apply background color if enabled and applicable
-        if (($sourceExtension !== $targetExtension) && ($sourceExtension !== 'jpg') && ($targetExtension === 'jpg') && ($config->getSetting('bgColor', $transform) !== '')) {
+        if (($sourceExtension !== 'jpg') && ($config->getSetting('bgColor', $transform) !== '')) {
             $this->applyBackgroundColor($layer, $config->getSetting('bgColor', $transform));
         }
     }
