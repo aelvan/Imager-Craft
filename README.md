@@ -42,6 +42,7 @@ Features
 - Concerned about people copying your images? You can add a watermark to them with Imager.  
 `{ watermark: { image: logo, width: 80, height: 80, position: { right: 30, bottom: 30 }, opacity: 0.8, blendMode: 'multiply' } }`
 - Imager also lets you get color information, dominant color and palette, from your images.
+- Imager also includes a bunch of color utilities for getting brightness, hue, lightness, percieved brightness, relative luminance, saturation, brightness difference, color difference and (puh!) contrast ratio. 
 
 ---
 
@@ -647,6 +648,12 @@ Returns `true` or `false` depending on if the client has support for webp or not
     ...
     {% endcache %}
  
+### craft.imager.isAnimated(image)
+Returns `true` or `false` depending on if the supplied image is animated or not (only gif support at the moment).   
+
+### craft.imager.imgixEnabled()
+Returns `true` or `false` depending on if Imgix is enabled.   
+
 ### craft.imager.getDominantColor(image [, quality=10, colorValue='hex'])
 Gets the dominant color of an image. Uses [Color Thief](https://github.com/ksubileau/color-thief-php) for all the magic.
 
@@ -654,7 +661,7 @@ Gets the dominant color of an image. Uses [Color Thief](https://github.com/ksubi
 **quality**: Calculation accuracy of the dominant color. 1 is the highest quality, 10 is the default. Be aware that there is a trade-off between quality and speed/memory consumption!    
 **colorValue**: Indicates which data format the returned color is in. Allowed values are `'hex'` (default) and `'rgb'`. If rgb is selected, the value is an array with red as index 0, green as index 1 and blue as index 2.   
 
-### craft.imager.getColorPalette(image [, $colorCount=8, quality=10, colorValue='hex'])
+### craft.imager.getColorPalette(image [, colorCount=8, quality=10, colorValue='hex'])
 Gets the color palette of an image. Uses [Color Thief](https://github.com/ksubileau/color-thief-php) for all the magic.
 
 **image**: Image to get palette from. Can be any of the types that transformImage can handle.  
@@ -668,11 +675,43 @@ Converts a hexadecimal color value to rgb. Input value must be a string. Output 
 ### craft.imager.rgb2hex(color)
 Converts a rgb color value to hexadecimal. Input value must be an array with red as index 0, green as index 1 and blue as index 2. Output value is a string.
 
-### craft.imager.isAnimated(image)
-Returns `true` or `false` depending on if the supplied image is animated or not (only gif support at the moment).   
+### craft.imager.getBrightness(color)
+Calculates [color brightness](https://www.w3.org/TR/AERT#color-contrast) on a scale from 0 (black) to 255 (white).
 
-### craft.imager.imgixEnabled()
-Returns `true` or `false` depending on if Imgix is enabled.   
+### craft.imager.getPercievedBrightness(color)
+Calculates the [perceived brightness](http://alienryderflex.com/hsp.html) of a color on a scale from 0 (black) to 255 (white).
+
+### craft.imager.getRelativeLuminance(color)
+Calculates the [relative luminance](https://www.w3.org/TR/WCAG20/#relativeluminancedef) of a color on a scale from 0 (black) to 1 (white).
+
+### craft.imager.getBrightnessDifference(color1, $color2)
+Calculates [brightness difference](https://www.w3.org/TR/AERT#color-contrast) on a scale from 0 to 255.
+ 
+### craft.imager.getColorDifference(color1, $color2)
+Calculates [color difference](https://www.w3.org/TR/AERT#color-contrast) on a scale from 0 to 765.
+ 
+### craft.imager.getContrastRatio(color1, $color2)
+Calculates the [contrast ratio](https://www.w3.org/TR/WCAG20/#contrast-ratiodef) between two colors on a scale from 1 to 21.
+
+### craft.imager.getHue(color)
+Get the hue channel of a color.
+
+### craft.imager.getLightness(color)
+Get the lightness channel of a color.
+
+### craft.imager.getSaturation(color)
+Get the saturation channel of a color.
+
+### craft.imager.isBright(color [, threshold=127.5])
+Checks brightness($color) >= $threshold. Accepts an optional $threshold float as the last parameter with a default of 127.5. 
+
+### craft.imager.isLight(color [, threshold=50])
+Checks lightness($color) >= $threshold. Accepts an optional $threshold float as the last parameter with a default of 50.0. 
+
+### craft.imager.looksBright(color [, threshold=127.5])
+Checks perceived_brightness($color) >= $threshold. Accepts an optional $threshold float as the last parameter with a default of 127.5. 
+ 
+ 
 
 ---
 
