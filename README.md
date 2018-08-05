@@ -516,6 +516,28 @@ The Settings model provides the following default `storageConfig`:
         ],
     ]
 
+Here's an example of how this could look when populated:
+
+    'storageConfig' => [
+        'aws'  => [
+            'accessKey' => 'XYXYYYY99YXYZXXX1YXY',
+            'secretAccessKey' => 'xY9xXXyYxXXyX9xYxxYyxy9XXyyxxy9XX99XYX9x',
+            'region' => 'eu-west-1',
+            'bucket' => 'transformbucket',
+            'folder' => 'transforms',
+            'requestHeaders' => array(),
+            'storageType' => 'standard',
+            'cloudfrontInvalidateEnabled' => true,
+            'cloudfrontDistributionId' => 'YXYZ99ZX99YXY',
+        ],
+        'gcs' => [
+            'keyFile' => '/absolute/path/to/key/gcs-31a21242cf7c.json',
+            'bucket' => 'transformbucket',
+            'folder' => 'transforms',
+        ]
+                
+    ]
+ 
 This is just provided as an example, make sure you override this with your own credentials.
 
 ---
@@ -639,12 +661,12 @@ Outputs a base64 encoded SVG image.
 ### craft.imager.serverSupportsWebp()
 Returns `true` or `false` depending on if the server has support for webp or not. This could either indicate built in support for webp in the current image driver, GD or Imagick, or the presence of the cwebp binary if this has been enabled.  
 
-### craft.imager.clientSupportsForWebp()
+### craft.imager.clientSupportsWebp()
 Returns `true` or `false` depending on if the client has support for webp or not. This is deducted from the Accept header that the client sends.   
   
 *If you use template caching, or any kind of front side cache (Varnish, Fastly, etc), make sure you create different caches based on if the client has support for webp or not. For template caching, adding a string to the key based on this variable, is one way to solve it. Example:*
   
-    {% cache using key "my-content" ~ (craft.imager.clientSupportsForWebp ? "-with-webp") %}  
+    {% cache using key "my-content" ~ (craft.imager.clientSupportsWebp ? "-with-webp") %}  
     ...
     {% endcache %}
  
