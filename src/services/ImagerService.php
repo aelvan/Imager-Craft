@@ -178,20 +178,10 @@ class ImagerService extends Component
     public function __construct($config = [])
     {
         parent::__construct($config);
-
-        // Get image driver
-        $extension = mb_strtolower(Craft::$app->getConfig()->getGeneral()->imageDriver);
-
-        if ($extension === 'gd') {
-            self::$imageDriver = 'gd';
-        } else {
-            if ($extension === 'imagick') {
-                self::$imageDriver = 'imagick';
-            } else { // autodetect
-                self::$imageDriver = Craft::$app->images->getIsGd() ? 'gd' : 'imagick';
-            }
-        }
-
+        
+        // Detect image driver 
+        self::detectImageDriver();
+        
         // Set up imagick specific constant aliases
         if (self::$imageDriver === 'imagick') {
             self::$compositeKeyTranslate['blend'] = \Imagick::COMPOSITE_BLEND;
@@ -208,6 +198,10 @@ class ImagerService extends Component
         }
     }
 
+
+    // Static public Methods
+    // =========================================================================
+
     /**
      * @return ConfigModel
      */
@@ -216,15 +210,29 @@ class ImagerService extends Component
         return self::$transformConfig ?? new ConfigModel(Plugin::$plugin->getSettings(), null);
     }
 
+    /**
+     * Detects which image driver to use
+     */
+    public static function detectImageDriver()
+    {
+        $extension = mb_strtolower(Craft::$app->getConfig()->getGeneral()->imageDriver);
 
-    // Static public Methods
-    // =========================================================================
+        if ($extension === 'gd') {
+            self::$imageDriver = 'gd';
+        } else if ($extension === 'imagick') {
+            self::$imageDriver = 'imagick';
+        } else { // autodetect
+            self::$imageDriver = Craft::$app->images->getIsGd() ? 'gd' : 'imagick';
+        }
+    }
 
     /**
      * @return bool
      */
     public static function hasSupportForWebP(): bool
     {
+        self::detectImageDriver();
+        
         if (self::$imageDriver === 'gd' && \function_exists('imagewebp')) {
             return true;
         }
