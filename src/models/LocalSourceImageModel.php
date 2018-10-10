@@ -126,9 +126,7 @@ class LocalSourceImageModel
      */
     public function getFilePath(): string
     {
-        $filename = FileHelper::sanitizeFilename($this->filename);
-
-        return FileHelper::normalizePath($this->path.'/'.$filename);
+        return FileHelper::normalizePath($this->path.'/'.$this->filename);
     }
 
     /**
@@ -293,7 +291,7 @@ class LocalSourceImageModel
         $this->url = $image;
         $this->basename = str_replace(' ', '-', $pathParts['filename']).($queryString !== '' ? '_'.md5($queryString) : '');
         $this->extension = $pathParts['extension'] ?? '';
-        $this->filename = $this->basename.'.'.$this->extension;
+        $this->filename = FileHelper::sanitizeFilename($this->basename.'.'.$this->extension);
 
         try {
             FileHelper::createDirectory($this->path);
