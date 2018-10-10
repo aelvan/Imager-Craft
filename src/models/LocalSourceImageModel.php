@@ -126,7 +126,9 @@ class LocalSourceImageModel
      */
     public function getFilePath(): string
     {
-        return FileHelper::normalizePath($this->path.'/'.$this->filename);
+        $filename = FileHelper::sanitizeFilename($this->filename);
+
+        return FileHelper::normalizePath($this->path.'/'.$filename);
     }
 
     /**
