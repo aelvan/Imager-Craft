@@ -543,7 +543,7 @@ class CraftTransformer extends Component implements TransformerInterface
             }
         }
 
-        $targetFilePath = $tempPath.md5(time()).'.'.$sourceExtension;
+        $targetFilePath = $tempPath.md5(microtime()).'.'.$sourceExtension;
 
         $saveOptions = [
             'jpeg_quality' => 100,
