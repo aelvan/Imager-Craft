@@ -1,5 +1,11 @@
 # Imager Changelog
 
+## 2.1.1 - 2018-11-01
+### Fixed
+- Fixes an issue where the image driver would not be detected when using the static method hasSupportForWebP before the service was constructed. 
+- Fixes an issue where if the the remote filename is invalid the filename would be invalid locally and could not be created, this sanitizes the filename that will be created to it is always valid even if the remote filename is invalid (Thanks, @HelgeSverre).
+- Fixes an issue with filename collisions when creating temporary filename, microtime() is now used instead of time() (thanks, @MflJoe).
+ 
 ## 2.1.0 - 2018-07-28
 ### Added
 - Added a ton of color utility template variables for getting brightness, hue, lightness, percieved brightness, relative luminance, saturation, brightness difference, color difference and (puh!) contrast ratio. 
