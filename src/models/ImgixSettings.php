@@ -14,6 +14,8 @@ class ImgixSettings extends Model
     public $shardStrategy = 'cycle';
     public $getExternalImageDimensions = false;
     public $defaultParams = [];
+    public $excludeFromPurge = false;
+    public $apiKey = '';
     
     public function __construct($config = [])
     {

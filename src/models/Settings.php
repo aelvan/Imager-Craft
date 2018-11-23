@@ -55,6 +55,9 @@ class Settings extends Model
     public $useForCpThumbs = false;
 
     public $imgixProfile = 'default';
+    public $imgixApiKey = '';
+    public $imgixEnableAutoPurging = true;
+    public $imgixEnablePurgeElementAction = true;
     public $imgixConfig = [
         'default' => [
             'domains' => [],
@@ -65,6 +68,8 @@ class Settings extends Model
             'shardStrategy' => 'cycle',
             'getExternalImageDimensions' => true,
             'defaultParams' => [],
+            'apiKey' => '',
+            'excludeFromPurge' => false,
         ]
     ];
     
