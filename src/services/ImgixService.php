@@ -19,6 +19,7 @@ use Imgix\UrlBuilder;
 use GuzzleHttp\RequestOptions;
 
 use Craft;
+use craft\base\Component;
 use craft\base\LocalVolumeInterface;
 use craft\base\Volume;
 use craft\elements\Asset;
@@ -35,7 +36,7 @@ use yii\base\InvalidConfigException;
  * @package   Imager
  * @since     2.1.2
  */
-class ImgixService
+class ImgixService extends Component
 {
 
     /**
