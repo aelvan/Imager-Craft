@@ -376,7 +376,7 @@ A valid Imgix API key is required to enable the [Imgix purging](https://docs.img
 
 ### imgixEnableAutoPurging [bool]
 *Default: `true`*  
-Attempts to [purge](https://docs.imgix.com/setup/purging-images) images automatically when the Asset is replaced, or edited with the Image Editor (i.e. cropped, resized etc). 
+Attempts to [purge](https://docs.imgix.com/setup/purging-images) images automatically when the Asset is replaced, or edited with the Image Editor (i.e. cropped, resized etc). _An Imgix API key is required to enable purging._  
 
 ### imgixEnablePurgeElementAction [bool]
 *Default: `true`*  
