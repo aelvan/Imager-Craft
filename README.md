@@ -376,11 +376,11 @@ A valid Imgix API key is required to enable the [Imgix purging](https://docs.img
 
 ### imgixEnableAutoPurging [bool]
 *Default: `true`*  
-Attempts to [purge](https://docs.imgix.com/setup/purging-images) images automatically when assets are replaced or edited with the Image Editor.
+Attempts to [purge](https://docs.imgix.com/setup/purging-images) images automatically when the Asset is replaced, or edited with the Image Editor (i.e. cropped, resized etc). 
 
 ### imgixEnablePurgeElementAction [bool]
 *Default: `true`*  
-Adds a "Purge from Imgix" element action to the Asset index. Note that if purging is not possible (i.e. if there's no Imgix API key set or there are no purgable profiles in the `imgixConfig` array) the element action will not display, regardless of this setting.
+Adds a "Purge from Imgix" element action to the Asset index, for manually triggering purge. Note that if purging is not possible (i.e. if there's no Imgix API key set or there are no purgable profiles in the `imgixConfig` array) the element action will not display, regardless of this setting.  
 
 ### imgixConfig [array]  
 An array of configuration objects for Imgix, where the key is the profile handle. The configuration object takes the following settings:
@@ -428,7 +428,7 @@ To use specify which profile to use in your templates you override `imgixProfile
 
     {% set transform = craft.imager.transformImage(externalUrl, { width: 400 }, {}, { imgixProfile: 'external' }) %}
 
-**excludeFromPurge (bool):** Exclude this source from purging. Note that profiles with the `sourceIsWebProxy` setting set to `true` will be excluded from purging regardless of this value.  
+**excludeFromPurge (bool):** Exclude this source from purging. Note that profiles with the `sourceIsWebProxy` setting set to `true` will be excluded from purging regardless of this value. _This setting affects both automatic purging when Assets are replaced (or edited with the Image Editor) and manual purges triggered by the element action._  
 **apiKey (string):** Will override the `imgixApiKey` setting when Imager attempts to purge images for a particular profile. Useful if you use sources belonging to different Imgix accounts.  
 
 ### optimizeType [string]
