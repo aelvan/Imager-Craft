@@ -1,5 +1,9 @@
 # Imager Changelog
 
+## 2.1.2 - 2018-11-27
+### Added
+- Added support for purging images from Imgix (thanks, @mmikkel).
+
 ## 2.1.1 - 2018-11-01
 ### Fixed
 - Fixes an issue where the image driver would not be detected when using the static method hasSupportForWebP before the service was constructed. 
