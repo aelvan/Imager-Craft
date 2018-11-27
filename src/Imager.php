@@ -10,7 +10,6 @@
 
 namespace aelvan\imager;
 
-use aelvan\imager\services\PlaceholderService;
 use Craft;
 use craft\base\Element;
 use craft\base\Plugin;
@@ -28,15 +27,18 @@ use craft\web\twig\variables\CraftVariable;
 
 use yii\base\Event;
 
-use aelvan\imager\models\Settings;
-use aelvan\imager\services\ImagerService;
-use aelvan\imager\services\ImagerColorService;
-use aelvan\imager\variables\ImagerVariable;
-use aelvan\imager\twigextensions\ImagerTwigExtension;
 use aelvan\imager\elementactions\ClearTransformsElementAction;
+use aelvan\imager\elementactions\ImgixPurgeElementAction;
 use aelvan\imager\exceptions\ImagerException;
 use aelvan\imager\models\CraftTransformedImageModel;
 use aelvan\imager\models\ImgixTransformedImageModel;
+use aelvan\imager\models\Settings;
+use aelvan\imager\services\PlaceholderService;
+use aelvan\imager\services\ImagerService;
+use aelvan\imager\services\ImagerColorService;
+use aelvan\imager\services\ImgixService;
+use aelvan\imager\variables\ImagerVariable;
+use aelvan\imager\twigextensions\ImagerTwigExtension;
 
 use aelvan\imager\effects\BlurEffect;
 use aelvan\imager\effects\ClutEffect;
@@ -81,6 +83,7 @@ use aelvan\imager\externalstorage\GcsStorage;
  * @property  ImagerService      $imager
  * @property  ImagerColorService $color
  * @property  PlaceholderService $placeholder
+ * @property  ImgixService $imgix
  */
 class Imager extends Plugin
 {
@@ -109,10 +112,14 @@ class Imager extends Plugin
             'imager' => ImagerService::class,
             'placeholder' => PlaceholderService::class,
             'color' => ImagerColorService::class,
+            'imgix' => ImgixService::class,
         ]);
 
         // Add our Twig extensions
         Craft::$app->view->registerTwigExtension(new ImagerTwigExtension());
+
+        /** @var ConfigModel $settings */
+        $config = ImagerService::getConfig();
 
         // Register our variables
         Event::on(CraftVariable::class, CraftVariable::EVENT_INIT,
@@ -141,16 +148,24 @@ class Imager extends Plugin
 
         // Register element action to assets for clearing transforms
         Event::on(Asset::class, Element::EVENT_REGISTER_ACTIONS,
-            function(RegisterElementActionsEvent $event) {
+            function(RegisterElementActionsEvent $event) use ($config) {
                 $event->actions[] = ClearTransformsElementAction::class;
+                // If Imgix purging is possible, add element action for purging – unless the element action is disabled
+                if ($config->imgixEnablePurgeElementAction && ImgixService::getCanPurge()) {
+                    $event->actions[] = ImgixPurgeElementAction::class;
+                }
             }
         );
 
         // Event listener for clearing caches when an asset is replaced
         Event::on(Assets::class, Assets::EVENT_AFTER_REPLACE_ASSET,
-            function(ReplaceAssetEvent $event) {
+            function(ReplaceAssetEvent $event) use ($config) {
                 if ($event->asset) {
                     self::$plugin->imager->removeTransformsForAsset($event->asset);
+                    // If Imgix purging is possible, do that too
+                    if ($config->imgixEnableAutoPurging && ImgixService::getCanPurge()) {
+                        self::$plugin->imgix->purgeAssetFromImgix($event->asset);
+                    }
                 }
             }
         );

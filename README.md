@@ -370,15 +370,33 @@ Overrides Craft's internal thumb transform in the control panel with Imager's. M
 *Default: `'default'`*  
 Imgix config settings profile to be used. Must correspond to a key in `imgixConfig`.
 
+### imgixApiKey [string]
+*Default: `''`*  
+A valid Imgix API key is required to enable the [Imgix purging](https://docs.imgix.com/setup/purging-images) features. Note that in addition to setting the `imgixApiKey` setting, you can also add per-profile API keys for specific sources inside the `imgixConfig` configuration object – useful if you're using sources belonging to different Imgix accounts.
+
+### imgixEnableAutoPurging [bool]
+*Default: `true`*  
+Attempts to [purge](https://docs.imgix.com/setup/purging-images) images automatically when the Asset is replaced, or edited with the Image Editor (i.e. cropped, resized etc). _An Imgix API key is required to enable purging._  
+
+### imgixEnablePurgeElementAction [bool]
+*Default: `true`*  
+Adds a "Purge from Imgix" element action to the Asset index, for manually triggering purge. Note that if purging is not possible (i.e. if there's no Imgix API key set or there are no purgable profiles in the `imgixConfig` array) the element action will not display, regardless of this setting.  
+
 ### imgixConfig [array]  
 An array of configuration objects for Imgix, where the key is the profile handle. The configuration object takes the following settings:
 
 **domains (array):** An array of Imgix source domains.  
+
 **useHttps (bool):** Indicates if generated Imgix URLs should be https or not.  
+
 **signKey (string):** If you've protected your source with secure URLs, you must provide the sign key/token. An empty string indicates that the source is not secure.  
-**sourceIsWebProxy (bool):** Indicates if your Imgix source is a web proxy or not.   
+
+**sourceIsWebProxy (bool):** Indicates if your Imgix source is a web proxy or not. Note that web proxy sources will be excluded from purging.  
+
 **useCloudSourcePath (bool):** If enabled, Imager will prepend the Craft source path to the asset path, before passing it to the Imgix URL builder. This makes it possible to have one Imgix source pulling images from many Craft volumes when they are on the same S3 bucket, but in different subfolder. This only works on volumes that implements a path setting (AWS S3 and GCS does, local volumes does not).  
+
 **shardStrategy (string):** etermines the sharding strategy if more than one source is used. Allowed values are `cycle` and `crc`.  
+
 **getExternalImageDimensions (bool):** Imager does its best at determining the dimensions of the transformed images. If the supplied asset is on Craft source, it's easy because Craft records the original dimensions of the image in the database. But if the image is external, it's not that easy. Imager will try to determine the size based on the transform parameters, and if both width and height, or ratio is provided, it'll usually be able to. But if you only transform by one attribute, it may not be possible. In these cases Imager will by default download the source image and check the dimensions to calculate the missing bits.
 
 By disabling this setting, you're telling Imager to never download external images, and to just give up on trying to figure out the dimensions. If you supplied only width to the transform, height will then be set to 0. If you don't need to use height in your code, that's totally fine, and you've managed to squeeze out a bit more performance.
@@ -415,6 +433,10 @@ The following example shows a setup that uses two Imgix sources, one that's poin
 To use specify which profile to use in your templates you override `imgixProfile` like this:
 
     {% set transform = craft.imager.transformImage(externalUrl, { width: 400 }, {}, { imgixProfile: 'external' }) %}
+
+**excludeFromPurge (bool):** Exclude this source from purging. Note that profiles with the `sourceIsWebProxy` setting set to `true` will be excluded from purging regardless of this value. _This setting affects both automatic purging when Assets are replaced (or edited with the Image Editor) and manual purges triggered by the element action._  
+
+**apiKey (string):** Will override the `imgixApiKey` setting when Imager attempts to purge images for a particular profile. Useful if you use sources belonging to different Imgix accounts.  
 
 ### optimizeType [string]
 *Default: `'job'`*  
