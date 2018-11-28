@@ -185,7 +185,13 @@ class ImgixTransformer extends Component implements TransformerInterface
         }
 
         // Set quality 
-        if (!isset($transform['q'])) {
+        if (
+            !isset($transform['q'])
+                && !(
+                    isset($transform['auto'])
+                    && strstr($transform['auto'], 'compress')
+                )
+            ) {
             if (isset($r['fm'])) {
                 $r['q'] = $this->getQualityFromExtension($r['fm'], $transform);
             } else {
