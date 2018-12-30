@@ -1,5 +1,9 @@
 # Imager Changelog
 
+## 2.1.3 - 2018-12-31
+### Fixed
+- Default quality is no longer sent to Imgix when auto compression is enabled (thanks, @jorenvanhee).
+
 ## 2.1.2 - 2018-11-27
 ### Added
 - Added support for purging images from Imgix (thanks, @mmikkel).
