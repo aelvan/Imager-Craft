@@ -185,7 +185,10 @@ class ImgixTransformer extends Component implements TransformerInterface
         }
 
         // Set quality 
-        if (!isset($transform['q'])) {
+        if (
+            !isset($transform['q'])
+            && !$this->transformHasAutoCompressionEnabled($transform)
+        ) {
             if (isset($r['fm'])) {
                 $r['q'] = $this->getQualityFromExtension($r['fm'], $transform);
             } else {
@@ -313,6 +316,20 @@ class ImgixTransformer extends Component implements TransformerInterface
         }
 
         return $r;
+    }
+
+    /**
+     * Check if transform has auto compression enabled
+     *
+     * @param array $transform
+     *
+     * @return bool
+     */
+    private function transformHasAutoCompressionEnabled(array $transform): bool
+    {
+        return
+            isset($transform['auto'])
+            && strstr($transform['auto'], 'compress');
     }
 
     /**
