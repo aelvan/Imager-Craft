@@ -106,7 +106,7 @@ class CraftTransformer extends Component implements TransformerInterface
         }
 
         // If ajax request, trigger jobs immediately
-        if ($taskCreated && $config->runJobsImmediatelyOnAjaxRequests && Craft::$app->getRequest()->getIsAjax()) {
+        if (!Craft::$app->getRequest()->isConsoleRequest && $taskCreated && $config->runJobsImmediatelyOnAjaxRequests && Craft::$app->getRequest()->getIsAjax()) {
             $this->triggerQueueNow();
         }
 
