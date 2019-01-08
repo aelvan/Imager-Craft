@@ -404,8 +404,11 @@ class ImgixTransformer extends Component implements TransformerInterface
      */
     private function getUrlEncodedPath($path): string
     {
-        $path = str_replace('%2F', '/', urlencode($path));
-
+        $entities = array('%21', '%2A', '%27', '%28', '%29', '%3B', '%3A', '%40', '%26', '%3D', '%2B', '%24', '%2C', '%2F', '%3F', '%25', '%23', '%5B', '%5D');
+        $replacements = array('!', '*', "'", '(', ')', ';', ':', '@', '&', '=', '+', '$', ',', '/', '?', '%', '#', '[', ']');
+        $path = str_replace($entities, $replacements, urlencode($path));
+        
         return $path;
     }
+    
 }
