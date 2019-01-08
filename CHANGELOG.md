@@ -1,5 +1,10 @@
 # Imager Changelog
 
+## 2.1.4 - 2018-01-08
+### Fixed
+- Makes URL encoding of file paths for Imgix RFC 3986 compliant (#190) (thanks, @Mosnar).
+- Fixes in issue with running Imager transforms from the command line (thanks, @janhenckens).
+
 ## 2.1.3 - 2018-12-31
 ### Fixed
 - Default quality is no longer sent to Imgix when auto compression is enabled (thanks, @jorenvanhee).

@@ -2,7 +2,7 @@
     "name": "aelvan/imager",
     "description": "Image transforms gone wild",
     "type": "craft-plugin",
-    "version": "v2.1.3",
+    "version": "v2.1.4",
     "keywords": [
         "craft",
         "cms",
@@ -29,7 +29,7 @@
         "craftcms/cms": "^3.0.0-RC10",
         "mikehaertl/php-shellcommand": "^1.2",
         "tinify/tinify": ">=1.1.1",
-        "ksubileau/color-thief-php": "^1.3.1",
+        "ksubileau/color-thief-php": "^1.4.0",
         "ssnepenthe/color-utils": "~0.4",
         "imgix/imgix-php": "^2.1.0",
         "kraken-io/kraken-php": "^1.2",
