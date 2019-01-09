@@ -562,6 +562,34 @@ Here's an example of how this could look when populated:
  
 This is just provided as an example, make sure you override this with your own credentials.
 
+And, make sure that you remember to enable the storage configs you want to use by default, 
+using the `storages` config setting, like so:
+
+    'storages' => ['aws'],
+    'storageConfig' => [
+        'aws'  => [
+            'accessKey' => 'XYXYYYY99YXYZXXX1YXY',
+            'secretAccessKey' => 'xY9xXXyYxXXyX9xYxxYyxy9XXyyxxy9XX99XYX9x',
+            'region' => 'eu-west-1',
+            'bucket' => 'transformbucket',
+            'folder' => 'transforms',
+            'requestHeaders' => array(),
+            'storageType' => 'standard',
+            'cloudfrontInvalidateEnabled' => true,
+            'cloudfrontDistributionId' => 'YXYZ99ZX99YXY',
+        ],
+        'gcs' => [
+            'keyFile' => '/absolute/path/to/key/gcs-31a21242cf7c.json',
+            'bucket' => 'transformbucket',
+            'folder' => 'transforms',
+        ]
+                
+    ]
+ 
+For more information about the concept of storages, please refer to 
+[this section](https://github.com/aelvan/Imager-Craft/wiki/What's-new-in-Imager-2.0%3F#external-storages) 
+in the "What's new in Imager 2.0" article. 
+
 ---
 
 Usage
