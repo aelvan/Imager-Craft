@@ -1,5 +1,9 @@
 # Imager Changelog
 
+## 2.1.5 - 2018-02-21
+### Fixed
+- Fixes issue where files with upper case extensions were not transformed with Imager when useForNativeTransforms was activated. (thanks, @johandouma).
+
 ## 2.1.4 - 2018-01-08
 ### Fixed
 - Makes URL encoding of file paths for Imgix RFC 3986 compliant (#190) (thanks, @Mosnar).
