@@ -193,7 +193,7 @@ class Imager extends Plugin
             function(GetAssetThumbUrlEvent $event) {
                 $config = ImagerService::getConfig();
                 
-                if ($config->useForCpThumbs && $event->asset !== null && $event->asset->kind === 'image' && \in_array($event->asset->getExtension(), Image::webSafeFormats(), true)) {
+                if ($config->useForCpThumbs && $event->asset !== null && $event->asset->kind === 'image' && \in_array(strtolower($event->asset->getExtension()), Image::webSafeFormats(), true)) {
                     try {
                         /** @var CraftTransformedImageModel|ImgixTransformedImageModel $transformedImage */
                         $transformedImage = self::$plugin->imager->transformImage($event->asset, ['width' => $event->width, 'height' => $event->height, 'mode' => 'fit']);
