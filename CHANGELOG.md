@@ -1,5 +1,9 @@
 # Imager Changelog
 
+## 2.1.5.1 - 2018-03-08
+### Fixed
+- Fixes issue where files with upper case extensions were not transformed with Imager when useForCpThumbs was activated. (thanks, @johandouma).
+
 ## 2.1.5 - 2018-02-21
 ### Fixed
 - Fixes issue where files with upper case extensions were not transformed with Imager when useForNativeTransforms was activated. (thanks, @johandouma).
