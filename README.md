@@ -401,7 +401,7 @@ An array of configuration objects for Imgix, where the key is the profile handle
 
 By disabling this setting, you're telling Imager to never download external images, and to just give up on trying to figure out the dimensions. If you supplied only width to the transform, height will then be set to 0. If you don't need to use height in your code, that's totally fine, and you've managed to squeeze out a bit more performance.
 
-**defaultParams (bool):** You can use this setting to set default parameters that you want passed to all your Imgix transforms. Example:
+**defaultParams (array):** You can use this setting to set default parameters that you want passed to all your Imgix transforms. Example:
 
     'defaultParams' => ['auto'=>'compress,format', 'q'=>80]
 
