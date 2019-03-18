@@ -92,7 +92,11 @@ class ImgixTransformedImageModel implements TransformedImageInterface
                     }
                 }
             } else {
-                // todo : neither is set, image is not resized. What to do?
+                // Neither is set, image is not resized. Just get dimensions and return.
+                list($sourceWidth, $sourceHeight) = $this->getSourceImageDimensions($source);
+                
+                $this->width = $sourceWidth;
+                $this->height = $sourceHeight;
             }
         }
     }
