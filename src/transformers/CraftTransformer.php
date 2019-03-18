@@ -463,7 +463,7 @@ class CraftTransformer extends Component implements TransformerInterface
             $r = shell_exec($command);
 
             if (!file_exists($path)) {
-                $msg = Craft::t('imager', 'Temporary file save operation failed: '.$r);
+                $msg = Craft::t('imager', 'Creation of webp with cwebp failed with error "'.$r. '". The executed command was "' . $command . '"');
                 Craft::error($msg, __METHOD__);
                 throw new ImagerException($msg);
             }
