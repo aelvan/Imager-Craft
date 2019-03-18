@@ -33,6 +33,9 @@ class Imager_AwsService extends BaseApplicationComponent
     {
         $s3 = $this->_getS3Object();
 
+        // clear stat cache so that filesize() reports correct size after optimizations are applied
+        clearstatcache(true, $filePath);
+
         $file = $s3->inputFile($filePath);
         $headers = craft()->imager->getSetting('awsRequestHeaders');
 
