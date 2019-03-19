@@ -63,7 +63,7 @@ class ImagerHelpers
             $height = 1;
         }
 
-        return new Box($width, $height);
+        return new Box((int)$width, (int)$height);
     }
 
     /**

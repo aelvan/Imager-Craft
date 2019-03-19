@@ -280,14 +280,14 @@ class CraftTransformer extends Component implements TransformerInterface
                 for ($i = $startFrame; $i <= $endFrame; $i += $interval) {
                     if (isset($layers[$i])) {
                         $layer = $layers[$i];
-                        $this->transformLayer($layer, $transform, $sourceModel->extension, $targetModel->extension);
+                        $this->transformLayer($layer, $transform, $sourceModel->extension);
                         $gif->layers()->add($layer);
                     }
                 }
 
                 $this->imageInstance = $gif;
             } else {
-                $this->transformLayer($this->imageInstance, $transform, $sourceModel->extension, $targetModel->extension);
+                $this->transformLayer($this->imageInstance, $transform, $sourceModel->extension);
             }
 
             // If Image Driver is imagick and removeMetadata is true, remove meta data
@@ -328,11 +328,10 @@ class CraftTransformer extends Component implements TransformerInterface
      * @param GdImage|ImagickImage $layer
      * @param array                $transform
      * @param string               $sourceExtension
-     * @param string               $targetExtension
      *
      * @throws ImagerException
      */
-    private function transformLayer(&$layer, $transform, $sourceExtension, $targetExtension)
+    private function transformLayer(&$layer, $transform, $sourceExtension)
     {
         /** @var ConfigModel $settings */
         $config = ImagerService::getConfig();
@@ -671,6 +670,12 @@ class CraftTransformer extends Component implements TransformerInterface
 
         if (!isset($watermark['width'], $watermark['height'])) {
             $msg = Craft::t('imager', 'Watermark image size is not set');
+            Craft::error($msg, __METHOD__);
+            throw new ImagerException($msg);
+        }
+        
+        if ($this->imagineInstance === null) {
+            $msg = Craft::t('imager', 'Imagine instance was not created for driver “{driver}”.', ['driver' => ImagerService::$imageDriver]);
             Craft::error($msg, __METHOD__);
             throw new ImagerException($msg);
         }

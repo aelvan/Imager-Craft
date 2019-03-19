@@ -43,7 +43,7 @@ class PlaceholderService extends Component
     /**
      * Main public placeholder method.
      * 
-     * @param null $config
+     * @param array|null $config
      * @return string
      * @throws ImagerException
      */
@@ -137,7 +137,7 @@ class PlaceholderService extends Component
             $sourceModel = new LocalSourceImageModel($source);
             $sourceModel->getLocalCopy();
         } catch (ImagerException $e) {
-            return null;
+            return '';
         }
         
         $tracer = new Potracio();
