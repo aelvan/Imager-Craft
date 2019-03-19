@@ -1,5 +1,10 @@
 # Imager Changelog
 
+## 2.1.6 - 2019-03-19
+### Fixed
+- Fixes issue where spaces in asset folders broke URL encoding for Imgix.
+- Fixes missing width and height when using Imgix and neither width or height was set in the transform (fixes #228).
+
 ## 2.1.5.1 - 2019-03-08
 ### Fixed
 - Fixes issue where files with upper case extensions were not transformed with Imager when useForCpThumbs was activated. (thanks, @johandouma).
