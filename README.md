@@ -508,7 +508,13 @@ The Settings model provides the following default `optimizerConfig`:
         ],
     ]
 
-You probably need to change this to reflect your environment. Configuration for additional, custom optimizers can also be added. 
+_Please note, the path and options given are just suggestions. You probably need to 
+change this to reflect your environment, and make sure that the options do
+what you want them to do. Also, not all options is necessarily available in
+the compiled version of the optimizers (for instance, pngquant doesn't necessarily
+have --strip compiled in)._
+
+Configuration for additional, custom optimizers can also be added. 
 
 ### storages [array]
 *Default: `[]`*  
