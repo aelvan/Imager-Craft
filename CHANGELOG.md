@@ -1,5 +1,9 @@
 # Imager Changelog
 
+## 2.1.7 - 2019-03-20
+### Fixed
+- Fixes regression error where settings that could have alias was not possible to override with template config overrides.
+
 ## 2.1.6 - 2019-03-19
 ### Fixed
 - Fixes issue where spaces in asset folders broke URL encoding for Imgix.
