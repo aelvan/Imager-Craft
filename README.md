@@ -395,6 +395,8 @@ An array of configuration objects for Imgix, where the key is the profile handle
 
 **useCloudSourcePath (bool):** If enabled, Imager will prepend the Craft source path to the asset path, before passing it to the Imgix URL builder. This makes it possible to have one Imgix source pulling images from many Craft volumes when they are on the same S3 bucket, but in different subfolder. This only works on volumes that implements a path setting (AWS S3 and GCS does, local volumes does not).  
 
+**addPath (string|array):** Prepends a path to the asset's path. Can be useful if you have several volumes that you want to serve with one Imgix web folder source. If this setting is an array, the key should be the volume handle, and the value the path to add. See example below.  
+
 **shardStrategy (string):** etermines the sharding strategy if more than one source is used. Allowed values are `cycle` and `crc`.  
 
 **getExternalImageDimensions (bool):** Imager does its best at determining the dimensions of the transformed images. If the supplied asset is on Craft source, it's easy because Craft records the original dimensions of the image in the database. But if the image is external, it's not that easy. Imager will try to determine the size based on the transform parameters, and if both width and height, or ratio is provided, it'll usually be able to. But if you only transform by one attribute, it may not be possible. In these cases Imager will by default download the source image and check the dimensions to calculate the missing bits.
@@ -417,7 +419,7 @@ The following example shows a setup that uses two Imgix sources, one that's poin
             'shardStrategy' => 'cycle',
             'getExternalImageDimensions' => true,
             'defaultParams' => ['auto'=>'compress,format', 'q'=>80],
-        ]
+        ],
         'external' => [
             'domains' => [imager-external.imgix.net],
             'useHttps' => true,
@@ -430,6 +432,26 @@ The following example shows a setup that uses two Imgix sources, one that's poin
         ]
     ]
 
+This example shows how you can serve several Craft volumes from one Imgix web folder source using `addPath`. The Imgix source should
+be set up to point to a location that lets you append the path in `addPath`, and the assets full path, to it, to create the full, public URI:
+
+    'imgixConfig' => [
+        'default' => [
+            'domains' => [imager-multi.imgix.net],
+            'useHttps' => true,
+            'signKey' => 'XxXxXxXx',
+            'sourceIsWebProxy' => false,
+            'addPath' => [
+                'images' => 'images',            
+                'documents' => 'documents',            
+                'otherstuff' => 'other/stuff',            
+            ],
+            'shardStrategy' => 'cycle',
+            'getExternalImageDimensions' => true,
+            'defaultParams' => ['auto'=>'compress,format', 'q'=>80],
+        ]
+    ]
+    
 To use specify which profile to use in your templates you override `imgixProfile` like this:
 
     {% set transform = craft.imager.transformImage(externalUrl, { width: 400 }, {}, { imgixProfile: 'external' }) %}

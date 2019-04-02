@@ -1,5 +1,9 @@
 # Imager Changelog
 
+## 2.1.8 - 2019-04-02
+### Added
+- Added support for addPath in Imgix config to make it easier to use several volumes with just one Imgix source and configuration.
+
 ## 2.1.7 - 2019-03-20
 ### Fixed
 - Fixes regression error where settings that could have alias was not possible to override with template config overrides.
