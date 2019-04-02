@@ -11,6 +11,7 @@
 namespace aelvan\imager\services;
 
 use aelvan\imager\exceptions\ImagerException;
+use aelvan\imager\helpers\ImgixHelpers;
 use aelvan\imager\models\ConfigModel;
 use aelvan\imager\models\ImgixSettings;
 use aelvan\imager\services\ImagerService;
@@ -60,12 +61,14 @@ class ImgixService extends Component
         if (!isset(self::$canPurge)) {
             /** @var ConfigModel $settings */
             $config = ImagerService::getConfig();
+            
             // No Imgix config, no purging
             $imgixConfigArr = $config->getSetting('imgixConfig');
             if (!$imgixConfigArr || !\is_array($imgixConfigArr) || empty($imgixConfigArr)) {
                 self::$canPurge = false;
                 return false;
             }
+            
             // Make sure there's at least one profile that is not a web proxy and that is not excluded from purging
             $hasApiKey = !!$config->getSetting('imgixApiKey');
             $hasPurgableProfile = false;
@@ -77,8 +80,10 @@ class ImgixService extends Component
                     break;
                 }
             }
+            
             self::$canPurge = $hasApiKey && $hasPurgableProfile;
         }
+        
         return self::$canPurge;
     }
 
@@ -91,6 +96,7 @@ class ImgixService extends Component
     {
         try {
             $client = Craft::createGuzzleClient();
+            
             $client->post(self::PURGE_ENDPOINT, [
                 'headers' => [
                     'Content-Type'  => 'application/json',
@@ -147,34 +153,24 @@ class ImgixService extends Component
 
             // Loop over this profile's domains
             foreach ($domains as $domain) {
-
                 try {
-
-                    /** @var LocalVolumeInterface|Volume|Local $volume */
-                    $volume = $asset->getVolume();
-
-                    // Get the image's path
-                    if (($imgixConfig->useCloudSourcePath === true) && isset($volume->subfolder) && \get_class($volume) !== 'craft\volumes\Local') {
-                        $path = implode('/', [$volume->subfolder, $asset->getPath()]);
-                    } else {
-                        $path = $asset->getPath();
-                    }
-
                     // Build base URL for the image on Imgix
-                    $builder = new UrlBuilder([$domain], $imgixConfig->useHttps, null, null, false);
-                    $url = $builder->createURL(\str_replace('%2F', '/', \urlencode($path)));
+                    $builder = new UrlBuilder([$domain], 
+                        $imgixConfig->useHttps, 
+                        null, 
+                        null, 
+                        false);
 
+                    $path = ImgixHelpers::getImgixFilePath($asset, $imgixConfig);
+                    $url = $builder->createURL($path);
+                    
                     $this->purgeUrlFromImgix($url, $apiKey);
 
                 } catch (\Throwable $e) {
                     Craft::error($e->getMessage(), __METHOD__);
                     throw new ImagerException($e->getMessage(), $e->getCode(), $e);
                 }
-
             }
-
         }
-
     }
-
 }
