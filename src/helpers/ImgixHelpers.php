@@ -42,7 +42,7 @@ class ImgixHelpers
         }
 
         if (($config->useCloudSourcePath === true) && isset($volume->subfolder) && \get_class($volume) !== 'craft\volumes\Local') {
-            $path = implode('/', [$volume->subfolder, $image->getPath()]);
+            $path = implode('/', [\Craft::parseEnv($volume->subfolder), $image->getPath()]);
         } else {
             $path = $image->getPath();
         }
