@@ -1,5 +1,9 @@
 # Imager Changelog
 
+## 2.1.8.1 - 2019-04-03
+### Added
+- Added environment parsing to volume subfolder setting in Imgix path parsing (Thanks, @Tam).
+
 ## 2.1.8 - 2019-04-02
 ### Added
 - Added support for addPath in Imgix config to make it easier to use several volumes with just one Imgix source and configuration.
