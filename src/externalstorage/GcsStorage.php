@@ -31,6 +31,9 @@ class GcsStorage implements ImagerStorageInterface
             $uri = ltrim(FileHelper::normalizePath($settings['folder'] . '/' . $uri), '/');
         }
         
+        // Always use forward slashes
+        $uri = str_replace('\\', '/', $uri);
+        
         $keyFilePath = FileHelper::normalizePath($settings['keyFile']);
         
         $storage = new StorageClient([
