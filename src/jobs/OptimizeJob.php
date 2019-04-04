@@ -2,6 +2,7 @@
 
 namespace aelvan\imager\jobs;
 
+use aelvan\imager\exceptions\ImagerException;
 use Craft;
 
 use craft\queue\BaseJob;
@@ -35,6 +36,7 @@ class OptimizeJob extends BaseJob
 
     /**
      * @param \craft\queue\QueueInterface|\yii\queue\Queue $queue
+     * @throws ImagerException
      */
     public function execute($queue)
     {
@@ -61,7 +63,7 @@ class OptimizeJob extends BaseJob
                         $result = ImagerService::$storage[$storage]::upload($this->filePath, $uri, true, $storageSettings);
                     
                         if (!$result) {
-                            // todo : delete transformed file. Assume that we'd want to try again.
+                            throw new ImagerException('Upload to storage "' . $storage . '" failed for job "' . $this->getDescription() . '"');
                         }
                     } else {
                         Craft::error('Could not find settings for storage "'.$storage.'"', __METHOD__);
