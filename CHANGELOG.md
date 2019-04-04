@@ -1,5 +1,13 @@
 # Imager Changelog
 
+## 2.1.9 - 2019-04-04
+### Fixed
+- Fixes path encoding for AWS and GCS when using Windows (Thanks, @aaronwaldon).
+- Fixes path encoding for Imgix when using Windows (Thanks, @aaronwaldon).
+- Fixes error that would occur when using cwebp and the path had a space. (fixes #220).
+- Optimize job now throws an exception if upload to external storage fails, so that it can be retried.
+- AWS and GCS external storages now open files in binary mode just to be safe.
+
 ## 2.1.8.1 - 2019-04-03
 ### Added
 - Added environment parsing to volume subfolder setting in Imgix path parsing (Thanks, @Tam).
