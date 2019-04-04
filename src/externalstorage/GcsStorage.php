@@ -45,7 +45,7 @@ class GcsStorage implements ImagerStorageInterface
         
         try {
             $bucket->upload(
-                fopen($file, 'r'),
+                fopen($file, 'rb'),
                 [
                     'name' => $uri,
                     'predefinedAcl' => 'publicRead',

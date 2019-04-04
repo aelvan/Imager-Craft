@@ -62,7 +62,7 @@ class AwsStorage implements ImagerStorageInterface
         $opts = array_merge($opts, [
             'Bucket' => $settings['bucket'],
             'Key' => $uri,
-            'Body' => fopen($file, 'r'),
+            'Body' => fopen($file, 'rb'),
             'ACL' => 'public-read',
             'StorageClass' => self::getAWSStorageClass($settings['storageType']),
         ]);
@@ -71,13 +71,11 @@ class AwsStorage implements ImagerStorageInterface
             $s3->putObject($opts);
         } catch (S3Exception $e) {
             Craft::error('An error occured while uploading to Amazon S3: '.$e->getMessage(), __METHOD__);
-
             return false;
         }
 
         // Cloudfront invalidation
         if (isset($settings['cloudfrontInvalidateEnabled'], $settings['cloudfrontDistributionId']) && $settings['cloudfrontInvalidateEnabled'] === true) {
-            
             try {
                 $cloudfront = new CloudFrontClient($clientConfig);
             } catch (\InvalidArgumentException $e) {
