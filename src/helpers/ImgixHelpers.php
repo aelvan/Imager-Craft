@@ -58,7 +58,10 @@ class ImgixHelpers
         }
         
         $path = FileHelper::normalizePath($path);
-        
+
+        //always use forward slashes for imgix
+        $path = str_replace('\\', '/', $path);
+
         return self::getUrlEncodedPath($path);
     }
     
