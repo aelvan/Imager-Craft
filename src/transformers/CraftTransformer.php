@@ -458,7 +458,7 @@ class CraftTransformer extends Component implements TransformerInterface
             $tempFile = $this->saveTemporaryFile($imageInstance, $sourceExtension);
 
             // Convert to webp with cwebp
-            $command = escapeshellcmd($config->getSetting('cwebpPath').' '.$config->getSetting('cwebpOptions').' -q '.$saveOptions['webp_quality'].' '.$tempFile.' -o '.$path);
+            $command = escapeshellcmd($config->getSetting('cwebpPath').' '.$config->getSetting('cwebpOptions').' -q '.$saveOptions['webp_quality'].' "'.$tempFile.'" -o "'.$path.'"');
             $r = shell_exec($command);
 
             if (!file_exists($path)) {
