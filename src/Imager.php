@@ -136,7 +136,7 @@ class Imager extends Plugin
                 $event->options[] = [
                     'key' => 'imager-transform-cache',
                     'label' => Craft::t('imager', 'Imager image transform cache'),
-                    'action' => FileHelper::normalizePath(self::$plugin->getSettings()->imagerSystemPath)
+                    'action' => FileHelper::normalizePath(ImagerService::getConfig()->imagerSystemPath)
                 ];
                 $event->options[] = [
                     'key' => 'imager-remote-images-cache',
