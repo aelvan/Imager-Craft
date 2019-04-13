@@ -1,10 +1,17 @@
 # Imager Changelog
 
+## 2.1.10 - 2019-04-13
+### Fixed
+- Fixed issues with using named transforms or `AssetTransform` models when `useForNativeTransforms` is `true` (fixes #237).
+- Fixed incorrect use of config setting `imagerSystemPath` when clearing cache (fixes #236).
+- Fixed docs for imgixConfig, domains are suppose to be strings.
+- Fixed default value for `getExternalImageDimensions` in `ImgixSettings` model to correspond with the description in docs, and the example in the `Settings` model.
+
 ## 2.1.9 - 2019-04-04
 ### Fixed
-- Fixes path encoding for AWS and GCS when using Windows (Thanks, @aaronwaldon).
-- Fixes path encoding for Imgix when using Windows (Thanks, @aaronwaldon).
-- Fixes error that would occur when using cwebp and the path had a space. (fixes #220).
+- Fixed path encoding for AWS and GCS when using Windows (Thanks, @aaronwaldon).
+- Fixed path encoding for Imgix when using Windows (Thanks, @aaronwaldon).
+- Fixed error that would occur when using cwebp and the path had a space. (fixes #220).
 - Optimize job now throws an exception if upload to external storage fails, so that it can be retried.
 - AWS and GCS external storages now open files in binary mode just to be safe.
 
@@ -18,7 +25,7 @@
 
 ## 2.1.7 - 2019-03-20
 ### Fixed
-- Fixes regression error where settings that could have alias was not possible to override with template config overrides.
+- Fixed regression error where settings that could have alias was not possible to override with template config overrides.
 
 ## 2.1.6 - 2019-03-19
 ### Fixed
