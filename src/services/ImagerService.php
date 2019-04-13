@@ -10,7 +10,6 @@
 
 namespace aelvan\imager\services;
 
-use aelvan\imager\exceptions\ImagerException;
 use Craft;
 
 use craft\base\Component;
@@ -23,12 +22,14 @@ use yii\base\InvalidParamException;
 
 use aelvan\imager\Imager as Plugin;
 use aelvan\imager\helpers\ImagerHelpers;
+use aelvan\imager\models\TransformedImageInterface;
 use aelvan\imager\models\LocalSourceImageModel;
 use aelvan\imager\models\LocalTargetImageModel;
-use aelvan\imager\transformers\TransformerInterface;
 use aelvan\imager\models\ConfigModel;
+use aelvan\imager\transformers\TransformerInterface;
 use aelvan\imager\transformers\CraftTransformer;
 use aelvan\imager\transformers\ImgixTransformer;
+use aelvan\imager\exceptions\ImagerException;
 
 /**
  * ImagerService Service
@@ -295,7 +296,7 @@ class ImagerService extends Component
      * @param array        $transformDefaults
      * @param array        $configOverrides
      *
-     * @return array|null
+     * @return array|TransformedImageInterface|null
      * @throws ImagerException
      */
     public function transformImage($image, $transforms, $transformDefaults = null, $configOverrides = null)

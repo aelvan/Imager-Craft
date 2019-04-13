@@ -5,6 +5,7 @@ namespace aelvan\imager\helpers;
 use craft\base\Volume;
 use craft\elements\Asset;
 use craft\helpers\FileHelper;
+use craft\models\AssetTransform;
 
 use Imagine\Exception\InvalidArgumentException;
 use Imagine\Image\Box;
@@ -23,8 +24,8 @@ class ImagerHelpers
      * Creates the destination crop size box
      *
      * @param \Imagine\Image\Box $originalSize
-     * @param array              $transform
-     * @param bool               $allowUpscale
+     * @param array $transform
+     * @param bool $allowUpscale
      *
      * @return Box
      * @throws \Imagine\Exception\InvalidArgumentException
@@ -70,8 +71,8 @@ class ImagerHelpers
      * Creates the resize size box
      *
      * @param \Imagine\Image\Box $originalSize
-     * @param array              $transform
-     * @param bool               $allowUpscale
+     * @param array $transform
+     * @param bool $allowUpscale
      *
      * @return Box
      * @throws ImagerException
@@ -134,7 +135,7 @@ class ImagerHelpers
         if (!$allowUpscale) {
             list($width, $height) = self::enforceMaxSize((int)$width, (int)$height, $originalSize, false, self::getCropZoomFactor($transform));
         }
-        
+
         try {
             $box = new Box((int)$width, (int)$height);
         } catch (InvalidArgumentException $e) {
@@ -148,11 +149,11 @@ class ImagerHelpers
     /**
      * Enforces a max size if allowUpscale is false
      *
-     * @param int          $width
-     * @param int          $height
+     * @param int $width
+     * @param int $height
      * @param BoxInterface $originalSize
-     * @param bool         $maintainAspect
-     * @param float        $zoomFactor
+     * @param bool $maintainAspect
+     * @param float $zoomFactor
      *
      * @return array
      */
@@ -201,7 +202,7 @@ class ImagerHelpers
      *
      * @param \Imagine\Image\Box $resizeSize
      * @param \Imagine\Image\Box $cropSize
-     * @param string             $position
+     * @param string $position
      *
      * @return \Imagine\Image\Point
      * @throws ImagerException
@@ -225,7 +226,7 @@ class ImagerHelpers
             \Craft::error($e->getMessage(), __METHOD__);
             throw new ImagerException($e->getMessage(), $e->getCode(), $e);
         }
-        
+
         return $point;
     }
 
@@ -254,10 +255,10 @@ class ImagerHelpers
         $addVolumeToPath = $config->addVolumeToPath;
 
         if ($hashPath) {
-            return FileHelper::normalizePath('/'.md5('/'.($addVolumeToPath ? mb_strtolower($volume->handle).'/' : '').$asset->folderPath.'/').'/'.$asset->id.'/');
+            return FileHelper::normalizePath('/' . md5('/' . ($addVolumeToPath ? mb_strtolower($volume->handle) . '/' : '') . $asset->folderPath . '/') . '/' . $asset->id . '/');
         }
 
-        return FileHelper::normalizePath('/'.($addVolumeToPath ? mb_strtolower($volume->handle).'/' : '').$asset->folderPath.'/'.$asset->id.'/');
+        return FileHelper::normalizePath('/' . ($addVolumeToPath ? mb_strtolower($volume->handle) . '/' : '') . $asset->folderPath . '/' . $asset->id . '/');
     }
 
     /**
@@ -276,7 +277,7 @@ class ImagerHelpers
         $pathParts = pathinfo($path);
 
         if ($hashPath) {
-            return FileHelper::normalizePath('/'.md5($pathParts['dirname']));
+            return FileHelper::normalizePath('/' . md5($pathParts['dirname']));
         }
 
         return FileHelper::normalizePath($pathParts['dirname']);
@@ -302,17 +303,17 @@ class ImagerHelpers
         $transformPath = $pathParts['dirname'];
 
         if ($hashPath) {
-            $transformPath = '/'.md5($pathParts['dirname']);
+            $transformPath = '/' . md5($pathParts['dirname']);
         }
 
         if ($hashRemoteUrl) {
             if (\is_string($hashRemoteUrl) && $hashRemoteUrl === 'host') {
-                $transformPath = '/'.substr(md5($urlParts['host']), 0, $shortHashLength).$transformPath;
+                $transformPath = '/' . substr(md5($urlParts['host']), 0, $shortHashLength) . $transformPath;
             } else {
-                $transformPath = '/'.md5($urlParts['host'].$pathParts['dirname']);
+                $transformPath = '/' . md5($urlParts['host'] . $pathParts['dirname']);
             }
         } else {
-            $transformPath = '/'.str_replace('.', '_', $urlParts['host']).$transformPath;
+            $transformPath = '/' . str_replace('.', '_', $urlParts['host']) . $transformPath;
         }
 
         return FileHelper::normalizePath($transformPath);
@@ -335,38 +336,38 @@ class ImagerHelpers
                 foreach ($v as $eff => $param) {
                     if (\is_array($param)) {
                         if (\is_array($param[0])) {
-                            $effectString .= '_'.$eff;
+                            $effectString .= '_' . $eff;
                             foreach ($param as $paramArr) {
-                                $effectString .= '-'.implode('-', $paramArr);
+                                $effectString .= '-' . implode('-', $paramArr);
                             }
                         } else {
-                            $effectString .= '_'.$eff.'-'.implode('-', $param);
+                            $effectString .= '_' . $eff . '-' . implode('-', $param);
                         }
                     } else {
-                        $effectString .= '_'.$eff.'-'.$param;
+                        $effectString .= '_' . $eff . '-' . $param;
                     }
                 }
 
-                $r .= '_'.(ImagerService::$transformKeyTranslate[$k] ?? $k).$effectString;
+                $r .= '_' . (ImagerService::$transformKeyTranslate[$k] ?? $k) . $effectString;
             } else {
                 if ($k === 'watermark') {
                     $watermarkString = '';
 
                     foreach ($v as $eff => $param) {
-                        $watermarkString .= $eff.'-'.(\is_array($param) ? implode('-', $param) : $param);
+                        $watermarkString .= $eff . '-' . (\is_array($param) ? implode('-', $param) : $param);
                     }
 
-                    $r .= '_'.(ImagerService::$transformKeyTranslate[$k] ?? $k).'_'.mb_substr(md5($watermarkString), 0, 10);
+                    $r .= '_' . (ImagerService::$transformKeyTranslate[$k] ?? $k) . '_' . mb_substr(md5($watermarkString), 0, 10);
                 } elseif ($k === 'webpImagickOptions') {
                     $optString = '';
 
                     foreach ($v as $optK => $optV) {
-                        $optString .= ($optK.'-'.$optV.'-');
+                        $optString .= ($optK . '-' . $optV . '-');
                     }
 
-                    $r .= '_'.(ImagerService::$transformKeyTranslate[$k] ?? $k).'_'.mb_substr($optString, 0, strlen($optString) - 1);
+                    $r .= '_' . (ImagerService::$transformKeyTranslate[$k] ?? $k) . '_' . mb_substr($optString, 0, strlen($optString) - 1);
                 } else {
-                    $r .= '_'.(ImagerService::$transformKeyTranslate[$k] ?? $k).(\is_array($v) ? implode('-', $v) : $v);
+                    $r .= '_' . (ImagerService::$transformKeyTranslate[$k] ?? $k) . (\is_array($v) ? implode('-', $v) : $v);
                 }
             }
         }
@@ -375,11 +376,33 @@ class ImagerHelpers
     }
 
     /**
+     * Converts a native asset transform object into an Imager transform.
+     *
+     * @param AssetTransform $assetTransform
+     * @return array
+     */
+    public static function normalizeAssetTransformToObject($assetTransform): array
+    {
+        $transformArray = $assetTransform->toArray();
+        $validParams = ['width', 'height', 'format', 'mode', 'position', 'interlace', 'quality'];
+
+        $r = [];
+
+        foreach ($validParams as $param) {
+            if (isset($transformArray[$param])) {
+                $r[$param] = $transformArray[$param];
+            }
+        }
+
+        return $r;
+    }
+
+    /**
      * Moves a named key in an associative array to a given position
      *
      * @param string $key
-     * @param int    $pos
-     * @param array  $arr
+     * @param int $pos
+     * @param array $arr
      *
      * @return array
      */
@@ -419,7 +442,7 @@ class ImagerHelpers
     /**
      * Fixes slashes in path
      *
-     * @param string     $str
+     * @param string $str
      * @param bool|false $removeInitial
      * @param bool|false $removeTrailing
      *
@@ -444,7 +467,7 @@ class ImagerHelpers
 
     /**
      * Strip trailing slash
-     * 
+     *
      * @param $str
      *
      * @return string
