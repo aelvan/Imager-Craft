@@ -411,7 +411,7 @@ The following example shows a setup that uses two Imgix sources, one that's poin
 
     'imgixConfig' => [
         'default' => [
-            'domains' => [imager.imgix.net],
+            'domains' => ['imager.imgix.net'],
             'useHttps' => true,
             'signKey' => 'XxXxXxXx',
             'sourceIsWebProxy' => false,
@@ -421,7 +421,7 @@ The following example shows a setup that uses two Imgix sources, one that's poin
             'defaultParams' => ['auto'=>'compress,format', 'q'=>80],
         ],
         'external' => [
-            'domains' => [imager-external.imgix.net],
+            'domains' => ['imager-external.imgix.net'],
             'useHttps' => true,
             'signKey' => 'XxXxXxXx',
             'sourceIsWebProxy' => true,
@@ -437,7 +437,7 @@ be set up to point to a location that lets you append the path in `addPath`, and
 
     'imgixConfig' => [
         'default' => [
-            'domains' => [imager-multi.imgix.net],
+            'domains' => ['imager-multi.imgix.net'],
             'useHttps' => true,
             'signKey' => 'XxXxXxXx',
             'sourceIsWebProxy' => false,
