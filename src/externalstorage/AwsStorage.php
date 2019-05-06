@@ -32,11 +32,14 @@ class AwsStorage implements ImagerStorageInterface
         $clientConfig = [
             'version' => 'latest',
             'region' => $settings['region'],
-            'credentials' => [
+        ];
+
+        if (isset($settings['accessKey'], $settings['secretAccessKey'])) {
+            $clientConfig['credentials'] = [
                 'key' => $settings['accessKey'],
                 'secret' => $settings['secretAccessKey'],
-            ],
-        ];
+            ];
+        }
 
         try {
             $s3 = new S3Client($clientConfig);
