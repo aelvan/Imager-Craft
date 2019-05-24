@@ -36,7 +36,7 @@ Features
 `{ width: 800, ratio: 16/9 }`
 - Basic image effects, including grayscale, negative, blur, sharpen, gamma and colorize.   
 `{ effects: { sharpen: true, gamma: 1.4, colorize: '#ff9933' } }`
-- Advanced effetcs, including color blend, tint, sepia, contrast, modulate, normalize, contrast stretch, unsharp mask, posterize and vignette (Imagick imagedriver only).  
+- Advanced effects, including color blend, tint, sepia, contrast, modulate, normalize, contrast stretch, unsharp mask, posterize and vignette (Imagick imagedriver only).  
 `{ effects: { modulate: [100, 40, 100], colorBlend: ['rgb(255, 153, 51)', 0.5] } }`
 - Your own choice of which resize filter to use. Speed vs. quality is up to you (Imagick imagedriver only).
 - Concerned about people copying your images? You can add a watermark to them with Imager.  
