@@ -973,9 +973,7 @@ Blends the image with the color and opacity specified. Example:
     {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { colorBlend: ['rgb(255, 153, 51)', 0.5] } }) %}
 
 ### tint [array]
-Tints the image using [Imagick's tintImage method](http://php.net/manual/en/imagick.tintimage.php). Example:
-
-    {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { colorBlend: ['rgb(255, 153, 51)', 'rgb(212, 212, 212)'] } }) %}
+Tints the image using [Imagick's tintImage method](http://php.net/manual/en/imagick.tintimage.php).
 
 ### sepia [int]
 Converts the image to sepia tones. 
