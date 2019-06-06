@@ -992,7 +992,7 @@ Let's you adjust brightness, saturation and hue with [Imagick's modulateImage me
 Enhances the contrast of the image by normalizing the colorspace. Uses [Imagick's normalizeImage method](http://php.net/manual/en/imagick.normalizeimage.php).
 
 ### contrastStretch [array]
-Enhances the contrast of a color image by adjusting the pixels color to span the entire range of colors available. Uses [Imagick's colorStretch method](http://php.net/manual/en/imagick.contraststretchimage.php). Example:
+Enhances the contrast of a color image by adjusting the pixels color to span the entire range of colors available. Uses [Imagick's contrastStretch method](http://php.net/manual/en/imagick.contraststretchimage.php). Example:
 
     {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { contrastStretch: [500*500*0.10, 500*500*0.90] } }) %}
 
