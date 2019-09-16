@@ -32,11 +32,14 @@ class AwsStorage implements ImagerStorageInterface
         $clientConfig = [
             'version' => 'latest',
             'region' => $settings['region'],
-            'credentials' => [
+        ];
+
+        if (isset($settings['accessKey'], $settings['secretAccessKey'])) {
+            $clientConfig['credentials'] = [
                 'key' => $settings['accessKey'],
                 'secret' => $settings['secretAccessKey'],
-            ],
-        ];
+            ];
+        }
 
         try {
             $s3 = new S3Client($clientConfig);
@@ -52,7 +55,7 @@ class AwsStorage implements ImagerStorageInterface
         //always use forward slashes for S3
         $uri = str_replace('\\', '/', $uri);
 
-        $opts = $settings['requestHeaders'];
+        $opts = $settings['requestHeaders'] ?? [];
         $cacheDuration = $isFinal ? $config->cacheDurationExternalStorage : $config->cacheDurationNonOptimized;
 
         if (!isset($opts['Cache-Control'])) {
@@ -64,7 +67,7 @@ class AwsStorage implements ImagerStorageInterface
             'Key' => $uri,
             'Body' => fopen($file, 'rb'),
             'ACL' => 'public-read',
-            'StorageClass' => self::getAWSStorageClass($settings['storageType']),
+            'StorageClass' => self::getAWSStorageClass($settings['storageType'] ?? 'standard'),
         ]);
 
         try {

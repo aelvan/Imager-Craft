@@ -1,5 +1,10 @@
 # Imager Changelog
 
+## unreleased
+### Changed
+- AWS credentials can now be configured via IAM role, shared credentials file, or environment variables, when `accessKey` and `secretAccessKey` are left blank in the storage config settings.
+- The `requestHeaders` and `storageType` storage config settings for AWS are now optional.
+
 ## 2.1.10 - 2019-04-13
 ### Fixed
 - Fixed issues with using named transforms or `AssetTransform` models when `useForNativeTransforms` is `true` (fixes #237).
