@@ -36,7 +36,7 @@ Features
 `{ width: 800, ratio: 16/9 }`
 - Basic image effects, including grayscale, negative, blur, sharpen, gamma and colorize.   
 `{ effects: { sharpen: true, gamma: 1.4, colorize: '#ff9933' } }`
-- Advanced effetcs, including color blend, tint, sepia, contrast, modulate, normalize, contrast stretch, unsharp mask, posterize and vignette (Imagick imagedriver only).  
+- Advanced effects, including color blend, tint, sepia, contrast, modulate, normalize, contrast stretch, unsharp mask, posterize and vignette (Imagick imagedriver only).  
 `{ effects: { modulate: [100, 40, 100], colorBlend: ['rgb(255, 153, 51)', 0.5] } }`
 - Your own choice of which resize filter to use. Speed vs. quality is up to you (Imagick imagedriver only).
 - Concerned about people copying your images? You can add a watermark to them with Imager.  
@@ -973,9 +973,7 @@ Blends the image with the color and opacity specified. Example:
     {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { colorBlend: ['rgb(255, 153, 51)', 0.5] } }) %}
 
 ### tint [array]
-Tints the image using [Imagick's tintImage method](http://php.net/manual/en/imagick.tintimage.php). Example:
-
-    {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { colorBlend: ['rgb(255, 153, 51)', 'rgb(212, 212, 212)'] } }) %}
+Tints the image using [Imagick's tintImage method](http://php.net/manual/en/imagick.tintimage.php).
 
 ### sepia [int]
 Converts the image to sepia tones. 
@@ -992,7 +990,7 @@ Let's you adjust brightness, saturation and hue with [Imagick's modulateImage me
 Enhances the contrast of the image by normalizing the colorspace. Uses [Imagick's normalizeImage method](http://php.net/manual/en/imagick.normalizeimage.php).
 
 ### contrastStretch [array]
-Enhances the contrast of a color image by adjusting the pixels color to span the entire range of colors available. Uses [Imagick's colorStretch method](http://php.net/manual/en/imagick.contraststretchimage.php). Example:
+Enhances the contrast of a color image by adjusting the pixels color to span the entire range of colors available. Uses [Imagick's contrastStretch method](http://php.net/manual/en/imagick.contraststretchimage.php). Example:
 
     {% set transformedImage = craft.imager.transformImage(image, { width: 500, effects: { contrastStretch: [500*500*0.10, 500*500*0.90] } }) %}
 
