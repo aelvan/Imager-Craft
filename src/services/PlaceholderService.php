@@ -111,6 +111,7 @@ class PlaceholderService extends Component
         $image = $imagineInstance->create(new Box($width, $height), $col);
         $data = $image->get('gif');
         
+        
         return 'data:image/gif;base64,' . base64_encode($data);
     }
 
@@ -155,14 +156,14 @@ class PlaceholderService extends Component
      */
     private function createImagineInstance()
     {
-        $extension = mb_strtolower(\Craft::$app->getConfig()->getGeneral()->imageDriver);
+        $imageDriver = ImagerService::$imageDriver;
         
         try {
-            if ($extension === 'gd') {
+            if ($imageDriver === 'gd') {
                 return new \Imagine\Gd\Imagine();
             }
 
-            if ($extension === 'imagick') {
+            if ($imageDriver === 'imagick') {
                 return new \Imagine\Imagick\Imagine();
             }
         } catch (RuntimeException $e) {
