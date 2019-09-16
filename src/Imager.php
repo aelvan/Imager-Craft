@@ -10,7 +10,6 @@
 
 namespace aelvan\imager;
 
-use aelvan\imager\models\TransformedImageInterface;
 use Craft;
 use craft\base\Element;
 use craft\base\Plugin;
@@ -29,11 +28,11 @@ use craft\web\twig\variables\CraftVariable;
 
 use yii\base\Event;
 
+use aelvan\imager\models\ConfigModel;
+use aelvan\imager\models\TransformedImageInterface;
 use aelvan\imager\elementactions\ClearTransformsElementAction;
 use aelvan\imager\elementactions\ImgixPurgeElementAction;
 use aelvan\imager\exceptions\ImagerException;
-use aelvan\imager\models\CraftTransformedImageModel;
-use aelvan\imager\models\ImgixTransformedImageModel;
 use aelvan\imager\models\Settings;
 use aelvan\imager\services\PlaceholderService;
 use aelvan\imager\services\ImagerService;
@@ -202,7 +201,7 @@ class Imager extends Plugin
                         $transformedImage = self::$plugin->imager->transformImage($event->asset, $transform);
 
                         if ($transformedImage !== null) {
-                            $event->url = $transformedImage->url;
+                            $event->url = $transformedImage->getUrl();
                         }
                     } catch (ImagerException $e) {
                         return null;
