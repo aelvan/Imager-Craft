@@ -255,10 +255,19 @@ class ImgixTransformedImageModel implements TransformedImageInterface
     }
 
     /**
+     * @return bool
+     */
+    public function getIsNew(): bool
+    {
+        return false;
+    }
+    
+    /**
      * @return string
      */
     public function __toString()
     {
         return (string)$this->url;
     }
+
 }

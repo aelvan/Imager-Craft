@@ -10,6 +10,8 @@
 
 namespace aelvan\imager\transformers;
 
+use aelvan\imager\models\NoopImageModel;
+use aelvan\imager\models\TransformedImageInterface;
 use Craft;
 
 use craft\base\Component;
@@ -87,15 +89,21 @@ class CraftTransformer extends Component implements TransformerInterface
         $transformedImages = [];
 
         foreach ($transforms as $transform) {
-            $transformedImages[] = $this->getTransformedImage($sourceModel, $transform);
+            if ($config->getSetting('noop', $transform)) {
+                $msg = Craft::t('imager', 'Noop activated, returning “{path}”.', ['path' => $sourceModel->url]);
+                Craft::info($msg, __METHOD__);
+                $transformedImages[] = new NoopImageModel($sourceModel, $transform);
+            } else {
+                $transformedImages[] = $this->getTransformedImage($sourceModel, $transform);
+            }
         }
 
         $taskCreated = false;
 
         // Loop over transformed images and do post optimizations and upload to external storage 
         foreach ($transformedImages as $transformedImage) {
-            /** @var CraftTransformedImageModel $transformedImage */
-            if ($transformedImage->isNew) {
+            /** @var TransformedImageInterface $transformedImage */
+            if ($transformedImage->getIsNew()) {
                 $isFinalVersion = $this->optimize($transformedImage);
                 $this->store($transformedImage, $isFinalVersion);
 
@@ -116,12 +124,12 @@ class CraftTransformer extends Component implements TransformerInterface
     /**
      * Store transformed image in configured storages
      *
-     * @param CraftTransformedImageModel $image
+     * @param TransformedImageInterface $image
      * @param bool $isFinalVersion
      *
      * @throws ImagerException
      */
-    public function store(CraftTransformedImageModel $image, bool $isFinalVersion)
+    public function store(TransformedImageInterface $image, bool $isFinalVersion)
     {
         /** @var ConfigModel $settings */
         $config = ImagerService::getConfig();
@@ -175,10 +183,6 @@ class CraftTransformer extends Component implements TransformerInterface
     {
         /** @var ConfigModel $settings */
         $config = ImagerService::getConfig();
-
-        if ($config->getSetting('noop', $transform)) {
-            // todo : just return source image unmodified
-        }
 
         if ($this->imagineInstance === null) {
             $msg = Craft::t('imager', 'Imagine instance was not created for driver “{driver}”.', ['driver' => ImagerService::$imageDriver]);
@@ -822,7 +826,7 @@ class CraftTransformer extends Component implements TransformerInterface
     /**
      * Post optimizations
      *
-     * @param CraftTransformedImageModel $transformedImage
+     * @param TransformedImageInterface $transformedImage
      *
      * @return bool Return if the image is the final version or not. If a task was set up, it's not.
      */

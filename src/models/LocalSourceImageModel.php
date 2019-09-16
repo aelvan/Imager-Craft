@@ -94,7 +94,7 @@ class LocalSourceImageModel
             }
         } else {
             // It's some kind of model
-            if (\get_class($image) === 'aelvan\\imager\\models\\CraftTransformedImageModel') {
+            if ($image instanceof CraftTransformedImageModel) {
                 $this->getPathsForLocalImagerFile($image->url);
             } else {
                 if ($image instanceof Asset) {

@@ -13,7 +13,7 @@ use Imagine\Image\Box;
 
 use yii\base\InvalidConfigException;
 
-class CraftTransformedImageModel implements TransformedImageInterface
+class NoopImageModel implements TransformedImageInterface
 {
     public $path;
     public $filename;
@@ -28,47 +28,41 @@ class CraftTransformedImageModel implements TransformedImageInterface
     /**
      * Constructor
      *
-     * @param LocalTargetImageModel $targetModel
      * @param LocalSourceImageModel $sourceModel
      * @param array $transform
      *
      * @throws ImagerException
      */
-    public function __construct($targetModel, $sourceModel, $transform)
+    public function __construct($sourceModel, $transform)
     {
-        $this->path = $targetModel->getFilePath();
-        $this->filename = $targetModel->filename;
-        $this->url = $targetModel->url;
-        $this->isNew = $targetModel->isNew;
+        $this->path = $sourceModel->getFilePath();
+        $this->filename = $sourceModel->filename;
+        $this->url = $sourceModel->url;
+        $this->isNew = false;
 
-        $this->extension = $targetModel->extension;
-        $this->size = @filesize($targetModel->getFilePath());
+        $this->extension = $sourceModel->extension;
+        $this->size = @filesize($sourceModel->getFilePath());
 
         try {
-            $this->mimeType = FileHelper::getMimeType($targetModel->getFilePath());
+            $this->mimeType = FileHelper::getMimeType($sourceModel->getFilePath());
         } catch (InvalidConfigException $e) {
             // just ignore
         }
 
-        $imageInfo = @getimagesize($targetModel->getFilePath());
+        $imageInfo = @getimagesize($sourceModel->getFilePath());
 
-        if (\is_array($imageInfo) && $imageInfo[0] !== '' && $imageInfo[1] !== '') {
-            $this->width = $imageInfo[0];
-            $this->height = $imageInfo[1];
-        } else { // Couldn't get size. Calculate size based on source image and transform.
-            /** @var ConfigModel $settings */
-            $config = ImagerService::getConfig();
+        /** @var ConfigModel $settings */
+        $config = ImagerService::getConfig();
 
-            $sourceImageInfo = @getimagesize($sourceModel->getFilePath());
+        $sourceImageInfo = @getimagesize($sourceModel->getFilePath());
 
-            try {
-                $sourceSize = new Box($sourceImageInfo[0], $sourceImageInfo[1]);
-                $targetCrop = ImagerHelpers::getCropSize($sourceSize, $transform, $config->getSetting('allowUpscale', $transform));
-                $this->width = $targetCrop->getWidth();
-                $this->height = $targetCrop->getHeight();
-            } catch (InvalidArgumentException $e) {
-                throw new ImagerException($e->getMessage(), $e->getCode(), $e);
-            }
+        try {
+            $sourceSize = new Box($sourceImageInfo[0], $sourceImageInfo[1]);
+            $targetCrop = ImagerHelpers::getCropSize($sourceSize, $transform, $config->getSetting('allowUpscale', $transform));
+            $this->width = $targetCrop->getWidth();
+            $this->height = $targetCrop->getHeight();
+        } catch (InvalidArgumentException $e) {
+            throw new ImagerException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -131,7 +125,7 @@ class CraftTransformedImageModel implements TransformedImageInterface
     /**
      * @return bool
      */
-    public function getIsNew(): bool 
+    public function getIsNew(): bool
     {
         return $this->isNew;
     }

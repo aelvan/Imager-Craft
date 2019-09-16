@@ -10,6 +10,7 @@
 
 namespace aelvan\imager;
 
+use aelvan\imager\models\TransformedImageInterface;
 use Craft;
 use craft\base\Element;
 use craft\base\Plugin;
@@ -217,11 +218,11 @@ class Imager extends Plugin
 
                 if ($config->useForCpThumbs && $event->asset !== null && $event->asset->kind === 'image' && \in_array(strtolower($event->asset->getExtension()), Image::webSafeFormats(), true)) {
                     try {
-                        /** @var CraftTransformedImageModel|ImgixTransformedImageModel $transformedImage */
+                        /** @var TransformedImageInterface $transformedImage */
                         $transformedImage = self::$plugin->imager->transformImage($event->asset, ['width' => $event->width, 'height' => $event->height, 'mode' => 'fit']);
 
                         if ($transformedImage !== null) {
-                            $event->url = $transformedImage->url;
+                            $event->url = $transformedImage->getUrl();
                         }
                     } catch (ImagerException $e) {
                         // just ignore
