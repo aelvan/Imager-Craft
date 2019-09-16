@@ -354,9 +354,25 @@ class ImagerHelpers
                     $watermarkString = '';
 
                     foreach ($v as $eff => $param) {
-                        $watermarkString .= $eff . '-' . (\is_array($param) ? implode('-', $param) : $param);
+                        if ($eff === 'image') {
+                            if ($param instanceof Asset) {
+                                $watermarkString .=  '-i-' . $param->id;
+                            } else {
+                                $watermarkString .=  '-i-' . $param;
+                            }
+                        } else if ($eff === 'position') {
+                            $watermarkString .=  '-pos';
+                            
+                            foreach ($param as $posKey => $posVal) {
+                                $watermarkString .= '-' . $posKey . '-' . $posVal;
+                            }
+                        } else {
+                            $watermarkString .= '-' . $eff . '-' . (\is_array($param) ? implode('-', $param) : $param);
+                        }
                     }
-
+                    
+                    $watermarkString = substr($watermarkString, 1);
+                    
                     $r .= '_' . (ImagerService::$transformKeyTranslate[$k] ?? $k) . '_' . mb_substr(md5($watermarkString), 0, 10);
                 } elseif ($k === 'webpImagickOptions') {
                     $optString = '';
