@@ -71,7 +71,7 @@ class CraftTransformer extends Component implements TransformerInterface
      * Main transform method
      *
      * @param Asset|string $image
-     * @param array        $transforms
+     * @param array $transforms
      *
      * @return array|null
      *
@@ -117,7 +117,7 @@ class CraftTransformer extends Component implements TransformerInterface
      * Store transformed image in configured storages
      *
      * @param CraftTransformedImageModel $image
-     * @param bool                       $isFinalVersion
+     * @param bool $isFinalVersion
      *
      * @throws ImagerException
      */
@@ -146,12 +146,12 @@ class CraftTransformer extends Component implements TransformerInterface
                         // todo : delete transformed file. Assume that we'd want to try again.
                     }
                 } else {
-                    $msg = 'Could not find settings for storage "'.$storage.'"';
+                    $msg = 'Could not find settings for storage "' . $storage . '"';
                     Craft::error($msg, __METHOD__);
                     throw new ImagerException($msg);
                 }
             } else {
-                $msg = 'Could not find a registered storage with handle "'.$storage.'"';
+                $msg = 'Could not find a registered storage with handle "' . $storage . '"';
                 Craft::error($msg, __METHOD__);
                 throw new ImagerException($msg);
             }
@@ -165,7 +165,7 @@ class CraftTransformer extends Component implements TransformerInterface
      * Gets one transformed image based on source image and transform
      *
      * @param LocalSourceImageModel $sourceModel
-     * @param array                 $transform
+     * @param array $transform
      *
      * @return CraftTransformedImageModel|null
      *
@@ -326,8 +326,8 @@ class CraftTransformer extends Component implements TransformerInterface
      * Apply transforms to an image or layer.
      *
      * @param GdImage|ImagickImage $layer
-     * @param array                $transform
-     * @param string               $sourceExtension
+     * @param array $transform
+     * @param string $sourceExtension
      *
      * @throws ImagerException
      */
@@ -441,9 +441,9 @@ class CraftTransformer extends Component implements TransformerInterface
      * Saves image as webp
      *
      * @param GdImage|ImagickImage $imageInstance
-     * @param string               $path
-     * @param string               $sourceExtension
-     * @param array                $saveOptions
+     * @param string $path
+     * @param string $sourceExtension
+     * @param array $saveOptions
      *
      * @throws ImagerException
      */
@@ -458,11 +458,11 @@ class CraftTransformer extends Component implements TransformerInterface
             $tempFile = $this->saveTemporaryFile($imageInstance, $sourceExtension);
 
             // Convert to webp with cwebp
-            $command = escapeshellcmd($config->getSetting('cwebpPath').' '.$config->getSetting('cwebpOptions').' -q '.$saveOptions['webp_quality'].' "'.$tempFile.'" -o "'.$path.'"');
+            $command = escapeshellcmd($config->getSetting('cwebpPath') . ' ' . $config->getSetting('cwebpOptions') . ' -q ' . $saveOptions['webp_quality'] . ' "' . $tempFile . '" -o "' . $path . '"');
             $r = shell_exec($command);
 
             if (!file_exists($path)) {
-                $msg = Craft::t('imager', 'Creation of webp with cwebp failed with error "'.$r. '". The executed command was "' . $command . '"');
+                $msg = Craft::t('imager', 'Creation of webp with cwebp failed with error "' . $r . '". The executed command was "' . $command . '"');
                 Craft::error($msg, __METHOD__);
                 throw new ImagerException($msg);
             }
@@ -487,7 +487,7 @@ class CraftTransformer extends Component implements TransformerInterface
             }
 
             if (ImagerService::$imageDriver === 'imagick') {
-                 /** @var ImagickImage $imageInstance */
+                /** @var ImagickImage $imageInstance */
                 $instance = $imageInstance->getImagick();
 
                 $instance->setImageFormat('webp');
@@ -504,7 +504,7 @@ class CraftTransformer extends Component implements TransformerInterface
 
                 if ($imagickOptions && \count($imagickOptions) > 0) {
                     foreach ($imagickOptions as $key => $val) {
-                        $instance->setOption('webp:'.$key, $val);
+                        $instance->setOption('webp:' . $key, $val);
                     }
                 }
 
@@ -517,7 +517,7 @@ class CraftTransformer extends Component implements TransformerInterface
      * Save temporary file and return filename
      *
      * @param GdImage|ImagickImage $imageInstance
-     * @param string               $sourceExtension
+     * @param string $sourceExtension
      *
      * @return string
      *
@@ -525,7 +525,7 @@ class CraftTransformer extends Component implements TransformerInterface
      */
     private function saveTemporaryFile($imageInstance, $sourceExtension): string
     {
-        $tempPath = Craft::$app->getPath()->getRuntimePath().'imager/temp/';
+        $tempPath = Craft::$app->getPath()->getRuntimePath() . DIRECTORY_SEPARATOR . 'imager' . DIRECTORY_SEPARATOR . 'temp' . DIRECTORY_SEPARATOR;
 
         // Check if the path exists
         if (!realpath($tempPath)) {
@@ -542,7 +542,7 @@ class CraftTransformer extends Component implements TransformerInterface
             }
         }
 
-        $targetFilePath = $tempPath.md5(microtime()).'.'.$sourceExtension;
+        $targetFilePath = $tempPath . md5(microtime()) . '.' . $sourceExtension;
 
         $saveOptions = [
             'jpeg_quality' => 100,
@@ -559,7 +559,7 @@ class CraftTransformer extends Component implements TransformerInterface
      * Get the save options based on extension and transform
      *
      * @param string $extension
-     * @param array  $transform
+     * @param array $transform
      *
      * @return array
      */
@@ -587,7 +587,7 @@ class CraftTransformer extends Component implements TransformerInterface
      * Apply letterbox to image
      *
      * @param GdImage|ImagickImage|ImageInterface $imageInstance
-     * @param array                               $transform
+     * @param array $transform
      *
      * @throws ImagerException
      */
@@ -616,7 +616,7 @@ class CraftTransformer extends Component implements TransformerInterface
                 $letterboxDef['color'] ?? '#000',
                 isset($letterboxDef['opacity']) ? (int)($letterboxDef['opacity'] * 100) : 0
             );
-            
+
             if ($this->imagineInstance !== null) {
                 $backgroundImage = $this->imagineInstance->create($size, $color);
                 $backgroundImage->paste($imageInstance, $position);
@@ -629,7 +629,7 @@ class CraftTransformer extends Component implements TransformerInterface
      * Apply background color to image when converting from transparent to non-transparent
      *
      * @param GdImage|ImagickImage|ImageInterface $imageInstance
-     * @param string                              $bgColor
+     * @param string $bgColor
      *
      * @throws ImagerException
      */
@@ -656,7 +656,7 @@ class CraftTransformer extends Component implements TransformerInterface
      * Apply watermark to image
      *
      * @param GdImage|ImagickImage|ImageInterface $imageInstance
-     * @param array                               $watermark
+     * @param array $watermark
      *
      * @throws ImagerException
      */
@@ -673,7 +673,7 @@ class CraftTransformer extends Component implements TransformerInterface
             Craft::error($msg, __METHOD__);
             throw new ImagerException($msg);
         }
-        
+
         if ($this->imagineInstance === null) {
             $msg = Craft::t('imager', 'Imagine instance was not created for driver “{driver}”.', ['driver' => ImagerService::$imageDriver]);
             Craft::error($msg, __METHOD__);
@@ -764,7 +764,7 @@ class CraftTransformer extends Component implements TransformerInterface
      * Applies effects to image.
      *
      * @param GdImage|ImagickImage $image
-     * @param array                $effects
+     * @param array $effects
      */
     private function applyEffects($image, $effects)
     {
@@ -783,7 +783,7 @@ class CraftTransformer extends Component implements TransformerInterface
      * Get vars for animated gif frames setup
      *
      * @param LayersInterface|array $layers
-     * @param array                 $transform
+     * @param array $transform
      *
      * @return array
      */
@@ -856,10 +856,10 @@ class CraftTransformer extends Component implements TransformerInterface
                         }
                     }
                 } else {
-                    Craft::error('Could not find settings for optimizer "'.$optimizer.'"', __METHOD__);
+                    Craft::error('Could not find settings for optimizer "' . $optimizer . '"', __METHOD__);
                 }
             } else {
-                Craft::error('Could not find a registered optimizer with handle "'.$optimizer.'"', __METHOD__);
+                Craft::error('Could not find a registered optimizer with handle "' . $optimizer . '"', __METHOD__);
             }
         }
 
@@ -870,7 +870,7 @@ class CraftTransformer extends Component implements TransformerInterface
      * Checks if extension is in array of extensions
      *
      * @param string $extension
-     * @param array  $validExtensions
+     * @param array $validExtensions
      *
      * @return bool
      */
@@ -884,20 +884,20 @@ class CraftTransformer extends Component implements TransformerInterface
      *
      * @param string $handle
      * @param string $filePath
-     * @param array  $settings
+     * @param array $settings
      */
     private function createOptimizeJob(string $handle, string $filePath, array $settings)
     {
         $queue = Craft::$app->getQueue();
 
         $jobId = $queue->push(new OptimizeJob([
-            'description' => Craft::t('imager', 'Optimizing images ('.$handle.')'),
+            'description' => Craft::t('imager', 'Optimizing images (' . $handle . ')'),
             'optimizer' => $handle,
             'optimizerSettings' => $settings,
             'filePath' => $filePath,
         ]));
 
-        Craft::info('Created optimize job for '.$handle.' (job id is '.$jobId.')', __METHOD__);
+        Craft::info('Created optimize job for ' . $handle . ' (job id is ' . $jobId . ')', __METHOD__);
     }
 
     /**
