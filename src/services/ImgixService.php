@@ -90,7 +90,6 @@ class ImgixService extends Component
     /**
      * @param string $url The base URL to the image you wish to purge (e.g. https://your-imgix-source.imgix.net/image.jpg)
      * @param string $apiKey Imgix API key
-     * @throws ImagerException
      */
     public function purgeUrlFromImgix(string $url, string $apiKey)
     {
@@ -109,7 +108,7 @@ class ImgixService extends Component
 
         } catch (\Throwable $e) {
             Craft::error($e->getMessage(), __METHOD__);
-            throw new ImagerException($e->getMessage(), $e->getCode(), $e);
+            // We don't continue to throw this error, since it could be caused by a duplicated request.
         }
     }
 
