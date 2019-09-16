@@ -61,7 +61,7 @@ class ImgixTransformedImageModel implements TransformedImageInterface
                 if ($sourceWidth / $sourceHeight < $paramsW / $paramsH) {
                     $useW = min($paramsW, $sourceWidth);
                     $this->width = $useW;
-                    $this->height = round($useW * ($paramsW / $paramsH));
+                    $this->height = round($useW * ($paramsH / $paramsW));
                 } else {
                     $useH = min($paramsH, $sourceHeight);
                     $this->width = round($useH * ($paramsW / $paramsH));
