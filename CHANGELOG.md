@@ -1,9 +1,20 @@
 # Imager Changelog
 
-## unreleased
+## 2.2.0 - 2019-09-16
+### Added
+- Added missing `noop` implementation (fixes #260). 
+
 ### Changed
-- AWS credentials can now be configured via IAM role, shared credentials file, or environment variables, when `accessKey` and `secretAccessKey` are left blank in the storage config settings.
-- The `requestHeaders` and `storageType` storage config settings for AWS are now optional.
+- Changed how watermark transform string is generated to avoid collisions due to keys in position (fixes #244). 
+- AWS credentials can now be configured via IAM role, shared credentials file, or environment variables, when `accessKey` and `secretAccessKey` are left blank in the storage config settings (Thanks, @carlcs). 
+- The `requestHeaders` and `storageType` storage config settings for AWS are now optional (Thanks, @carlcs).
+
+### Fixed
+- Fixed an issue where an error thrown while purging images on Imgix could result in assets not being replaced correctly and JS alerts IN CP. Purging is now silent, check logs for errors (fixes #261).
+- Fixed issue where gif placeholder would not work if the image driver was left at `'auto'` in Craft's general config (fixes #195).
+- Fixed incorrect calculation of image size in `ImgixTransformedImageModel` under very specific circumstances (fixes #238).
+- Normalized path to `imagerSystemPath` returned from `Settings` model (Thanks, @andersaloof).
+- Fixed directory separators in temp file path.
 
 ## 2.1.10 - 2019-04-13
 ### Fixed
