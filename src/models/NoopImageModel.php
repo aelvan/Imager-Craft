@@ -20,9 +20,25 @@ class NoopImageModel implements TransformedImageInterface
     public $url;
     public $extension;
     public $mimeType;
+    
+    /**
+     * @var int
+     */
     public $width;
+    
+    /**
+     * @var int
+     */
     public $height;
+    
+    /**
+     * @var int|float
+     */
     public $size;
+    
+    /**
+     * @var bool
+     */
     public $isNew;
 
     /**

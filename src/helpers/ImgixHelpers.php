@@ -30,7 +30,7 @@ class ImgixHelpers
         } 
         
         if ($config->sourceIsWebProxy === true) {
-            return $image->url;
+            return $image->url ?? '';
         } 
             
         try {

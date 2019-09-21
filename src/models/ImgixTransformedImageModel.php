@@ -13,15 +13,49 @@ use aelvan\imager\exceptions\ImagerException;
 
 class ImgixTransformedImageModel implements TransformedImageInterface
 {
+    /**
+     * @var string
+     */
     public $path;
+    
+    /**
+     * @var string
+     */
     public $filename;
+    
+    /**
+     * @var string
+     */
     public $url;
+    
+    /**
+     * @var string
+     */
     public $extension;
+    
+    /**
+     * @var string
+     */
     public $mimeType;
+    
+    /**
+     * @var int
+     */
     public $width;
+    
+    /**
+     * @var int
+     */
     public $height;
+    
+    /**
+     * @var int|float
+     */
     public $size;
 
+    /**
+     * @var ImgixSettings|null
+     */
     private $profileConfig;
 
     /**

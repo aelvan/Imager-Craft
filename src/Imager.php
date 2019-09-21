@@ -187,7 +187,7 @@ class Imager extends Plugin
                         }
 
                         // Transform is a named asset transform
-                        if (is_string($event->transform)) {
+                        if (is_string($transform)) {
                             $assetTransform = Craft::$app->getAssetTransforms()->getTransformByHandle($transform);
 
                             if ($assetTransform) {
@@ -198,10 +198,12 @@ class Imager extends Plugin
                             }
                         }
 
-                        $transformedImage = self::$plugin->imager->transformImage($event->asset, $transform);
-
-                        if ($transformedImage !== null) {
-                            $event->url = $transformedImage->getUrl();
+                        if (is_array($transform)) {
+                            $transformedImage = self::$plugin->imager->transformImage($event->asset, $transform);
+    
+                            if ($transformedImage !== null) {
+                                $event->url = $transformedImage->getUrl();
+                            }
                         }
                     } catch (ImagerException $e) {
                         return null;
