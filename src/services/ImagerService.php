@@ -324,7 +324,7 @@ class ImagerService extends Component
         $transforms = $this->mergeTransforms($transforms, $transformDefaults);
 
         // Normalize transform parameters
-        $transforms = $this->normalizeTransforms($transforms);
+        $transforms = $this->normalizeTransforms($transforms, $image);
 
         // Create transformer
         try {
@@ -593,15 +593,16 @@ class ImagerService extends Component
      * Merges default transform object into an array of transforms
      *
      * @param array $transforms
+     * @param Asset|string $image
      *
      * @return array
      */
-    private function normalizeTransforms($transforms): array
+    private function normalizeTransforms($transforms, $image): array
     {
         $r = [];
 
         foreach ($transforms as $t) {
-            $r[] = $this->normalizeTransform((array)$t);
+            $r[] = $this->normalizeTransform((array)$t, $image);
         }
 
         return $r;
@@ -611,10 +612,11 @@ class ImagerService extends Component
      * Normalize transform object and values
      *
      * @param array $transform
+     * @param Asset|string $image
      *
      * @return array
      */
-    private function normalizeTransform($transform): array
+    private function normalizeTransform($transform, $image): array
     {
         // if resize mode is not crop or croponly, remove position
         if (isset($transform['mode'], $transform['position']) && (($transform['mode'] !== 'crop') && ($transform['mode'] !== 'croponly'))) {
@@ -644,10 +646,14 @@ class ImagerService extends Component
             }
         }
 
+        // if no position is passed and a focal point exists, use it
+        if ($image instanceof Asset && !isset($transform['position']) && $image->getHasFocalPoint()) {
+            $transform['position'] = $image->getFocalPoint();
+        }
+        
         // if transform is in Craft's named version, convert to percentage
         if (isset($transform['position'])) {
-
-            if (\is_array($transform['position']) && isset($transform['position']['x']) && isset($transform['position']['y'])) {
+            if (\is_array($transform['position']) && isset($transform['position']['x'], $transform['position']['y'])) {
                 $transform['position'] = ($transform['position']['x'] * 100).' '.($transform['position']['y'] * 100);
             }
 
