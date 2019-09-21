@@ -1,5 +1,13 @@
 # Imager Changelog
 
+## 2.3.0 - 2019-09-21
+
+> {warning} As of Imager 2.3.0, the native focal point will automatically be used for transforms on Asset elements, _if no `position` is set in the transform_. If you were relying on the configuration setting `position` as the fallback value in previous versions, this could result in new transforms being created for some images, and you should consider adding your default value explicitly before upgrading. 
+
+### Changed
+- Imager will now automatically use native focal point for Asset elements, if no position is set by the transform. (fixes #270). 
+
+
 ## 2.2.0 - 2019-09-16
 ### Added
 - Added missing `noop` implementation (fixes #260). 
