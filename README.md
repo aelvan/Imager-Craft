@@ -214,7 +214,7 @@ If an image is converted from a format that supports transparency, to a format t
 
 ### position [string]
 *Default: `'50% 50%'`*  
-The default focal point to be used when cropping an image. This can either be in percent, where the first value is along the horizontal axis, and the second value is along the vertical axis. Or one of the string values used in Craft's default image transform functionality (ie 'center-center', 'top-right', etc).
+By default, Imager will use the native focal point for Asset elements. For other types of source elements, like external images, this setting will be used as default when cropping an image. 
 
 ### letterbox [array]
 *Default: `array('color'=>'#000', 'opacity'=>0)`*  
@@ -643,7 +643,7 @@ Here's how the code would look with Imager:
 		{ width: 800 }, 
 		{ width: 600, jpegQuality: 65 }, 
 		{ width: 400, jpegQuality: 65 }
-		], { ratio: 16/9, position: 'bottom-right', jpegQuality: 80 }) %}
+		], { ratio: 16/9, position: '100% 100%', jpegQuality: 80 }) %}
 		
 Imager 1.5.0 also introduced a convenient `fillTransforms` config setting which makes the above code even simpler:
 		
@@ -651,18 +651,10 @@ Imager 1.5.0 also introduced a convenient `fillTransforms` config setting which 
 		{ width: 1200 }, 
 		{ width: 600, jpegQuality: 65 }, 
 		{ width: 400, jpegQuality: 65 }
-		], { ratio: 16/9, position: 'bottom-right', jpegQuality: 80 }, 
+		], { ratio: 16/9, position: '100% 100%', jpegQuality: 80 }, 
 		{ fillTransforms: true }) %}
 
 See the `fillTransforms`, `fillAttribute` and `fillInterval` settings for more information.
-
-To use Craft's built in focal point feature when cropping, you can easily pass in the focal point object directly to position:
-
-	{% set transformedImages = craft.imager.transformImage(image, [
-		{ width: 1200 }, 
-		{ width: 400 }
-		], { ratio: 16/9, position: image.getFocalPoint() }, 
-		{ fillTransforms: true }) %}
 		
 The plugin also includes some additional methods that helps you streamline the creation of responsive images. With the above transformed images, you can output the appropriate srcset like this, with a base64-encoded placeholder in the src attribute:
 
@@ -874,7 +866,7 @@ The mode that should be used when resizing images.
 *Transformers: Craft, Imgix*  
 By default when cropping, the image will be resized to the smallest size needed to make the image fit the given crop size. By increasing the `cropZoom` value, the image will be resized to a bigger size before cropping. 
 
-Example: If the original image is 1600x900px, and you resize it to 300x300px with mode 'crop' and a cropZoom value of 1.5, the image will; 1) be resized to 800x450px and 2) a crop of 300x300px will be made (the position depending on the position given).
+Example: If the original image is 1600x900px, and you resize it to 300x300px with mode 'crop' and a cropZoom value of 1.5, the image will; 1) be resized to 800x450px and 2) a crop of 300x300px will be made (the position depending on the `position` given).
 
 ### frames [string]
 *Transformers: Craft*  
