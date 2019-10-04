@@ -32,7 +32,7 @@ Features
 `{ width: 600, height: 600, position: asset.getFocalPoint() }`
 - New letterbox resize mode.    
 `{ width: 600, height: 600, mode: 'letterbox', letterbox: { color: '#000', opacity: 0 } }`
-- If you know the aspect ration you want, you don't have to calculate the extra height/width.    
+- If you know the aspect ratio you want, you don't have to calculate the extra height/width.    
 `{ width: 800, ratio: 16/9 }`
 - Basic image effects, including grayscale, negative, blur, sharpen, gamma and colorize.   
 `{ effects: { sharpen: true, gamma: 1.4, colorize: '#ff9933' } }`
