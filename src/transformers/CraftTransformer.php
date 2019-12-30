@@ -223,8 +223,6 @@ class CraftTransformer extends Component implements TransformerInterface
                     Craft::error($msg, __METHOD__);
                     throw new ImagerException($msg);
                 }
-
-                $targetModel->path = realpath($targetModel->path);
             }
 
             try {
