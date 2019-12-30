@@ -1,5 +1,9 @@
 # Imager Changelog
 
+## 2.3.1 - 2019-12-30
+### Fixed
+- Fixed an issue where realpath() was used unnecessarily and introduced a bug that would result in incorrect file paths when uploading to external storages (fixes #289, thanks @SanderVanLeeuwen).
+
 ## 2.3.0 - 2019-09-21
 
 > {warning} As of Imager 2.3.0, the native focal point will automatically be used for transforms on Asset elements, _if no `position` is set in the transform_. If you were relying on the configuration setting `position` as the fallback value in previous versions, this could result in new transforms being created for some images, and you should consider adding your default value explicitly before upgrading. 
