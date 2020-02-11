@@ -1,5 +1,15 @@
 # Imager Changelog
 
+## 2.4.0 - 2020-02-11
+
+> {warning} This version of Imager is no longer actively maintained. [Imager X](https://plugins.craftcms.com/imager-x) is the successor of Imager 2.0, a commercial plugin with several new and awesome features.
+
+### Changed
+- Changed README to inform about [Imager X](https://plugins.craftcms.com/imager-x).  
+
+### Fixed
+- Fixed an issue where Imgix URLs with special characters were being encoded unnecessarily. 
+
 ## 2.3.1 - 2019-12-30
 ### Fixed
 - Fixed an issue where realpath() was used unnecessarily and introduced a bug that would result in incorrect file paths when uploading to external storages (fixes #289, thanks @SanderVanLeeuwen).

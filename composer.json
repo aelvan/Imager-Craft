@@ -2,7 +2,7 @@
     "name": "aelvan/imager",
     "description": "Image transforms gone wild",
     "type": "craft-plugin",
-    "version": "v2.3.1",
+    "version": "v2.4.0",
     "keywords": [
         "craft",
         "cms",
