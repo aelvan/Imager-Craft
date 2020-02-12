@@ -16,14 +16,14 @@ Imager, install Imager X, and rename the config file from `imager.php` to
 
 Imager X also comes with some new features, like:
 
-– Support for named transforms, a new way to define your transforms in a central place, and easily reuse it in your templates.
-– Support for auto generating transforms on asset upload or element save.
-– Console commands and element actions for generating transforms.
-– Support for GraphQL.
-– Support for adding a fallbackImage that is used when a transform fails.
-– Support for adding a mockImage that completely overrides any used image (great for development!).
-– Much improved docs built on Vuepress.
+- Support for named transforms, a new way to define your transforms in a central place, and easily reuse it in your templates.
+- Support for auto generating transforms on asset upload or element save.
+- Console commands and element actions for generating transforms.
+- Support for GraphQL.
+- Support for adding a fallbackImage that is used when a transform fails.
+- Support for adding a mockImage that completely overrides any used image (great for development!).
+- Much improved docs built on Vuepress.
 
-Give it a try!    
+**Give it a try!**    
 
 _And if you don't want to pay, feel free to use Imager 2.0 for as long as you wish! [You can still access the old documentation here](https://github.com/aelvan/Imager-Craft/blob/e06b24885dd194a6b0659a66f9333067975b027e/README.md)._
